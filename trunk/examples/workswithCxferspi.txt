@@ -1,0 +1,117 @@
+15:56:22.397>  run1802.2.2(1000)
+15:56:22.982>  at begin: wiznet MR=0000, S0_SR=0000, S0_MR=0000, S0_PORT=0000 0000
+15:56:23.210> recv_size=0
+15:56:23.210> Wiznet 5100 pingmastery begins here!
+15:56:23.520> Setting Gateway Address 192.168.1.1
+15:56:23.980> Setting Source Address 00DE:00AD:00BE:00EF:00FE:00ED
+15:56:24.705> Setting Subnet Mask  255.255.255.0
+15:56:25.269> Setting IP Address 192.168.1.181
+15:56:26.205> Reading SIPR: 192.168.1.181
+15:56:26.205> 
+15:56:26.267> Setting Wiznet RMSR and TMSR
+15:56:26.267> 
+15:56:26.453> Done Wiznet W5100 Initialization!
+15:56:27.074>  at after setup: wiznet MR=0000, S0_SR=0000, S0_MR=0000, S0_PORT=0000 0000
+15:56:27.267> recv_size=0
+15:56:28.118>  at after socket init: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:56:28.326> recv_size=0
+15:56:28.972>  at after socket init: wiznet MR=0000, S0_SR=0013, S0_MR=0001, S0_PORT=0000 0050
+15:56:29.199> recv_size=0
+15:56:29.905>  at after listen: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:30.135> recv_size=0
+15:56:30.647> loop.. at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:30.885> recv_size=0
+15:56:32.904>  at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:33.129> recv_size=0
+15:56:35.112>  at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:35.316> recv_size=0
+15:56:37.267>  at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:37.499> recv_size=0
+15:56:39.527>  at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:39.746> recv_size=0
+15:56:41.733>  at loop: wiznet MR=0000, S0_SR=0014, S0_MR=0001, S0_PORT=0000 0050
+15:56:41.929> recv_size=0
+15:56:43.879>  at loop: wiznet MR=0000, S0_SR=0017, S0_MR=0001, S0_PORT=0000 0050
+15:56:44.112> recv_size=431
+15:56:44.611> RX Buffer: 0000
+15:57:24.059> recv(sockreg,buf,rsize)=1
+15:57:24.059> Content:
+15:57:24.059> GET / HTTP/1.1
+15:57:24.059> 
+15:57:24.059> Host: 192.168.1.181
+15:57:24.059> 
+15:57:24.175> Connection: keep-alive
+15:57:24.175> 
+15:57:24.175> Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+15:57:24.175> 
+15:57:24.514> User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.94 Safari/537.36
+15:57:24.514> 
+15:57:24.514> Referer: http://www.google.com/url?sa=D&q=http://192.168.1.181/&usg=AFQjCNET5Hu_REwvyjrE1_gLiiEqzQS63w
+15:57:24.514> 
+15:57:24.514> Accept-Encoding: gzip,deflate,sdch
+15:57:24.514> 
+15:57:24.514> Accept-Language: en-US,en;q=0.8
+15:57:24.514> 
+15:57:24.514> 
+15:57:24.514> 
+15:57:24.514> 
+15:58:11.617>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:11.849> recv_size=0
+15:58:13.891>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:14.093> recv_size=0
+15:58:16.080>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:16.278> recv_size=0
+15:58:18.229>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:18.461> recv_size=0
+15:58:20.478>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:20.648> recv_size=0
+15:58:22.686>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:22.894> recv_size=0
+15:58:24.852>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:25.076> recv_size=0
+15:58:27.022>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+15:58:27.263> recv_size=0
+15:58:29.282>  at loop: wiznet MR=0000, S0_SR=0000, S0_MR=0001, S0_PORT=0000 0050
+
+************************failsbelow with asm routine
+15:59:42.203> Wiznet 5100 pingmastery begins here!
+15:59:42.390> Setting Gateway Address 192.168.1.1
+15:59:42.582> Setting Source Address 00DE:00AD:00BE:00EF:00FE:00ED
+15:59:42.890> Setting Subnet Mask  255.255.255.0
+15:59:43.140> Setting IP Address 192.168.1.181
+15:59:43.451> Reading SIPR: 192.168.1.181
+15:59:43.451> 
+15:59:43.451> Setting Wiznet RMSR and TMSR
+15:59:43.451> 
+15:59:43.559> Done Wiznet W5100 Initialization!
+15:59:43.698>  at after setup: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 00FF
+15:59:43.827> recv_size=0
+15:59:44.085>  at after socket init: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:44.085> recv_size=0
+15:59:44.285>  at after socket init: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:44.381> recv_size=0
+15:59:44.629>  at after listen: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:44.698> recv_size=0
+15:59:44.900> loop.. at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:44.948> recv_size=0
+15:59:46.337>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:46.384> recv_size=0
+15:59:47.772>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:47.820> recv_size=0
+15:59:49.208>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:49.257> recv_size=0
+15:59:50.673>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:50.740> recv_size=0
+15:59:52.109>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:52.178> recv_size=0
+15:59:53.538>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:53.615> recv_size=0
+15:59:54.950>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:55.015> recv_size=0
+15:59:56.446>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:56.494> recv_size=0
+15:59:57.879>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:57.928> recv_size=0
+15:59:59.318>  at loop: wiznet MR=0000, S0_SR=0001, S0_MR=0000, S0_PORT=0001 0050
+15:59:59.364> recv_size=0
+
