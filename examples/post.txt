@@ -1,0 +1,12 @@
+POST / HTTP/1.1
+Host: 192.168.1.182
+Connection: keep-alive
+Content-Length: 4
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,;q=0.8
+Origin: http://192.168.1.182
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36
+Content-Type: application/x-www-form-urlencoded
+Referer: http://192.168.1.182/
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8
