@@ -151,7 +151,7 @@ int main(argc, argv) int argc; char **argv; {
 /* match - match ins against pat and set vars */
 int match(ins, pat, vars) char *ins, *pat, **vars; {
 	char *p, lin[MAXLINE];
-	printf("match(%s,%s)\n",ins,pat); //wjr june 24
+	//printf("match(%s,%s)\n",ins,pat); //wjr june 24
 	while (*ins && *pat){
 		if (pat[0] == '%' && isdigit(pat[1])) {
 			for (p = lin; *ins && *ins != pat[2];)
