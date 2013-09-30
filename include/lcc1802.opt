@@ -22,4 +22,8 @@ _main: ;copt is peeping you too now!
 =
 	demote	%2	;opt3
 
+	st2 %1,'O',sp,(%2); flag1 
+	demote	%2	;opt3
+=
+	st1 %1,'O',sp,(%2); opt4 
 
