@@ -108,7 +108,7 @@ releaseL: macro	framesize	;release the stack frame
 ;so if there's an interrupt in mid calculation the sp will be pointing to free memory
 	alu2i sp,sp,framesize,adi,adci
 	endm
-blkcpy:	macro	tgt,src,len	;move memory length len from memory addressed by src to memory addressed by tgt
+blkcpy:	macro	tgt,src,len	;move memory length len from memory addressed by src to memory addressed by tgt - 19 bytes, lb@5-12, lb@16-4
 	ldiReg	retVal,len	;length to move
 $$nxt:	glo	retVal
 	lbnz	$$go
@@ -122,7 +122,7 @@ $$go:	lda	src		;get byte to move - nb, src reg altered
 $$done:
 	endm
 	
-jcI2:	macro	reg1,reg2,brop,label	;signed comparison 
+jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
 	dec	sp ;make a work area
 	glo	reg2
 	str	sp 
@@ -142,7 +142,7 @@ jcI2:	macro	reg1,reg2,brop,label	;signed comparison
 	brop	label  ;execute 
 	endm
 
-jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs
+jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs -28 bytes, ls@21, lbr@25
 	dec	sp ;make a work area
 	glo	reg2	;lowest order byte
 	str	sp 
@@ -170,7 +170,7 @@ jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs
 	brop	label  ;execute 
 	endm
 
-jcU2:	macro	reg1,reg2,brop,label
+jcU2:	macro	reg1,reg2,brop,label ;13 bytes, lbr@10
 	dec	sp
 	glo	reg2
 	str	sp
@@ -183,7 +183,7 @@ jcU2:	macro	reg1,reg2,brop,label
 	inc	sp
 	brop	label
 	endm
-jcU4:	macro	reg1,reg2,brop,label
+jcU4:	macro	reg1,reg2,brop,label	;21 bytes, lbr@18
 	dec	sp
 	glo	reg2	;start with the low byte of the low order register
 	str	sp
@@ -204,7 +204,7 @@ jcU4:	macro	reg1,reg2,brop,label
 	inc	sp
 	brop	label
 	endm
-jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate
+jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate -17 bytes, ls@10, lbr@14
 	glo	reg1
 	smi	(ival)#256
 	ghi	reg1
@@ -217,7 +217,7 @@ jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate
 	shrc           ;put it back in df
 	brop	label  ;execute 
 	endm
-jnI2I:	macro	reg1,ival,brop,label	;reverse signed comparison - register immediate
+jnI2I:	macro	reg1,ival,brop,label	;reverse signed comparison - register immediate -17 bytes, ls@10, lbr@14
 	glo	reg1
 	sdi	(ival)#256	;subtract d FROM immediate value
 	ghi	reg1
@@ -230,21 +230,21 @@ jnI2I:	macro	reg1,ival,brop,label	;reverse signed comparison - register immediat
 	shrc           ;put it back in df
 	brop	label  ;execute 
 	endm
-jcU2I:	macro	reg1,ival,brop,label
+jcU2I:	macro	reg1,ival,brop,label ;-9 bytes, lbr@6
 	glo	reg1
 	smi	(ival)#256
 	ghi	reg1
 	smbi	(ival)>>8; was/256
 	brop	label
 	endm
-jnU2I:	macro	reg1,ival,brop,label	;reverse unsigned comparison
+jnU2I:	macro	reg1,ival,brop,label	;reverse unsigned comparison - 9 byes, lbr@6
 	glo	reg1
 	sdi	(ival)#256	;subtract d FROM immediate value
 	ghi	reg1
 	sdbi	(ival)>>8; was/256 ; sfinish subtracting register FROM immediate value
 	brop	label
 	endm
-jneU2:	macro	reg1,reg2,label
+jneU2:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	dec	sp
 	glo	reg2
 	str	sp
@@ -260,7 +260,7 @@ jneU2:	macro	reg1,reg2,label
 	inc	sp
 	lbnz	label
 	endm
-jneU2I:	macro	reg1,ival,label
+jneU2I:	macro	reg1,ival,label	;-12 bytes, lbr@3, lbr@9
 	glo	reg1
 	smi	(ival)#256
 	lbnz	label
@@ -268,28 +268,28 @@ jneU2I:	macro	reg1,ival,label
 	smbi	(ival)>>8; was/256
 	lbnz	label
 	endm
-jnzU1:	macro	reg1,label
+jnzU1:	macro	reg1,label	;4 bytes, lbr@1
 	glo	reg1
 	lbnz	label
 	endm
-jnzU2:	macro	reg1,label
+jnzU2:	macro	reg1,label	;8 bytes, lbr@1, lbr@5
 	glo	reg1
 	lbnz	label
 	ghi	reg1
 	lbnz	label
 	endm
-jzU1:	macro	reg1,label
+jzU1:	macro	reg1,label	;4 bytes, lbr@1
 	glo	reg1
 	lbz	label
 	endm
-jzU2:	macro	reg1,label
+jzU2:	macro	reg1,label	;8 bytes, lbr@1-8, lbr@5
 	glo	reg1
 	lbnz	+
 	ghi	reg1
 	lbz	label
 +
 	endm
-jeqI4:	macro	reg1,reg2,label
+jeqI4:	macro	reg1,reg2,label	;36 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33
 	dec	sp	;make a work area
 	glo	reg2	;get the low byte of the low register of the pair for the 2nd operand
 	str	sp
@@ -321,7 +321,7 @@ jeqI4:	macro	reg1,reg2,label
 $$nobr:
 	endm
 
-jneu4:	macro	reg1,reg2,label
+jneu4:	macro	reg1,reg2,label	;39 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33-39, lbr@36
 	jeqi4	reg1,reg2,+
 	lbr	label
 +
