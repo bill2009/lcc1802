@@ -1,5 +1,6 @@
 #include "c.h"
 //april 11 2013 dumptree exposed for use in .md file
+//June 28 2013 trying out 'A' instead of 'a' to include framesize
 static char rcsid[] = "$Id: gen.c,v 1.1 2002/08/28 23:12:43 drh Exp $";
 
 #define readsreg(p) \
@@ -360,6 +361,10 @@ unsigned emitasm(Node p, int nt) {
 				emitasm(kids[*fmt - '0'], nts[*fmt - '0']);
 			else if (*fmt >= 'a' && *fmt < 'a' + NELEMS(p->syms))
 				fputs(p->syms[*fmt - 'a']->x.name, stdout);
+			else if (*fmt >= 'A' && *fmt < 'A' + NELEMS(p->syms)){ //wjr - trying out 'A' instead of 'a' to include framesize
+				print("%d",atoi(p->syms[*fmt - 'A']->x.name)+framesize); //wjr
+				//fprintf(stderr,"\np->syms[*fmt - 'A']->x.name=%s(atoi is %d)\n",p->syms[*fmt - 'A']->x.name, atoi(p->syms[*fmt - 'A']->x.name)); //wjr
+			} //wjr
 			else
 				(void)putchar(*fmt);
 	}
