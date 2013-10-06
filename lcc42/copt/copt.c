@@ -1,14 +1,15 @@
 /* copt version 1.00 (C) Copyright Christopher W. Fraser 1984 */
 //may 10 2013 added -I and -O for input & output files, counts of lines read and written.
 //May 24 packaging for distribution
-//June 24 experimenting with triggering special behaviour on %9
+//June 24 poking around
+//Oct 6 counting patterns and substitutions, allowing comments
 #include <ctype.h>
 #include <stdio.h>
 #define HSIZE 107
 #define MAXLINE 100
 
 int debug = 0;
-
+int npats=0, nsubs=0;	//number of patterns and replacements done oct 6
 struct lnode {
 	char *l_text;
 	struct lnode *l_prev, *l_next;
@@ -49,8 +50,12 @@ int getlst(fp, quit, p1, p2) FILE *fp; char *quit; struct lnode *p1, *p2; {
 	int ngot=0; //wjr
 	connect(p1, p2);
 	while (fgets(lin, MAXLINE, fp) != NULL && strcmp(lin, quit)){
-		insert(install(lin), p2);
 		ngot++;
+		if (strncmp(lin,"#",1)!=0){ //oct6 ignore lines with leading #
+			insert(install(lin), p2);
+		} else {
+			//printf("ignoring %s\n",lin);
+		}
 	}
 	return ngot;
 }
@@ -80,6 +85,7 @@ init(fp) FILE *fp; {
 
 		*next = p;
 		next = &p->o_next;
+		npats+=1; //oct6
 	}
 	*next = 0;
 }
@@ -123,7 +129,7 @@ int main(argc, argv) int argc; char **argv; {
         struct lnode head, *p, *opt(), tail;
 		char ebuf[BUFSIZ];
 		setbuf(stderr, ebuf);
-        fprintf(stderr,"Copt peephole optimizer 1.3: ");
+        fprintf(stderr,"Copt peephole optimizer 1.4: ");
         //while(1);
         for (i = 1; i < argc; i++)
                 if (strcmp(argv[i], "-D") == 0)
@@ -144,7 +150,7 @@ int main(argc, argv) int argc; char **argv; {
                 fputs(p->l_text, fout);
                 nout++;
 		}
-		fprintf(stderr,";%d source lines read, %d lines written\n",nin,nout);
+		fprintf(stderr,";%d source lines read, %d lines written, %d patterns, %d substitutions\n",nin,nout,npats,nsubs); //oct 6
 		fflush(stderr);
         return 0;
 }
@@ -186,8 +192,10 @@ struct lnode *opt(r) struct lnode *r; {
 			p = p->l_prev;
 			c = c->l_prev;
 		}
-		if (p == 0)
+		if (p == 0){
+			nsubs+=1; //oct6
 			return rep(c, r->l_next, o->o_new, vars);
+		}
 	}
 	return r->l_next;
 }
