@@ -1,0 +1,29 @@
+	release 0; release room for local variables 
+=
+
+_main:
+=
+_main: ;copt is peeping you too now!
+
+	cpy2 %1,%2 ;LOADP2(reg)
+	cpy2 %2,%1
+=
+	cpy2 %1,%2 ;LOADP2(reg) ;opt1
+
+	shrU2I %1,8
+=
+	ghi	%1	;opt2
+	plo	%1
+	ldi	0
+	phi	%1	
+
+	ld2 %1,'O',sp,(%2) ;reg:INDIRI2(addr)
+	st1 %1,'O',sp,(%2); ASGNU1
+=
+	demote	%2	;opt3
+
+	st2 %1,'O',sp,(%2); flag1 
+	demote	%2	;opt3
+=
+	st1 %1,'O',sp,(%2); opt4 
+
