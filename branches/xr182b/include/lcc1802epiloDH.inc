@@ -13,6 +13,7 @@
 ;mar 28,2013 - LCCepilofl.inc changes scrt to standard big-endian stack
 ;april 4 adding digit count argument to dubdabx
 ;Oct 2, 2013 redoing mulu2 for faster results with small arg1 - dhrystone
+;oct 12 divu2 redone for faster perf on small numbers, remainder now in regarg1 - modu2/modi2 changed to match
 rwork	equ	memAddr	;work register
 lcc1802init:	
 	ldiReg	RCALL,_call
@@ -37,18 +38,18 @@ _setqOff:
 _modU2:	;16 bit unsigned remainder
 	; just calls the 16 bit division then puts remainder into return value
     Ccall _divU2
-    glo regArg2
+    glo regArg1
     plo retVal
-    ghi regArg2
+    ghi regArg1
     phi retVal
     Cretn
     
 _modI2:	;16 bit signed remainder
 	; just calls the 16 bit division then puts remainder into return value
     Ccall _divI2
-    glo regArg2
+    glo regArg1
     plo retVal
-    ghi regArg2
+    ghi regArg1
     phi retVal
     Cretn
 
@@ -125,7 +126,9 @@ $$mulrdone:		;here the product is in retval
 ;credit to http://research.microsoft.com/pubs/70645/tr-2008-141.pdf
 ;changed oct 12 to save R10 & 1/2 R11 on stack
 _divu2: ;retval=regarg1(x or dividend)/regarg2(y or divisor)
-	;uses R14(rwork) as temp, R10 to hold remainder, R11 to save original divisor y0
+	;uses R14(rwork) to hold original divisor y0, 
+	;regarg1 to hold develop remainder, 
+	;R10 to hold working dividend R11.0 as a temp
 testsub: macro reg1,reg2	;test subtraction of reg2 from reg1
 				;result in D, rwork.hi, DF
 	glo reg2
@@ -146,27 +149,27 @@ testsub: macro reg1,reg2	;test subtraction of reg2 from reg1
 	ld2z retval	;quotient
 	cpy2 rwork,regarg2
 	
-	testsub regarg1,regarg2
+	testsub R10,regarg2
 	bnf $$computequot	;DF=0 means it didn't fit
-	phi regarg1	;regarg1=regarg1-regarg2
+	phi R10	;R10=R10-regarg2
 	glo R11
-	plo regarg1
+	plo R10
 	
 $$again:	;this is the divisor doubling phase
- 	testsub regarg1,regarg2
+ 	testsub R10,regarg2
  	bnf $$computequot	;df=0 means it didn't fit
-	phi regarg1	;regarg1=regarg1-regarg2
+	phi R10	;R10=R10-regarg2
 	glo R11
-	plo regarg1 	
+	plo R10 	
  	shl2 regarg2	;y=y+y
  	br $$again
  	
  $$computequot:	;here we're computing the quotient
- 	testsub R10,regarg2
+ 	testsub regarg1,regarg2
  	bnf $$testexit
- 	phi R10		;complete the subtraction
+ 	phi regarg1		;complete the subtraction
  	glo R11
- 	plo R10
+ 	plo regarg1
  	inc retval
  $$testexit:
  	ghi rwork
@@ -182,8 +185,7 @@ $$again:	;this is the divisor doubling phase
  	shrU2 regarg2	;halve divisor
  	br $$computequot	;continue
  $$out:
- ;here the quotient is in retval, remainder in R10
- 	cpy2 regarg2,R10
+ ;here the quotient is in retval, remainder in regarg1
   	inc sp	;release work area
 	lda sp	;recover
 	plo R11	;bottom byte of R11
