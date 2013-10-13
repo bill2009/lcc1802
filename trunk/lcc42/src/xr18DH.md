@@ -342,11 +342,11 @@ reg: con0  "\tld2z R%c\n" 1
 reg: acon  "\tldaD R%c,%0; reg:acon\n" 1
 reg: addr  "\tldA2 R%c,%0; reg:addr\n"  2
 
-stmt: ASGNI1(addr,reg)  "\tst1 R%1,%0; ASGNI1\n"  1
-stmt: ASGNI1(indaddr,reg)  "\tstr1 R%1,%0; ASGNI1(indaddr,reg)\n"  0
-stmt: ASGNU1(addr,acon)  "\tst1I %1,%0; ASGNU1(addr,acon)\n"  5
+stmt: ASGNI1(addr,reg)  "\tst1 R%1,%0; ASGNI1\n"  10
+stmt: ASGNI1(indaddr,reg)  "\tstr1 R%1,%0; ASGNI1(indaddr,reg)	DH\n"  5
+stmt: ASGNU1(indaddr,acon)  "\tstr1I %1,%0; ASGNU1(indaddr,acon)	DH\n"  5
 stmt: ASGNU1(addr,reg)  "\tst1 R%1,%0; ASGNU1\n"  10
-stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)\n"  0
+stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)		DH\n"  5
 stmt: ASGNI2(addr,acon)  "\tst2I %1,%0; ASGNI2(addr,acon)\n"  5
 stmt: ASGNI2(addr,reg)  "\tst2 R%1,%0; ASGNI2(addr,reg)*;\n"  10
 stmt: ASGNU2(addr,reg)  "\tst2 R%1,%0; ASGNU2(addr,reg)*\n"  10
@@ -387,9 +387,11 @@ reg: MULI4(reg,reg)  "\tCcall _mulu4\n"   1
 reg: MULU2(reg,reg)  "\tCcall _mulu2; was mulU2 R%c,R%0,R%1\n"   1
 reg: MULU4(reg,reg)  "\tCcall _mulu4\n"   1
 
-reg: ADDI2(reg,reg)   "\talu2 R%c,R%0,R%1,add,adc; ADDI2(r,r)\n"  2
+reg: ADDI2(reg,INDIRI2(addr))   "\talu2RRS R%c,R%0,%1,add,adc; ADDI2(r,INDIRI2(addr))	DH3\n"  5
+reg: ADDI2(reg,reg)   "\talu2 R%c,R%0,R%1,add,adc; ADDI2(r,r)\n"  10
 reg: ADDI4(reg,reg)   "\talu4 R%c,R%0,R%1,add,adc\n"  1
-reg: ADDP2(reg,reg)   "\talu2 R%c,R%0,R%1,add,adc\n"  1
+reg: ADDP2(reg,INDIRP2(addr))   "\talu2RRS R%c,R%0,%1,add,adc; ADDI2(r,INDIRP2(addr))	DH3.1\n"  5
+reg: ADDP2(reg,reg)   "\talu2 R%c,R%0,R%1,add,adc	;ADDP2(reg,reg)\n"  10
 reg: ADDU2(reg,reg)   "\talu2 R%c,R%0,R%1,add,adc; ADDU2(r,r)\n"  2
 reg: ADDU4(reg,reg)   "\talu4 R%c,R%0,R%1,add,adc\n"  1
 reg: BANDI2(reg,reg)  "\talu2 R%c,R%0,R%1,and,and\n"   1
@@ -985,13 +987,16 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                         if (out->sclass == REGISTER
                         && (isint(out->type) || out->type == in->type)) {	//this is about moving an arg register to another register
                                 int outn = out->x.regnode->number;
+                                /*Oct 12 eliminate refs to float regs - I don't use them
                                 if (rs == FREG && tyin == F+sizeop(8))
                                         print("mov.d rf%d,rf%d\n", outn, rn);
                                 else if (rs == FREG && tyin == F+sizeop(4))
                                         print("mov.s rf%d,rf%d\n", outn, rn);
                                 else if (rs == IREG && tyin == F+sizeop(8))
                                         print("mtc1.d r%d,rf%d\n", rn,   outn);
-                                else if (rs == IREG && tyin == F+sizeop(4))
+                                else 
+                                Oct 12 */
+                                if (rs == IREG && tyin == F+sizeop(4))
                                         print("\tcpy4 RL%d,RL%d; halfbaked&floaty\n",   outn,rn);//print("mtc1 r%d,rf%d\n",   rn,   outn);
                                 else if (rs == IREG && tyin == I+sizeop(4))
                                         print("\tcpy4 RL%d,RL%d; halfbaked\n",   outn,rn);
@@ -1000,13 +1005,17 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                                 else
                                         print("\tcpy2 r%d,r%d; function(%d) 1\n",    outn, rn,tyin);
                         } else {
-                                int off = in->x.offset + framesize;	
+                                int off = in->x.offset + framesize;
+                                /*oct 12 eliminate refs to FREG
                                 if (rs == FREG && tyin == F+sizeop(8))
-                                        print("s.d rf%d,%d(sp)\n", rn, off);
+                                        print("pigs s.d rf%d,%d(sp)\n", rn, off); //cannot get here
                                 else if (rs == FREG && tyin == F+sizeop(4))
-                                        print("s.s rf%d,%d(sp)\n", rn, off);
-                                else {	//this is about saving arg registers in the caller's frame
+                                        print("frogs s.s rf%d,%d(sp)\n", rn, off); //cannot get here
+                                else 
+                                Oct 12*/
+                                {	//this is about saving arg registers in the caller's frame
                                         int i, n = (in->type->size + 1)/2;
+                                        //print("hey hey rn=%d,n=%d,REG_LAST_ARG=%d\n",rn,n,REG_LAST_ARG);
                                         for (i = rn; i < rn+n && i <= REG_LAST_ARG; i++)
                                                 print("\tst2 R%d,'O',sp,(%d); flag1 \n", i, off + (i-rn)*2);
                                 }
@@ -1200,6 +1209,10 @@ static int fp() {
     return 10;
 }
 
+static int samesame(){
+	fprintf(stderr,"same called\n");
+	return 1;
+}
 
 Interface xr18DHIR = {	//each entry represents size, alignment, out-of-line literals needed
         1, 1, 0,  /* char */
