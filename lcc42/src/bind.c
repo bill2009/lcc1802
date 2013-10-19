@@ -3,6 +3,7 @@
 //wjr mar 3, 2013 adding xr18no
 //april 10 - looks like xr18.fl was added march 20th.
 //april 23 replace xr18 with xr182b
+//Oct 2 replace XR18ng with xr18DH
 #include "c.h"
 #undef yy
 #define yy \
@@ -11,7 +12,7 @@ xx(mips/irix,    mipsebIR) \
 xx(m1,    		 m1IR) \
 xx(xr16,    	 xr16IR) \
 xx(xr182b,    	 xr182bIR) \
-xx(xr18ng,    	 xr18ngIR) \
+xx(xr18DH,    	 xr18DHIR) \
 xx(xr18no,    	 xr18noIR) \
 xx(xr18fl,    	 xr18flIR) \
 xx(sparc/sun,    sparcIR) \
