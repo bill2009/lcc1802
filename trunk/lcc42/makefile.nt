@@ -4,6 +4,7 @@
 # wjr mar 20 adding xr18fl.md for floating point support
 # april 23 replace xr18 with xr182b - expanded reg vars
 # may 15 trying to add copt modeled on cpp
+#Oct 2 2013 replacing xr18ng with xr18DH
 HOSTFILE=etc/win32.c
 TARGET=x86\win32
 TEMPDIR=\\temp
@@ -66,7 +67,7 @@ RCCOBJS=$Balloc$O \
 	$Bm1$O \
 	$Bxr16$O \
 	$Bxr182b$O \
-	$Bxr18ng$O \
+	$Bxr18DH$O \
 	$Bxr18no$O \
 	$Bxr18fl$O \
 	$Bsparc$O \
@@ -118,7 +119,7 @@ $Bmips$O:	$Bmips.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bmips.c
 $Bm1$O:		$Bm1.c;		$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bm1.c
 $Bxr16$O:	$Bxr16.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr16.c
 $Bxr182b$O:	$Bxr182b.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr182b.c
-$Bxr18ng$O:	$Bxr18ng.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18ng.c
+$Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18DH.c
 $Bxr18no$O:	$Bxr18no.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18no.c
 $Bxr18fl$O:	$Bxr18fl.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18fl.c
 $Bsparc$O:	$Bsparc.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bsparc.c
@@ -131,7 +132,7 @@ $Bmips.c:	$Blburg$E src/mips.md;     $Blburg src/mips.md     $@
 $Bm1.c:		$Blburg$E src/m1.md;	   $Blburg src/m1.md       $@
 $Bxr16.c:	$Blburg$E src/xr16.md;	   $Blburg src/xr16.md       $@
 $Bxr182b.c:	$Blburg$E src/xr182b.md;   $Blburg src/xr182b.md       $@
-$Bxr18ng.c:	$Blburg$E src/xr18ng.md;   $Blburg src/xr18ng.md       $@
+$Bxr18DH.c:	$Blburg$E src/xr18DH.md;   $Blburg src/xr18DH.md       $@
 $Bxr18no.c:	$Blburg$E src/xr18no.md;   $Blburg src/xr18no.md       $@
 $Bxr18fl.c:	$Blburg$E src/xr18fl.md;   $Blburg src/xr18fl.md       $@
 $Bsparc.c:	$Blburg$E src/sparc.md;    $Blburg src/sparc.md    $@
@@ -356,7 +357,7 @@ testclean:
 
 clean::		testclean
 		-del /q $B*$O
-		-del /q $Bdagcheck.c $Balpha.c $Bmips.c $Bm1.c  $Bxr16.c $Bxr182b.c  $Bxr18ng.c $Bxr18no.c $Bxr18fl.c $Bx86.c $Bsparc.c $Bx86linux.c
+		-del /q $Bdagcheck.c $Balpha.c $Bmips.c $Bm1.c  $Bxr16.c $Bxr182b.c  $Bxr18DH.c $Bxr18no.c $Bxr18fl.c $Bx86.c $Bsparc.c $Bx86linux.c
 		-del /q $Brcc1$E $Brcc1$E $B1rcc$E $B2rcc$E
 		-del /q $B*.ilk
 
@@ -399,7 +400,7 @@ RCCSRCS=src/alloc.c \
 	$Bm1.c \
 	$Bxr16.c \
 	$Bxr182b.c \
-	$Bxr18ng.c \
+	$Bxr18DH.c \
 	$Bxr18no.c \
 	$Bxr18fl.c \
 	$Bsparc.c \
