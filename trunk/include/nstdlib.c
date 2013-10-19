@@ -8,7 +8,7 @@
 //April 10 #ifdef nofloats used to exclude float code in nstdlib
 //May 26 2013 added strncmp from apple source
 //June 25 removed static keyword from strlen
-
+//Sept 29 - adding include for assembly versions of strcpy, strcmp for dhrystone optimization
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -27,13 +27,7 @@
 	    return 0;
     return 0;
 }
-char * strcpy(char * to, const char *from)
-{
-	char *save = to;
 
-	for (; (*to = *from) != 0; ++from, ++to);
-	return(save);
-}
 unsigned int strlen(char *str)
 {
 	unsigned int slen = 0 ;
@@ -277,4 +271,7 @@ void *memset(void *s, int c, unsigned int n) //sets memory at s to c for n bytes
     while(n--)
         *p++ = (unsigned char)c;
     return s;
+}
+void nstdlibincluder(){
+	asm("\tinclude nstdlib.inc\n"); //strcpy, strcmp
 }
