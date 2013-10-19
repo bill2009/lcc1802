@@ -7,6 +7,7 @@
 //april 12 changed default to xr18fl
 //May 13 added char *peep[] for copt optimizer
 //May 24 making xr182b the default target
+//Oct 2  making XR18DH default
 #include <string.h>
 
 static char rcsid[] = "$Id: win32.c,v 1.19 2001/07/09 18:00:13 drh Exp $";
@@ -21,7 +22,7 @@ char *cpp[] = { LCCDIR "bin\\" "cpp", "-D__STDC__=1", "-Dwin32", "-D_WIN32", "-D
 	"$1", "$2", "$3", 0 };
 char *include[] = { "-I" LCCDIR "include", 0 };
 
-char *com[] = { LCCDIR "bin\\" "rcc", "-target=xr182b", "$1", "$2", "$3", 0 }; //wjr dec 12, 27
+char *com[] = { LCCDIR "bin\\" "rcc", "-target=xr18DH", "$1", "$2", "$3", 0 }; //wjr dec 12, 27
 
 //char *as[] = { "asw", "-cpu 1802", "-i ..\\..\\include", "-L", "", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
 char *as[] = { LCCDIR "bin\\"  "asw", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
