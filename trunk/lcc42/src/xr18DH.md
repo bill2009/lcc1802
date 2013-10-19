@@ -36,6 +36,7 @@
  addr: ADDRLP2  "'O',sp,(%a+%F)"
  * Oct 2 xr18DH.md is dhrystone optimization
  * Oct 2 break up global inits into 1000 byte chunks to prevent assembler error
+ * Oct 13 wholesale change of register names in rules from r* to R* also typo in a 4 byte compare
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -489,62 +490,62 @@ reg: CVFI2(reg)  "\tccall cvfi4; CVFI4(reg) convert float to long(should work fo
 reg: CVFI4(reg)  "\tccall cvfi4; CVFI4(reg) convert float to long\n"  fp()
 stmt: LABELV  "%a:\n"
 stmt: JUMPV(acon)  "\tlbr %0\n"   1
-stmt: JUMPV(reg)   "\tjumpv r%0; JUMPV(reg)\n"  1
+stmt: JUMPV(reg)   "\tjumpv R%0; JUMPV(reg)\n"  1
 
-stmt: EQI2(reg,reg)  "\tjeqI2 r%0,r%1,%a; EQI2(reg,reg)\n"   2
-stmt: EQU2(reg,reg)  "\tjeqI2 r%0,r%1,%a;EQU2(reg,reg)\n"   2
-stmt: GEI2(reg,reg)  "\tjcI2 r%0,r%1,lbdf,%a; GE is flipped test from LT\n"   2
-stmt: GEU2(reg,reg)  "\tjcU2 r%0,r%1,lbdf,%a; GE is flipped test from LT\n"  2
-stmt: GTI2(reg,reg)  "\tjcI2 r%1,r%0,lbnf,%a ;GT is reversed operands from LT\n"   2
-stmt: GTU2(reg,reg)  "\tjcU2 r%1,r%0,lbnf,%a ;GT same as LT but operands reversed\n"  2
-stmt: LEI2(reg,reg)  "\tjcI2 r%1,r%0,lbdf,%a ;LE is flipped test & operands\n"  2
-stmt: LEU2(reg,reg)  "\tjcU2 r%1,r%0,lbdf,%a ;LE is flipped test & operands\n"  2
-stmt: LTI2(reg,reg)  "\tjcI2 r%0,r%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"   2
-stmt: LTU2(reg,reg)  "\tjcU2 r%0,r%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"  2
-stmt: NEI2(reg,reg)  "\tjneU2 r%0,r%1,%a; NE\n"   2
-stmt: NEU2(reg,reg)  "\tjneU2 r%0,r%1,%a; NE\n"   2
-stmt: EQI4(reg,reg)  "\tjeqI4 r%0,r%1,%a\n"   2
-stmt: EQU4(reg,reg)  "\tjeqI4 r%0,r%1,%a\n"   2
+stmt: EQI2(reg,reg)  "\tjeqI2 R%0,R%1,%a; EQI2(reg,reg)\n"   2
+stmt: EQU2(reg,reg)  "\tjeqI2 R%0,R%1,%a;EQU2(reg,reg)\n"   2
+stmt: GEI2(reg,reg)  "\tjcI2 R%0,R%1,lbdf,%a; GE is flipped test from LT\n"   2
+stmt: GEU2(reg,reg)  "\tjcU2 R%0,R%1,lbdf,%a; GE is flipped test from LT\n"  2
+stmt: GTI2(reg,reg)  "\tjcI2 R%1,R%0,lbnf,%a ;GT is reversed operands from LT\n"   2
+stmt: GTU2(reg,reg)  "\tjcU2 R%1,R%0,lbnf,%a ;GT same as LT but operands reversed\n"  2
+stmt: LEI2(reg,reg)  "\tjcI2 R%1,R%0,lbdf,%a ;LE is flipped test & operands\n"  2
+stmt: LEU2(reg,reg)  "\tjcU2 R%1,R%0,lbdf,%a ;LE is flipped test & operands\n"  2
+stmt: LTI2(reg,reg)  "\tjcI2 R%0,R%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"   2
+stmt: LTU2(reg,reg)  "\tjcU2 R%0,R%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"  2
+stmt: NEI2(reg,reg)  "\tjneU2 R%0,R%1,%a; NE\n"   2
+stmt: NEU2(reg,reg)  "\tjneU2 R%0,R%1,%a; NE\n"   2
+stmt: EQI4(reg,reg)  "\tjeqI4 R%0,R%1,%a\n"   2
+stmt: EQU4(reg,reg)  "\tjeqI4 R%0,R%1,%a\n"   2
 stmt: GEI4(reg,reg)  "\tjcI4 R%0,R%1,lbdf,%a; GE is flipped test from LT\n"   2
 stmt: GEU4(reg,reg)  "\tjcU4 R%0,R%1,lbdf,%a; GE is flipped test from LT\n"   2
-stmt: GTI4(reg,reg)  "\tjcI4 r%1,r%0,lbnf,%a ;GT is reveresed operands from LT\n"   2
-stmt: GTU4(reg,reg)  "\tjcU4 r%1,r%0,lbnf,%a ;GT same as LT but operands reversed\n"  2
-stmt: LEI4(reg,reg)  "\tjcI4 r%1,r%0,lbdf,%a ;LE is flipped test & operands\n"  2
-stmt: LEU4(reg,reg)  "\tjcU4 r%1,r%0,lbdf,%a ;LE is flipped test & operands\n"  2
-stmt: LTI4(reg,reg)  "\tjcI4 r%0,r%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"   2
-stmt: LTU4(reg,reg)  "\tjcU4 r%0,r%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"  2
-stmt: NEI4(reg,reg)  "\tjneU4 r%0,r%1,%a; NE\n"   2   
-stmt: NEU4(reg,reg)  "\tjneU4 r%0,r%1,%a; NE\n"   2   
+stmt: GTI4(reg,reg)  "\tjcI4 R%1,R%0,lbnf,%a ;GT is reveresed operands from LT\n"   2
+stmt: GTU4(reg,reg)  "\tjcU4 R%1,R%0,lbnf,%a ;GT same as LT but operands reversed\n"  2
+stmt: LEI4(reg,reg)  "\tjcI4 R%1,R%0,lbdf,%a ;LE is flipped test & operands\n"  2
+stmt: LEU4(reg,reg)  "\tjcU4 R%1,R%0,lbdf,%a ;LE is flipped test & operands\n"  2
+stmt: LTI4(reg,reg)  "\tjcI4 R%0,R%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"   2
+stmt: LTU4(reg,reg)  "\tjcU4 R%0,R%1,lbnf,%a; LT=lbnf i.e. subtract B from A and jump if borrow \n"  2
+stmt: NEI4(reg,reg)  "\tjneU4 R%0,R%1,%a; NE\n"   2   
+stmt: NEU4(reg,reg)  "\tjneU4 R%0,R%1,%a; NE\n"   2   
 
-stmt: EQI2(reg,con)  "\tjeqU2I r%0,%1,%a;EQI2(reg,con)\n"   2
-stmt: EQI4(reg,con)  "\tjeqU4I r%0,%1,%a\n"   2
-stmt: EQU2(reg,con)  "\tjeqU2I r%0,%1,%a;EQU2(reg,con)*\n"   2
-stmt: EQU4(reg,con)  "\tjeqU4I r%0,%1,%a\n"   2
-stmt: GEI2(reg,con)  "\tjcI2I r%0,%1,lbdf,%a; GE is flipped test from LT\n"   2
-stmt: GEI4(reg,con)  "\tjgeI4I r%0,%1,%a; GE\n"   2
-stmt: GEU2(reg,con)  "\tjcI2I r%0,%1,lbdf,%a; GE is flipped test from LT\n"  2
-stmt: GEU4(reg,con)  "\tjgeU4I r%0,%1,%a; GE\n"  2
-stmt: GTI2(reg,con)  "\tjnI2I r%0,%1,lbnf,%a; GT reverse  the subtraction\n"   2
-stmt: GTI4(reg,con)  "\tjgtI4I r%0,%1,%a\n"   2
-stmt: GTU2(reg,con)  "\tjnU2I r%0,%1,lbnf,%a; GT reverse the subtraction\n"  2
-stmt: GTU4(reg,con)  "\tjgtU4I r%0,%1,%a\n"  2
-stmt: LEI2(reg,con)  "\tjnI2I r%0,%1,lbdf,%a ;LEI2 %1 %0 %a; LE is flipped test & subtraction\n"   2
-stmt: LEI4(reg,con)  "\tjleI4I r%0,%1,%a\n"   2
-stmt: LEU2(reg,con)  "\tjnU2I r%0,%1,lbdf,%a ;LEU2 %1 %0 %a; LE is flipped test & subtraction\n"  2
-stmt: LEU4(reg,con)  "\tjleU4I r%0,%1,%a\n"  2
-stmt: LTI2(reg,con)  "\tjcI2I r%0,%1,lbnf,%a  ;LT=lbnf i.e. subtract immedB from A and jump if borrow\n"   2
-stmt: LTI4(reg,con)  "\tjltI4I r%0,%1,%a\n"   2
-stmt: LTU2(reg,con)  "\tjcU2I r%0,%1,lbnf,%a ;LT=lbnf i.e. subtract immedB from A and jump if borrow\n"  2
-stmt: LTU4(reg,con)  "\tjltU4I r%0,%1,%a\n" 2
-stmt: NEI2(CVUI2(reg),con0) "\tjnzU1 r%0,%a; NEI2(CVUI2(reg),con0)\n"   1
-stmt: NEI2(reg,con0) "\tjnzU2 r%0,%a; NE 0\n"   1
-stmt: EQI2(reg,con0) "\tjzU2 r%0,%a; EQ 0\n"   1
-stmt: EQU2(reg,con0) "\tjzU2 r%0,%a; EQ 0\n"   1
-stmt: NEI2(reg,con)  "\tjneU2I r%0,%1,%a; NE\n"   2
-stmt: NEI4(reg,con)  "\tjneI4I r%0,%1,%a; NE\n"   2
-stmt: NEU2(reg,con0) "\tjnzU2 r%0,%a; NE 0\n"   1
-stmt: NEU2(reg,con)  "\tjneU2I r%0,%1,%a; NE\n"   2
-stmt: NEU4(reg,con)  "\tjneU4I r%0,%1,%a; NE\n"   2
+stmt: EQI2(reg,con)  "\tjeqU2I R%0,%1,%a;EQI2(reg,con)\n"   2
+stmt: EQI4(reg,con)  "\tjeqU4I R%0,%1,%a\n"   2
+stmt: EQU2(reg,con)  "\tjeqU2I R%0,%1,%a;EQU2(reg,con)*\n"   2
+stmt: EQU4(reg,con)  "\tjeqU4I R%0,%1,%a\n"   2
+stmt: GEI2(reg,con)  "\tjcI2I R%0,%1,lbdf,%a; GE is flipped test from LT\n"   2
+stmt: GEI4(reg,con)  "\tjgeI4I R%0,%1,%a; GE\n"   2
+stmt: GEU2(reg,con)  "\tjcI2I R%0,%1,lbdf,%a; GE is flipped test from LT\n"  2
+stmt: GEU4(reg,con)  "\tjgeU4I R%0,%1,%a; GE\n"  2
+stmt: GTI2(reg,con)  "\tjnI2I R%0,%1,lbnf,%a; GT reverse  the subtraction\n"   2
+stmt: GTI4(reg,con)  "\tjgtI4I R%0,%1,%a\n"   2
+stmt: GTU2(reg,con)  "\tjnU2I R%0,%1,lbnf,%a; GT reverse the subtraction\n"  2
+stmt: GTU4(reg,con)  "\tjgtU4I R%0,%1,%a\n"  2
+stmt: LEI2(reg,con)  "\tjnI2I R%0,%1,lbdf,%a ;LEI2 %1 %0 %a; LE is flipped test & subtraction\n"   2
+stmt: LEI4(reg,con)  "\tjleI4I R%0,%1,%a\n"   2
+stmt: LEU2(reg,con)  "\tjnU2I R%0,%1,lbdf,%a ;LEU2 %1 %0 %a; LE is flipped test & subtraction\n"  2
+stmt: LEU4(reg,con)  "\tjleU4I R%0,%1,%a\n"  2
+stmt: LTI2(reg,con)  "\tjcI2I R%0,%1,lbnf,%a  ;LT=lbnf i.e. subtract immedB from A and jump if borrow\n"   2
+stmt: LTI4(reg,con)  "\tjltI4I R%0,%1,%a\n"   2
+stmt: LTU2(reg,con)  "\tjcU2I R%0,%1,lbnf,%a ;LT=lbnf i.e. subtract immedB from A and jump if borrow\n"  2
+stmt: LTU4(reg,con)  "\tjltU4I R%0,%1,%a\n" 2
+stmt: NEI2(CVUI2(reg),con0) "\tjnzU1 R%0,%a; NEI2(CVUI2(reg),con0)\n"   1
+stmt: NEI2(reg,con0) "\tjnzU2 R%0,%a; NE 0\n"   1
+stmt: EQI2(reg,con0) "\tjzU2 R%0,%a; EQ 0\n"   1
+stmt: EQU2(reg,con0) "\tjzU2 R%0,%a; EQ 0\n"   1
+stmt: NEI2(reg,con)  "\tjneU2I R%0,%1,%a; NE\n"   2
+stmt: NEI4(reg,con)  "\tjneI4I R%0,%1,%a; NE\n"   2
+stmt: NEU2(reg,con0) "\tjnzU2 R%0,%a; NE 0\n"   1
+stmt: NEU2(reg,con)  "\tjneU2I R%0,%1,%a; NE\n"   2
+stmt: NEU4(reg,con)  "\tjneU4IR R%0,%1,%a; NE\n"   2
 
 stmt: EQF4(reg,reg)  "\tjeqI4 R%0,R%1,%a; EQF4(reg,reg)\n"  fp()
 stmt: GTF4(reg,reg)  "\tjcF4 R%1,R%0,lbnf,%a;GTF4(reg,reg) - reverse operands\n"  fp()
@@ -561,7 +562,7 @@ reg:  CALLP2(ar)  "\tCcall %0\n"  1
 reg:  CALLU2(ar)  "\tCcall %0;CALLU2(ar)*\n"  1
 reg:  CALLU4(ar)  "\tCcall %0\n"  1
 stmt: CALLV(ar)  "\tCcall %0\n"  1
-ar: reg    "r%0"
+ar: reg    "R%0"
 ar: CNSTP2  "%a"   range(a, 0, 0x0ffff)
 stmt: RETF4(reg)  "# retn\n"  fp()
 stmt: RETI2(reg)  "# retn\n"  1
@@ -578,7 +579,7 @@ stmt: ARGU2(reg)  "# arg\n"  1
 stmt: ARGU4(reg)  "# arg\n"  1
 
 stmt: ARGB(INDIRB(reg))       "# argb %0\n"      1
-stmt: ASGNB(reg,INDIRB(reg))  "\tblkcpy r%0,r%1,%a; ASGNB(reg,INDIRB(reg))\n"  1
+stmt: ASGNB(reg,INDIRB(reg))  "\tblkcpy R%0,R%1,%a; ASGNB(reg,INDIRB(reg))\n"  1
 
 stmt: IASMV                 "# emit inline assembly\n"
 
@@ -876,7 +877,7 @@ static void gensaveregs(){  //routine to save registers extracted from function(
 	int i;
 	for (i = 0; i < NUM_IREGS; i++)	//now we save the int registers
                 if (usedmask[IREG]&(1<<i)) {
-                        print("\tpushr r%d\n", i);  //push the register
+                        print("\tpushr R%d\n", i);  //push the register
                 }
         for (i = 20; i <= 30; i += 2)	//now we save the float registers
                 if (usedmask[FREG]&(3<<i)) {
@@ -887,7 +888,7 @@ static void genrldregs(){ //reload any saved registers
 	int i;
         for (i = NUM_IREGS; i >=0 ; i--)	//now we reload the int registers
                 if (usedmask[IREG]&(1<<i)) {
-                        print("\tpopr r%d\n", i);  
+                        print("\tpopr R%d\n", i);  
                 }
         for (i = 30; i >= 20; i -= 2)	//now we reload the float registers
                 if (usedmask[FREG]&(3<<i)) {
@@ -993,17 +994,17 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                                 else if (rs == FREG && tyin == F+sizeop(4))
                                         print("mov.s rf%d,rf%d\n", outn, rn);
                                 else if (rs == IREG && tyin == F+sizeop(8))
-                                        print("mtc1.d r%d,rf%d\n", rn,   outn);
+                                        print("mtc1.d R%d,rf%d\n", rn,   outn);
                                 else 
                                 Oct 12 */
                                 if (rs == IREG && tyin == F+sizeop(4))
-                                        print("\tcpy4 RL%d,RL%d; halfbaked&floaty\n",   outn,rn);//print("mtc1 r%d,rf%d\n",   rn,   outn);
+                                        print("\tcpy4 RL%d,RL%d; halfbaked&floaty\n",   outn,rn);//print("mtc1 R%d,rf%d\n",   rn,   outn);
                                 else if (rs == IREG && tyin == I+sizeop(4))
                                         print("\tcpy4 RL%d,RL%d; halfbaked\n",   outn,rn);
                                 else if (rs == IREG && tyin == U+sizeop(4))
                                         print("\tcpy4 RL%d,RL%d; halfbaked\n",   outn,rn);
                                 else
-                                        print("\tcpy2 r%d,r%d; function(%d) 1\n",    outn, rn,tyin);
+                                        print("\tcpy2 R%d,R%d; function(%d) 1\n",    outn, rn,tyin);
                         } else {
                                 int off = in->x.offset + framesize;
                                 /*oct 12 eliminate refs to FREG
@@ -1129,11 +1130,11 @@ static void space(int n) {
         if (cseg != BSS)
                 print("\tdb %d dup(0) ;zerofill\n", n); //was print("\tds %d\n", n);
 }
-static void blkloop(int dreg, int doff, int sreg, int soff, int size, int tmps[]) {
+static void blkloop(int dreg, int doff, int sreg, int soff, int size, int tmps[]) { //probably not used
         int lab = genlabel(1);
 
-        print("addi r%d,r%d,%d\n", sreg, sreg, size&~7);
-        print("addi r%d,r%d,%d\n", tmps[2], dreg, size&~7);
+        print("addi R%d,R%d,%d\n", sreg, sreg, size&~7);
+        print("addi R%d,R%d,%d\n", tmps[2], dreg, size&~7);
         blkcopy(tmps[2], doff, sreg, soff, size&7, tmps);
         print("L%d:\n", lab);
         print("addi r%d,r%d,%d\n", sreg, sreg, -8);
@@ -1141,7 +1142,7 @@ static void blkloop(int dreg, int doff, int sreg, int soff, int size, int tmps[]
         blkcopy(tmps[2], doff, sreg, soff, 8, tmps);
         print("cmp r%d,r%d\nbltu L%d\n", dreg, tmps[2], lab);
 }
-static void blkfetch(int size, int off, int reg, int tmp) {
+static void blkfetch(int size, int off, int reg, int tmp) {//probably not used
 	fprintf(stderr,"blkfetch(size=%d,off=%d,reg=%d,tmp=%d,salign=%d\n",size,off,reg,tmp,salign);
         assert(size == 1 || size == 2);
         if (size == 1)
