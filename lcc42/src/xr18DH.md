@@ -37,6 +37,7 @@
  * Oct 2 xr18DH.md is dhrystone optimization
  * Oct 2 break up global inits into 1000 byte chunks to prevent assembler error
  * Oct 13 wholesale change of register names in rules from r* to R* also typo in a 4 byte compare
+ * Oct 19 experimenting with stmt: EQI2(CVUI2(INDIRU1(indaddr)),CVUI2(INDIRU1(indaddr))) "surely not %0,%1,%a\n" 0
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
