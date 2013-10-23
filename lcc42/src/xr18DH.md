@@ -38,6 +38,7 @@
  * Oct 2 break up global inits into 1000 byte chunks to prevent assembler error
  * Oct 13 wholesale change of register names in rules from r* to R* also typo in a 4 byte compare
  * Oct 19 experimenting with stmt: EQI2(CVUI2(INDIRU1(indaddr)),CVUI2(INDIRU1(indaddr))) "surely not %0,%1,%a\n" 0
+ * Oct 23 redecorating ASGNI2(addr,reg)/U2/P2 so the same peephole rule picks them up
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -350,20 +351,20 @@ stmt: ASGNU1(indaddr,acon)  "\tstr1I %1,%0; ASGNU1(indaddr,acon)	DH\n"  5
 stmt: ASGNU1(addr,reg)  "\tst1 R%1,%0; ASGNU1\n"  10
 stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)		DH\n"  5
 stmt: ASGNI2(addr,acon)  "\tst2I %1,%0; ASGNI2(addr,acon)\n"  5
-stmt: ASGNI2(addr,reg)  "\tst2 R%1,%0; ASGNI2(addr,reg)*;\n"  10
-stmt: ASGNU2(addr,reg)  "\tst2 R%1,%0; ASGNU2(addr,reg)*\n"  10
+stmt: ASGNI2(addr,reg)  "\tst2 R%1,%0; ASGNI2(addr,reg)\n"  10
+stmt: ASGNU2(addr,reg)  "\tst2 R%1,%0; ASGNU2(addr,reg)\n"  10
+stmt: ASGNP2(addr,reg)  "\tst2 R%1,%0; ASGNP2(addr,reg)\n"  1
 stmt: ASGNI4(addr,reg)  "\tst4 R%1,%0\n"  1
 stmt: ASGNU4(addr,reg)  "\tst4 R%1,%0; ASGNU4\n"  1
-stmt: ASGNP2(addr,reg)  "\tst2 R%1,%0; ASGNP2\n"  1
 reg:  INDIRI1(indaddr)     "\tldn1 R%c,%0;reg:  INDIRI1(indaddr)\n"  0
 reg:  INDIRU1(indaddr)     "\tldn1 R%c,%0;reg:  INDIRU1(indaddr)\n"  0
 reg:  INDIRI1(addr)     "\tld1 R%c,%0\n"  1
 reg:  INDIRU1(addr)     "\tld1 R%c,%0\n"  1
 reg:  INDIRI2(addr)     "\tld2 R%c,%0 ;reg:INDIRI2(addr)\n"  1
-reg:  INDIRU2(addr)     "\tld2 R%c,%0; reg:INDIRU2(addr)\n"  1
+reg:  INDIRU2(addr)     "\tld2 R%c,%0 ;reg:INDIRU2(addr)\n"  1
+reg:  INDIRP2(addr)     "\tld2 R%c,%0 ;reg:INDIRP2(addr)\n"  1
 reg:  INDIRI4(addr)     "\tld4 R%c,%0;reg:  INDIRI4(addr)\n"  1
 reg:  INDIRU4(addr)     "\tld4 R%c,%0;reg:  INDIRU4(addr)\n"  1
-reg:  INDIRP2(addr)     "\tld2 R%c,%0;reg:  INDIRP2(addr)\n"  1
 
 reg:  CVII2(INDIRI1(addr))     "\tld1 R%c,%0\n\tsExt R%c ;CVII2: widen signed char to signed int (sign extend)\n"  1
 reg:  CVUU2(INDIRU1(addr))     "\tld1 R%c,%0\n\tzExt R%c ;CVUU2: widen unsigned char to signed int (zero extend)\n" 1
