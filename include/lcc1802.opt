@@ -49,29 +49,6 @@ _main: ;copt is peeping your size %1 frame with oct 23 rules
 =
 	ldn2 %1,%2	;opt9x
 
-	ldaD %1,%2; reg:acon
-	st2 %1,'O',sp,(%3); ASGNI2(addr,reg)*;
-;    %9
-=
-	st2I %2,'O',sp,(%3)	;opt10
-;    %9
-
-	ldaD %1,%2; reg:acon
-	st2 %1,'O',sp,(%3); ASGNI2(addr,reg)*;
-	lbr %5
-%9:
-=
-	st2I %2,'O',sp,(%3)	;opt10.1
-	lbr %5
-%9:
-
-	ld2z %1
-	st2 %1,'O',sp,(%2); ASGNI2(addr,reg)*;
-%9:
-=
-	st2I 0,'O',sp,(%2)	;opt10.2
-%9:
-
 	pushr %1
 	pushr %2
 =
