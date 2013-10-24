@@ -549,6 +549,8 @@ stmt: NEU2(reg,con0) "\tjnzU2 R%0,%a; NE 0\n"   1
 stmt: NEU2(reg,con)  "\tjneU2I R%0,%1,%a; NE\n"   2
 stmt: NEU4(reg,con)  "\tjneU4IR R%0,%1,%a; NE\n"   2
 
+stmt: NEI2(CVUI2(reg),con8bit)  "\tjneU1I R%0,%1,%a	; DH 4\n"  1 
+
 stmt: EQF4(reg,reg)  "\tjeqI4 R%0,R%1,%a; EQF4(reg,reg)\n"  fp()
 stmt: GTF4(reg,reg)  "\tjcF4 R%1,R%0,lbnf,%a;GTF4(reg,reg) - reverse operands\n"  fp()
 stmt: GEF4(reg,reg)  "\tjcF4 R%0,R%1,lbdf,%a;GEF4(reg,reg) - reverse test\n"  fp()+10
@@ -883,7 +885,7 @@ static void gensaveregs(){  //routine to save registers extracted from function(
                 }
         for (i = 20; i <= 30; i += 2)	//now we save the float registers
                 if (usedmask[FREG]&(3<<i)) {
-                        print("\tpushf RF%d\n", i);
+                        print("\tpushfloat RF%d\n", i);
                 }
 }
 static void genrldregs(){ //reload any saved registers 
@@ -894,7 +896,7 @@ static void genrldregs(){ //reload any saved registers
                 }
         for (i = 30; i >= 20; i -= 2)	//now we reload the float registers
                 if (usedmask[FREG]&(3<<i)) {
-                        print("\tpopf RF%d\n", i);
+                        print("\tpopfloat RF%d\n", i);
                 }
 }
 

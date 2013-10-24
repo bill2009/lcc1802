@@ -24,7 +24,7 @@
 ;Oct 2, 2013 DH version for dhrystone optimization 
 ;Oct 2, 2013 added str2 macro 2 byte store at addr pointed to by register
 ;oct 4,	added st2i 2 byte immediate sore, pushf,pushm,pushl sequences, 
-;	changed ldax to use incm for small offsets
+;oct 24, added ldaXs for stack pointed addresses, added mvcn1, mvc1 for 1 byte storage to storage moves, jneu1i for single byte immediate compare
 R0:	equ	0
 R1:	equ	1
 R2:	equ	2
@@ -264,12 +264,28 @@ jneU2:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	inc	sp
 	lbnz	label
 	endm
+
 jneU2I:	macro	reg1,ival,label	;-12 bytes, lbr@3, lbr@9
 	glo	reg1
 	smi	(ival)#256
 	lbnz	label
 	ghi	reg1
 	smbi	(ival)>>8; was/256
+	lbnz	label
+	endm
+jneU2NI: macro	reg1,ival,label	;jump if storage at reg1%!=lval
+	lda	reg1
+	smi	(ival)>>8; was/256
+	lbnz	label
+	ldn	reg1
+	smi	(ival)#256
+	lbnz	label
+	endm
+
+
+jneU1I:	macro	reg1,immedval,label
+	glo	reg1
+	smi	immedval
 	lbnz	label
 	endm
 jnzU1:	macro	reg1,label	;4 bytes, lbr@1
@@ -348,6 +364,14 @@ jeqI2:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	lbz	label
 $$nobr:
 	endm
+jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
+	dec	sp
+	glo	reg2
+	str	sp
+	glo	reg1
+	sm
+	lbz	label
+	endm
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
 	glo	reg1
 	smi	(ival)#256
@@ -369,12 +393,20 @@ ldAD:	macro	reg1,directaddress	;load an absolute address or a constant into a re
 	phi	reg1
 	endm
 ldAX:	macro	reg1,basereg,offset	;load a base+offset address into a register
-		glo	basereg
-		adi	(offset)#256
-		plo	reg1
-		ghi	basereg
-		adci	(offset)>>8; was/256
-		phi	reg1
+	glo	basereg
+	adi	(offset)#256
+	plo	reg1
+	ghi	basereg
+	adci	(offset)>>8; was/256
+	phi	reg1
+	endm
+ldAXs:	macro	reg1,basereg,offset	;load a stack-pointer+offset address into a register
+	if	(offset>1)
+		ldaX reg1,basereg,offset
+	else
+		cpy2 reg1,basereg
+		incm reg1,offset
+	endif
 	endm
 ldA2:	macro	reg1,OorD,destBase,destOff ;2 byte load address direct or base+offset
 ;Oct 13 destoff added to ldAD call
@@ -402,6 +434,19 @@ mvcn2:	macro	regdest,regsrc 	;moves 2 bytes from storage to storage where addres
 	str	regdest
 	dec regsrc
 	dec regdest
+	endm
+
+mvc1:	macro	reg1,OorDdest,destBase,destOff,OorDsrc,srcBase,srcOff ;moves 2 bytes from storage to storage
+	ldA2	reg1,OorDdest,destBase,destOff
+	ldA2	memaddr,OorDsrc,srcBase,srcOff
+	ldn	memaddr
+	str	reg1
+	endm
+
+
+mvcn1:	macro	regdest,regsrc 	;moves 1 bytes from storage to storage where addresses are already in registers
+	ldn	regsrc
+	str	regdest
 	endm
 
 cpy2:	macro	tgt,src			;2 byte register copy
