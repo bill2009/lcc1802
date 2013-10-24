@@ -61,8 +61,37 @@ _main: ;copt is peeping your size %1 frame with oct 23 rules
 	pushm %1	;opt11.1
 	pushl %2	;opt11.1
 
+	ld2 %1,%2,%3,%4 ;reg:INDIRP2(addr)
+	str2 %1,%5	;opt5 ASGNP2
+;%9
+=
+	lda2 memaddr,%2,%3,%4	;opt12.7
+	mvcn2 %5,memaddr
+;%9
+
+	ldn2 %1,%2	;opt9x
+	str2 %1,%3	;opt5 %8
+;%9
+=
+	mvcn2 %3,%2	;opt12x
+;%9
+
+	ldn2s %1,%2	;opt9xs
+	str2 %1,%3	;opt5 %8
+;%9
+=
+	mvcn2 %3,%2	;opt12xs
+;%9
+
+	ldn2s %1,%2	;opt9xs
+	str2 %1,%3	;opt5 %8
+%9:
+=
+	mvcn2 %3,%2	;opt12xs:
+%9:
+
 	ld2 %1,%2,%3,%4 ;reg:INDIRI2(addr)
-	st2 %1,%5,%6,%7; ASGNI2(addr,reg)*;
+	st2 %1,%5,%6,%7; ASGNI2(addr,reg)
 	lbr %8
 %9:
 =
@@ -89,20 +118,6 @@ _main: ;copt is peeping your size %1 frame with oct 23 rules
 ;%9
 =
 	mvc2 %1,%5,%6,%7,%2,%3,%4	;opt12.3
-;%9
-
-	ldn2 %1,%2	;opt9.3
-	str2 %1,%3	;opt5.1
-;%9
-=
-	mvcn2 %3,%2	;opt12.4
-;%9
-
-	ldn2s %1,%2	;opt9s
-	str2 %1,%3	;opt5
-;%9
-=
-	mvcn2 %3,%2	;opt12.5s
 ;%9
 
 	cpy1 %1,%2
@@ -136,43 +151,40 @@ _main: ;copt is peeping your size %1 frame with oct 23 rules
 	inc memaddr				;opt16.1
 	str2 R13,memaddr			
 
-	ld2 R10,'O',sp,(0) ;reg:INDIRI2(addr)
-	alu2 R10,R13,R10,add,adc; ADDI2(r,r)
-=
-	alu2RS R10,R13,'O',sp,(0),add,adc	;opt15
-
 	ldA2 %1,'O',sp,(1); reg:addr
 =
-	cpy2 %1,sp				;opt17
-	inc %1
+	ldaXs %1,sp,(1)			;opt17
 
 	ldA2 %1,'O',sp,(0); reg:addr
 =
-	cpy2 %1,sp				;opt17
+	ldaXs %1,sp,(0)			;opt17.1
 
-	ld1 R10,'O',sp,(1)
-	str1 R10,R11; ASGNU1(indaddr,reg)		DH
+	ld1 %1,'O',sp,(1)
+	str1 %1,%2; ASGNU1(indaddr,reg)		DH
 ;%9
 =
-	cpy2 memaddr,sp				;opt18
-	inc memaddr
-	ldn memaddr
-	str R11
+	ldaXs memaddr,sp,(1)	;opt18
+	mvcn1 %2,memaddr
 ;%9
 
 	ld2 %1,'O',sp,(0) ;reg:INDIRI2(addr)
 =
-	cpy2 memaddr,sp				;opt19
+	cpy2 memaddr,sp	;opt19
 	ldn2 %1,memaddr
 
 	ldn2 %1,memaddr
 	jneU2I %1,%2,%3; NE
 ;%9
 =
-	lda memaddr				;opt20
-	smi (%2)>>8
-	bnz %3
-	ldn memaddr
-	smi (%2)&255
-	bnz %3
+	jneU2NI memaddr,%2,%3	;opt20
+;%9
+
+	zExt %1 ;CVUI2: widen unsigned char to signed int (zero extend)
+	ldn1 %2,%3	;opt14*
+	zExt %2 ;CVUI2: widen unsigned char to signed int (zero extend)
+	jeqI2 %1,%2,%4; EQI2(reg,reg)
+;%9
+=
+	ldn1 %2,%3	;opt14*
+	jeqI1 %1,%2,%4	;opt21
 ;%9
