@@ -9,6 +9,7 @@
 //May 26 2013 added strncmp from apple source
 //June 25 removed static keyword from strlen
 //Sept 29 - adding include for assembly versions of strcpy, strcmp for dhrystone optimization
+//Nov 23 added scungy %cx hack for printing single char as hex.
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -192,8 +193,13 @@ void printf(char *ptr,...){ //limited implementation of printf
 					printstr((char*) *this++);
 					argslot+=1; //next argument slot
 					break;
-				case 'c':
-					putc((unsigned int) *this++);
+				case 'c'://scungy support for hex printing as %cx
+					if (*ptr=='x'){ //if there's an x
+						ptr++; //skip over the x
+						putx(((unsigned int) *this++)&255); //print 1 byte as hex
+					} else{
+						putc((unsigned int) *this++);		//print as char
+					}
 					argslot+=1; //next argument slot
 					break;
 				case 'x': case 'X':
