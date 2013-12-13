@@ -169,6 +169,7 @@ byte mmc_readSector(byte *buffer, uint32_t sector)
 {
 	uint8_t status_, tries;
 	uint16_t i;
+	printf("Sector %ld...\n",sector);
 	if (mmc__card_type != SD_CARD_TYPE_SDHC)	sector <<= 9;
 
 	tries=0;
@@ -197,6 +198,7 @@ byte mmc_readSector(byte *buffer, uint32_t sector)
 		buffer[i] = spiRec();
 	}
 	digitalWrite(SD_SS,HIGH);
+	printf("...Read\n");
 
 	return RES_OK;
 

@@ -127,5 +127,5 @@ void main(){
 #include <olduino.c>
 #include <nstdlib.c>
 #include "mmc.c"
-#include <hspi.c>
+#include "hspi2v2.c"
 #include "tinyFat.c"
