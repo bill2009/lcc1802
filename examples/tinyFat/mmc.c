@@ -10,7 +10,7 @@
 	http://www.henningkarlsen.com/electronics
 */
 #include "mmc.h"
-#include <hspi.h>
+#include <hspi2.h>
 #include <olduino.h>
 #define spiRec() spixfer(0xff)
 
@@ -169,7 +169,7 @@ byte mmc_readSector(byte *buffer, uint32_t sector)
 {
 	uint8_t status_, tries;
 	uint16_t i;
-	printf("Sector %ld...\n",sector);
+	//printf("Sector %ld...\n",sector);
 	if (mmc__card_type != SD_CARD_TYPE_SDHC)	sector <<= 9;
 
 	tries=0;
@@ -192,13 +192,10 @@ byte mmc_readSector(byte *buffer, uint32_t sector)
 		goto fail;
 	}
 
+	spiReceiveN(buffer,512); //read the block into the buffer
 
-	for (i = 0; i < 512; i++)
-	{
-		buffer[i] = spiRec();
-	}
 	digitalWrite(SD_SS,HIGH);
-	printf("...Read\n");
+	//printf("...Read\n");
 
 	return RES_OK;
 

@@ -35,6 +35,20 @@ void construct_tinyFAT()
 {
 	_inited=false;
 }
+uint32_t loadLittleEndianLong(unsigned char * lel){//load a long stored as littleendian
+	union
+	{
+		unsigned long l;
+		unsigned char c[4];
+	} longUchar;
+
+
+	longUchar.c[3]=*lel++;
+	longUchar.c[2]=*lel++;
+	longUchar.c[1]=*lel++;
+	longUchar.c[0]=*lel++;
+	return 	longUchar.l;
+}
 uint32_t make4long(int c0,int c1,int c2,int c3){//return 4 bytes as a long
 	union
 	{
@@ -74,8 +88,6 @@ byte tF_initFAT(byte speed)
 			MBR.part1Type=buffer[450];
 			MBR.part1Start = make4long(buffer[457],buffer[456],buffer[455],buffer[454]);
 			MBR.part1Size = make4long(buffer[461],buffer[460],buffer[459],buffer[458]);
-//			MBR.part1Start = uint16_t(buffer[454])+(uint16_t(buffer[455])<<8)+(uint32_t(buffer[456])<<16)+(uint32_t(buffer[457])<<24);
-//			MBR.part1Size = uint16_t(buffer[458])+(uint16_t(buffer[459])<<8)+(uint32_t(buffer[460])<<16)+(uint32_t(buffer[461])<<24);
 		}
 		else
 		{

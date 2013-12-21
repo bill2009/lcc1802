@@ -1,6 +1,7 @@
 #include <nstdint.h>
 #include <olduino.h>
 #include <nstdlib.h>
+#include <hspi2.h>
 #include "tinyFAT.h"
 #include "mmc.h"
 #define nofloats
@@ -127,5 +128,5 @@ void main(){
 #include <olduino.c>
 #include <nstdlib.c>
 #include "mmc.c"
-#include "hspi2v2.c"
+#include "hspi2.c"
 #include "tinyFat.c"
