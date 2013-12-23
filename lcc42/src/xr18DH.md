@@ -39,6 +39,7 @@
  * Oct 13 wholesale change of register names in rules from r* to R* also typo in a 4 byte compare
  * Oct 19 experimenting with stmt: EQI2(CVUI2(INDIRU1(indaddr)),CVUI2(INDIRU1(indaddr))) "surely not %0,%1,%a\n" 0
  * Oct 23 redecorating ASGNI2(addr,reg)/U2/P2 so the same peephole rule picks them up
+ * Dec 23 removing *s from loadx2(reg) so a common rule can pick them up
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -464,8 +465,8 @@ reg: NEGI2(reg)   "\tnegI2 R%c,R%0 ;was alu2I R%c,R%0,0,sdi,sdbi\n"  1
 reg: NEGI4(reg)   "\tnegI4 R%c,R%0 ;was alu4I R%c,R%0,0,sdi,sdbi\n"  1
 reg: LOADI1(reg)  "?\tcpy1 R%c,R%0;LOADI1(reg)\n"  move(a)
 reg: LOADU1(reg)  "?\tcpy1 R%c,R%0;LOADU1(reg)\n"  move(a)
-reg: LOADI2(reg)  "?\tcpy2 R%c,R%0 ;LOADI2(reg)*\n"  move(a)+10
-reg: LOADU2(reg)  "?\tcpy2 R%c,R%0 ;LOADU2(reg)*\n"  move(a)+10
+reg: LOADI2(reg)  "?\tcpy2 R%c,R%0 ;LOADI2(reg)\n"  move(a)+10
+reg: LOADU2(reg)  "?\tcpy2 R%c,R%0 ;LOADU2(reg)\n"  move(a)+10
 reg: LOADI4(reg)  "?\tcpy4 R%c,R%0; LOADI4*\n"  move(a)+1
 reg: LOADP2(reg)  "?\tcpy2 R%c,R%0 ;LOADP2(reg)\n"  move(a)+1
 reg: LOADU4(reg)  "?\tcpy4 R%c,R%0; LOADU4(reg)\n"  move(a)+1
