@@ -6,10 +6,10 @@ _main:		;framesize=%1
 =
 _main: ;copt is peeping your size %1 frame with oct 23 rules
 
-	cpy2 %1,%2 ;LOADP2(reg)
+	cpy2 %1,%2 ;LOAD%3(reg)
 	cpy2 %2,%1
 =
-	cpy2 %1,%2 ;LOADP2(reg) ;opt1
+	cpy2 %1,%2 ;LOAD%3(reg) ;opt1.1
 
 	shrU2I %1,8
 =
