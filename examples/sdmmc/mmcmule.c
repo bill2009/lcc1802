@@ -2,52 +2,11 @@
 //Nov 22 2013, bill rowe
 #include <nstdlib.h>
 #include <olduino.h>
+#include <hspi2.h>
 #define SDSS 7	//active low slave select for SD card
 typedef unsigned char uint8_t;
 typedef unsigned int uint16_t;
 typedef unsigned long int uint32_t;
-unsigned char spixfer(unsigned char movalue){//now using outboard clock
-	asm("	glo 12\n"
-		"	dec 2\n"
-		"	str 2\n"
-		"	out 6\n"
-		"	dec 2\n"
-		"	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n"
-		"	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n" "	sex 2\n"
-		"	inp 6\n"
-		"	plo 15\n"
-		"	inc 2\n"
-		"	cretn\n");
-	//warning the return below is NOT executed. It just prevents a compiler warning
-	//the cretn inside the asm block above returns the correct value from the spi transfer
-	//sorry.
-	return 0;
-}
-unsigned char spixferAsWas(unsigned char movalue){
-	asm("	glo 12\n"
-		"	dec 2\n"
-		"	str 2\n"
-		"	out 6\n"
-		"	sex 3\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	out 2\n	db 00\n"
-		"	sex 2\n"
-		"	dec 2\n"
-		"	inp 6\n"
-		"	plo 15\n"
-		"	inc 2\n"
-		"	cretn\n");
-	//warning the return below is NOT executed. It just prevents a compiler warning
-	//the cretn inside the asm block above returns the correct value from the spi transfer
-	//sorry.
-	return 0;
-}
 void mmc_clock_and_release(void)
 {
     uint8_t i;
@@ -161,9 +120,9 @@ int mmc_readsector(uint32_t lba, uint8_t *buffer)
         mmc_clock_and_release();    // cleanup and
         return -1;                  // return error code
     }
-
-    for (i=0;i<512;i++)             // read sector data
-        *buffer++ = spixfer(0xff);
+	spiReceiveN(buffer,512);
+//    for (i=0;i<512;i++)             // read sector data
+//        *buffer++ = spixfer(0xff);
 
     (void)spixfer(0xff);                 // ignore dummy checksum
     (void)spixfer(0xff);                 // ignore dummy checksum
@@ -196,18 +155,7 @@ void main(){
 	unsigned int i,px,py,pz,retval[32];
     uint32_t sector = 0;
     uint8_t sectorbuffer[512];
-    //py=0xdc00;
-    //pz=py&0xff;
-	//printf("<%x,%x>",py,pz);
-	//while(1);
-    //sector=0xee;
-    //px=(sector>>7) & 0xffff;
-    //py=(sector<<9) & 0xffff;
-	//printf("%lx, %x, %x\n",sector,px,py);
-   	//while(1);
-	//retval[0]=mmc_readsector(0xee,sectorbuffer);    // read a data sector
 	printf("MMC mule sez Hello World\n");
-//while(1);
 	printf("trying mmc_init\n");
 	retval[0]=mmc_init();
 	printf("\nreturn code is %d\n",retval[0]);
@@ -224,76 +172,9 @@ void main(){
 		dump(sectorbuffer,512);                 // dump sector contents
 	}
 
-/*
-	digitalWrite(SDSS,HIGH); //to get into MMC mode we send 80 clocks with SS high
-	for (i=10;i!=0;i--){ 	//10 repeats
-		retval[0]=spixfer(0xff);		//of clocks with MOSI high
-	}
-	digitalWrite(SDSS,LOW);	//now SS is active low
-	retval[31]=spixfer(0xff);
-	retval[0]=spixfer(0x40); //cmd0 - reset
-	retval[1]=spixfer(0x00); //arg1
-	retval[2]=spixfer(0x00); //arg2
-	retval[3]=spixfer(0x00); //arg3
-	retval[4]=spixfer(0x00); //arg4
-	retval[5]=spixfer(0x95); //CRC
-	retval[6]=spixfer(0xff); //waiting for response
-	retval[7]=spixfer(0xff); //getting response
-	retval[8]=spixfer(0xff); //
-	retval[9]=spixfer(0xff); //
-	retval[10]=spixfer(0xff); //
-	retval[11]=spixfer(0xff); //
-	retval[12]=spixfer(0xff); //
-	retval[13]=spixfer(0xff); //
-	for (i=0;i<9;i++){
-		printf("%x ",retval[i]);
-	}
-	printf("\ntrying cmd 1: ");
-	retval[31]=spixfer(0xff);
-	retval[0]=spixfer(0x41); //cmd1 - initialization
-	retval[1]=spixfer(0x00); //arg1
-	retval[2]=spixfer(0x00); //arg2
-	retval[3]=spixfer(0x00); //arg3
-	retval[4]=spixfer(0x00); //arg4
-	retval[5]=spixfer(0x95); //CRC
-	retval[6]=spixfer(0xff); //waiting for response
-	retval[7]=spixfer(0xff); //getting response
-	retval[8]=spixfer(0xff); //
-	retval[9]=spixfer(0xff); //
-	retval[10]=spixfer(0xff); //
-	retval[11]=spixfer(0xff); //
-	retval[12]=spixfer(0xff); //
-	retval[13]=spixfer(0xff); //
-	retval[14]=spixfer(0xff); //
-	retval[15]=spixfer(0xff); //
-	for (i=0;i<16;i++){
-		printf("%x ",retval[i]);
-	}
-	printf("\ntrying cmd 1(again): ");
-	retval[31]=spixfer(0xff);
-	retval[0]=spixfer(0x41); //cmd1 - initialization
-	retval[1]=spixfer(0x00); //arg1
-	retval[2]=spixfer(0x00); //arg2
-	retval[3]=spixfer(0x00); //arg3
-	retval[4]=spixfer(0x00); //arg4
-	retval[5]=spixfer(0x95); //CRC
-	retval[6]=spixfer(0xff); //waiting for response
-	retval[7]=spixfer(0xff); //getting response
-	retval[8]=spixfer(0xff); //
-	retval[9]=spixfer(0xff); //
-	retval[10]=spixfer(0xff); //
-	retval[11]=spixfer(0xff); //
-	retval[12]=spixfer(0xff); //
-	retval[13]=spixfer(0xff); //
-	retval[14]=spixfer(0xff); //
-	retval[15]=spixfer(0xff); //
-	for (i=0;i<16;i++){
-		printf("%x ",retval[i]);
-	}
-*/
 	printf("\n");
 	printf("\nand we're done\n");
 }
-
+#include <hspi2.c>
 #include <nstdlib.c>
 #include <olduino.c>
