@@ -117,6 +117,7 @@ uint8_t mmc_initialize(uint8_t speed)
 	// check SD version
 	if ((mmc_cardCommand(SEND_IF_COND, 0x1AA) & STATUS_ILLEGAL_COMMAND))
 	{
+		printf("just as you suspected!\n");
 		mmc__card_type = SD_CARD_TYPE_SD1;
 	}
 	else
