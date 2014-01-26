@@ -7,8 +7,8 @@
 */
 #include <olduino.h>
 #include <nstdlib.h>
-#include <hspi.h>
-#include "hwspilcd.h"
+#include <hspi2.h>
+#include <hspi2Lcd.h>
 #include <spiship.h>
 #include "santaw2.h"
 void animate(){
@@ -39,16 +39,19 @@ void animate(){
 void main()
 {
  	PIN4=0;
+ 	digitalWrite(LcdSS,HIGH);
  	setqon();
+ 	digitalWrite(LcdSS,LOW);
 	LcdInitialise();
 	setqoff();
 	LcdClear();
-	LcdWriteN(santabw2,504);
-	while(1);{
-	animate();
-}
+	//while(1);
+	LcdWriteN(spibytes,504);
+	while(1){
+		animate();
+	}
 }
 #include <hspi2.c>
-#include "hwspilcd2.c"
+#include <hspi2Lcd.c>
 #include <olduino.c>
 #include <nstdlib.c>
