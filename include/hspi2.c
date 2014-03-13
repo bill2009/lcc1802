@@ -2,6 +2,7 @@
 //spixfer sends and receives, spisend output only
 //spisendN spireceiveN, multibyte send and receive
 //dec 18 cleanup
+//Feb 16 fix spelling of spiSend
 unsigned char spixfer(unsigned char value){
 	//this code depends on the argument being in Reg 12 and returned value in reg 15
 	asm("	glo 12\n" //get the char to be sent
@@ -19,7 +20,7 @@ unsigned char spixfer(unsigned char value){
 	//sorry.
 	return 0;
 }
-void spisend(unsigned char value){ //this is for output only
+void spiSend(unsigned char value){ //this is for output only
 	//this code depends on the argument being in Reg 12
 	asm("	glo 12\n" //get the char to send
 		"	dec 2\n"  //make a work area
