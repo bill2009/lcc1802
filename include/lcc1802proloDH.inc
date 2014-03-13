@@ -25,6 +25,7 @@
 ;Oct 2, 2013 added str2 macro 2 byte store at addr pointed to by register
 ;oct 4,	added st2i 2 byte immediate sore, pushf,pushm,pushl sequences, 
 ;oct 24, added ldaXs for stack pointed addresses, added mvcn1, mvc1 for 1 byte storage to storage moves, jneu1i for single byte immediate compare
+;Feb 17 2014 added "inc sp" to restore stack pointer in jeqI1, affected strncmp.
 R0:	equ	0
 R1:	equ	1
 R2:	equ	2
@@ -370,6 +371,7 @@ jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	str	sp
 	glo	reg1
 	sm
+	inc	sp	;added Feb 17
 	lbz	label
 	endm
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
