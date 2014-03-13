@@ -10,6 +10,7 @@
 //June 25 removed static keyword from strlen
 //Sept 29 - adding include for assembly versions of strcpy, strcmp for dhrystone optimization
 //Nov 23 added scungy %cx hack for printing single char as hex.
+//jan 29 - changing out(5,x) to putc(x)
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -39,7 +40,7 @@ unsigned int strlen(char *str)
    return slen;
 }
 void printstr(char *ptr){
-    while(*ptr) out(5,*ptr++);
+    while(*ptr) putc(*ptr++); //jan 29
 }
 #ifndef nofloats
 static const float round_nums[8] = {
