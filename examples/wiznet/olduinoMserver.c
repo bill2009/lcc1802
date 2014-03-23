@@ -29,9 +29,14 @@
 #define MAX_BUF 512
 unsigned char buf[MAX_BUF];			//memory buffer for incoming & outgoing data
 int ledmode=0;	//0=off, 1=on
-int cmdip[]={0,0,0,182}; //most recent address where a command came from
-int saveip[]={0,0,0,0}; //registered address where command accepted from
-char savename[16]={0}; //registered name/country
+union IPaddr{
+	long l;
+	unsigned char c[4];
+};
+union IPaddr regip[4]={1,2,3,4};//the ips i have registered
+union IPaddr cmdip={182};
+union IPaddr saveip={0}; //registered address where command accepted from
+unsigned char savename[16]={0}; //registered name/country
 int pagehits=0;
 char strbuf[16];
 struct SPIsequence{
@@ -39,7 +44,6 @@ struct SPIsequence{
 	unsigned int realaddr;
 	unsigned char data;
 } SPINpayload;
-//struct SPIsequence SPINpayload;
 void p4hex(unsigned char uc[4]){
 	printf("%cx-%cx%cx:%cx,",uc[0],uc[1],uc[2],uc[3]);
 }
@@ -230,7 +234,7 @@ int send0s(char* what){
 	//printf(">>%s\n",what);
 	return send0((unsigned char *)what,strlen(what));
 }
-void sendip(int ip[]){
+void sendip(unsigned char * ip){
 	send0s(itoa(ip[0],strbuf));
 	sendlit(".");
 	send0s(itoa(ip[1],strbuf));
@@ -241,8 +245,8 @@ void sendip(int ip[]){
 }
 
 void sendipandname(){
-	sendlit("(in contact with "); send0s(savename); sendlit(" at ip address ");
-	sendip(saveip);
+	sendlit("(in contact with "); send0s((char *)savename); sendlit(" at ip address ");
+	sendip(saveip.c);
 	sendlit(")\r\n");
 }
 void sendformbasics(){
@@ -254,16 +258,16 @@ void sendformbasics(){
 	printf(">SF\n");
 	pagehits+=1;
 	sendrc=send0(hdr1,sizeof(hdr1)-1); 	// Now Send the HTTP Response first part
-	if (saveip[0]!=0){
+	if (saveip.c[0]!=0){
 		sendipandname();	//put custom info in header if avail
 	}
 	sendrc=send0(hdr2,sizeof(hdr2)-1); 	// Now Send the HTTP Response 2nd part
 
 	send0s("Pages Served: "); send0s(itoa(pagehits,strbuf)); send0s("<p>");
 
-	if (cmdip[0]!=0){
+	if (cmdip.c[0]!=0){
 		sendlit("Last command from: ");
-		sendip(cmdip);
+		sendip(cmdip.c);
 		sendlit("<p>");
 	}
 
@@ -289,7 +293,7 @@ void sendform(){
 						"</form>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 	sendformbasics(); //do the basics
-	if (registeredip()){
+	if (registeredip()>=0){
 		sendrc=send0(postform,sizeof(postform)-1); 	// allow registered users to toggle
 	} else{
 		sendrc=send0(nform,sizeof(nform)-1); 	// allow unknown users to register
@@ -318,34 +322,36 @@ void handlepost(){
 		ledmode=1;
 		asm("	seq\n");
 	}
-	cmdip[0]=SPI_Read(S0_DIPR + 0);cmdip[1]=SPI_Read(S0_DIPR + 1);cmdip[2]=SPI_Read(S0_DIPR + 2);cmdip[3]=SPI_Read(S0_DIPR + 3);
+	cmdip.c[0]=SPI_Read(S0_DIPR + 0);cmdip.c[1]=SPI_Read(S0_DIPR + 1);cmdip.c[2]=SPI_Read(S0_DIPR + 2);cmdip.c[3]=SPI_Read(S0_DIPR + 3);
 }
-unsigned int cpyname(char *to,char *from){//copy the name until space or length limit
+unsigned int cpyname(unsigned char *to,unsigned char *from){//copy the name until space or length limit
 	unsigned int len=0;
-	while((len<17) && *from!=' '){
+	while((len<17) && *from!=' ' &&*from!='+'){
 		*to++=*from++;
 		len++;
 	}
 	*to=0;
 	return len;
 }
-int registeredip(){//see if this ip is registered - return 0 if so
-	int thisip[4];
-	thisip[0]=SPI_Read(S0_DIPR + 0);thisip[1]=SPI_Read(S0_DIPR + 1);thisip[2]=SPI_Read(S0_DIPR + 2);thisip[3]=SPI_Read(S0_DIPR + 3);
-	if ((thisip[0]==saveip[0])&&(thisip[3]==saveip[3])){
-		return 1;
-	}else{
+int registeredip(){//see if this ip is registered - return -1 if not
+	union IPaddr thisip;
+	regip[0].c[0]=thisip.c[0];
+	thisip.c[0]=SPI_Read(S0_DIPR + 0);thisip.c[1]=SPI_Read(S0_DIPR + 1);thisip.c[2]=SPI_Read(S0_DIPR + 2);thisip.c[3]=SPI_Read(S0_DIPR + 3);
+	if ((thisip.l==saveip.l)){
 		return 0;
+	}else{
+		return -1;
 	}
 }
+
 
 void registername(){
 	unsigned int namelen;
 	printf(" SN \n");
-	namelen=cpyname(savename,(char *)buf+8); //register the name
+	namelen=cpyname(savename,buf+8); //register the name
 	printf("name length %d\n",namelen);
 	if (namelen>0){ //if one supplied
-		saveip[0]=SPI_Read(S0_DIPR + 0);saveip[1]=SPI_Read(S0_DIPR + 1);saveip[2]=SPI_Read(S0_DIPR + 2);saveip[3]=SPI_Read(S0_DIPR + 3);
+		saveip.c[0]=SPI_Read(S0_DIPR + 0);saveip.c[1]=SPI_Read(S0_DIPR + 1);saveip.c[2]=SPI_Read(S0_DIPR + 2);saveip.c[3]=SPI_Read(S0_DIPR + 3);
 		printf("name registered %s\n",savename);
 	}
 }
@@ -384,7 +390,7 @@ void handlesession(){	//handle a session once it's established
 
 void main(void){
 	int socket0status;
-	//ledmode=0; digitalWrite(0,LOW); cmdip[0]=0; pagehits=0;
+	//ledmode=0; digitalWrite(0,LOW); cmdip.c[0]=0; pagehits=0;
 	delay(100);
 	printf("\nOlduino Web Server v5.1\n");
     W5100_Init(); //initialize the wiznet chip
