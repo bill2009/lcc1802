@@ -51,7 +51,7 @@ unsigned char SPI_Read(unsigned int addr)
 
 void W5100_Init(void){// Ethernet Setup
   unsigned char mac_addr[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-  unsigned char ip_addr[] = {192,168,0,182};
+  unsigned char ip_addr[] = {169,254,180,2};//{192,168,0,182};//
   unsigned char sub_mask[] = {255,255,255,0};
   unsigned char gtw_addr[] = {192,168,0,1};
   SPI_Write(MR,0x80);   // setting bit 7 of the mode register does a software reset of the w5100
