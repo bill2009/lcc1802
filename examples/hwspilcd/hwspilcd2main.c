@@ -4,6 +4,7 @@
 	Dec 8 using hwspi2 for outboard clock
 	Dec 11, finally working after bypassing inverter to MOSR load, changes to clearer etc
 	Dec 19 adding Santa Animation
+	June 23 reverting to starship display/animation
 */
 #include <olduino.h>
 #include <nstdlib.h>
@@ -32,7 +33,7 @@ void animate(){
 		if (offset>0){
 			LcdWriteN(spibytes+252,offset);
 		}
-		//delay(100);
+		delay(100);
 	}
 }
 #define LcdSS 4
