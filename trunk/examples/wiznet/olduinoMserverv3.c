@@ -450,7 +450,7 @@ void main(void){
     W5100_Init(); //initialize the wiznet chip
 	while(1){  // Loop forever
 		socket0status=SPI_Read(S0_SR);
-		printf("s0s=%x ",socket0status);
+		//printf("s0s=%x ",socket0status);
 		switch (socket0status){
 			case SOCK_CLOSED: //initial condition
 				socket0_init();	//initialize socket 0
