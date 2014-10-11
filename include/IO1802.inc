@@ -36,7 +36,7 @@ _out:		;raw port output
 		;store the program as 6x cc D5 where x is the port number and cc is the char
 		;then SEP sp
 		;the D5 would return to the calling program and finish fixing the stack.
-		;saves 6 instrucrions but it's a bit tricky.
+		;saves 6 instructions but it's a bit tricky.
 	dec	sp	;work backwards
 	ldi	0xD3	;return instruction
 	stxd		
