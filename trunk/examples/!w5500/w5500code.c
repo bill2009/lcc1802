@@ -28,6 +28,19 @@ void wizCmd(unsigned char cmd){ //send a command to socket 0 and wait for comple
 void wizSetCtl8(unsigned int ctlreg, unsigned char val){//write to a socket 0 control register
 	wizWrite(ctlreg, WIZNET_WRITE_S0R,&val,1);
 }
+unsigned char wizGetCtl8(unsigned int ctlregaddr){
+  unsigned char regval; //spot to hold the register contents
+  wizRead(ctlregaddr,WIZNET_READ_S0R,&regval,1);
+  return regval;
+}
+void wizSetCtl16(unsigned int ctlregaddr, unsigned int ctlregvalue){
+  wizWrite(ctlregaddr,WIZNET_WRITE_S0R,(unsigned char *) &ctlregvalue,2);
+}
+unsigned int wizGetCtl16(unsigned int ctlregaddr){
+  union WReg regval; //spot to hold the register contents
+  wizRead(ctlregaddr,WIZNET_READ_S0R,regval.c,2);
+  return regval.i;
+}
 void wiz_Init(unsigned char ip_addr[]){// Ethernet Setup
   unsigned char mac_addr[] = {0xDE, 0xAD, 0xBE, 0xE5, 0xFE, 0xED};
   unsigned char sub_mask[] = {255,255,255,0};
@@ -42,21 +55,15 @@ void wiz_Init(unsigned char ip_addr[]){// Ethernet Setup
   delay(1);
   wizWrite(SIPR,WIZNET_WRITE_COMMON,ip_addr,4);// Set the Wiznet W5100 IP Address
   delay(1);
-  wizWrite(SnRX_BSZ,WIZNET_WRITE_S0R,&bsz4,1); //set receive buffer for soscket 0 to 4K
-  wizWrite(SnTX_BSZ,WIZNET_WRITE_S0R,&bsz4,1); //set transmit buffer for soscket 0 to 4K
-  wizWrite(SnRX_BSZ,WIZNET_WRITE_S7R,&bsz0,1); //set receive buffer for soscket 7 to 0K
-  wizWrite(SnTX_BSZ,WIZNET_WRITE_S7R,&bsz0,1); //set transmit buffer for soscket 7 to 0K
 
   wizRead(SIPR,WIZNET_READ_COMMON,readback_ip,4); //read back the IP to make sure it "took"
   printf("Done Wiznet W5500 Initialization on IP address %d.%d.%d.%d\n\n",readback_ip[0],readback_ip[1],readback_ip[2],readback_ip[3]);
 }
 void socket0_init(){ //initialize socket 0 for http server
-	unsigned char tcpmode=MR_TCP, cropen=CR_OPEN, crlisten=CR_LISTEN, intclr=255, crreadback=255,crclose=CR_CLOSE;
-	unsigned char tcpport[]={0,80}; //port 80 for tcp
 	wizCmd(CR_CLOSE); //make sure port is closed
 	wizSetCtl8(SnIR,0xFF); //reset interrupt reg
 	wizSetCtl8(SnMR,MR_TCP); //set mode register to tcp
-	wizWrite(SnPORT,WIZNET_WRITE_S0R,tcpport,2);	//set tcp port to 0050
+	wizSetCtl16(SnPORT,80); //set tcp port to 80
 	wizCmd(CR_OPEN); //open the port
 	wizCmd(CR_LISTEN); //listen for a conection
 }
@@ -68,30 +75,20 @@ long getip(){ //retrieve the requester's ip and return it as a long
 	return thisip.l;
 }
 
-unsigned int recv_size(void){
-  union WReg rsz; //spot to hold the received size
-  wizRead(SnRX_RSR,WIZNET_READ_S0R,rsz.c,2);
-  return rsz.i;
-}
-unsigned int txfree_size(void){
-  union WReg fsz; //spot to hold the free size
-  wizRead(SnTX_FSR,WIZNET_READ_S0R,fsz.c,2);
-  return fsz.i;
-}
+//unsigned int recv_size(void){
+//  union WReg rsz; //spot to hold the received size
+//  wizRead(SnRX_RSR,WIZNET_READ_S0R,rsz.c,2);
+//  return rsz.i;
+//}
+//unsigned int txfree_size(void){
+//  union WReg fsz; //spot to hold the free size
+//  wizRead(SnTX_FSR,WIZNET_READ_S0R,fsz.c,2);
+//  return fsz.i;
+//}
 unsigned int txwr_loc(void){
   union WReg txwr; //spot to hold the buffer pointer
   wizRead(SnTX_WR,WIZNET_READ_S0R,txwr.c,2);
   return txwr.i;
-}
-unsigned int wizGetCtl16(unsigned int ctlregaddr){
-  union WReg regval; //spot to hold the register contents
-  wizRead(ctlregaddr,WIZNET_READ_S0R,regval.c,2);
-  return regval.i;
-}
-void wizSetCtl16(unsigned int ctlregaddr, unsigned int ctlregvalue){
-  union WReg regval; //spot to hold the register contents
-  regval.i=ctlregvalue;
-  wizRead(ctlregaddr,WIZNET_READ_S0R,regval.c,2);
 }
 
 
@@ -101,16 +98,16 @@ void wizSetCtl16(unsigned int ctlregaddr, unsigned int ctlregvalue){
 unsigned int send0(unsigned char *buf,unsigned int buflen){
     unsigned int timeout,txsize,txfree;
     unsigned char crsend=CR_SEND,crreadback;
-	union WReg txwr;
+	unsigned int txwr;
 	//printf("send0 %d\n",buflen);
     if (buflen <= 0) return 0;
     // Make sure the TX Free Size Register shows enough room
-    txfree=txfree_size();
+    txfree=wizGetCtl16(SnTX_FSR);
 	//printf("free %d\n",txfree);
     timeout=0;
     while (txfree < buflen) {
       delay(1);
-     txfree=txfree_size();
+     txfree=wizGetCtl16(SnTX_FSR);
      // Timeout for approx 1000 ms
      if (timeout++ > 1000) {
        printf("TX Free Size Error!\n");
@@ -122,11 +119,10 @@ unsigned int send0(unsigned char *buf,unsigned int buflen){
    }
 
 
-   txwr.i=wizGetCtl16(SnTX_WR); //txwr_loc(); // Read the Tx Write Pointer
-   wizWrite(txwr.i,WIZNET_WRITE_S0TX,buf, buflen);
-   txwr.i+=buflen;
-   wizWrite(SnTX_WR,WIZNET_WRITE_S0R,txwr.c,2);
-
+   	txwr=wizGetCtl16(SnTX_WR); //txwr_loc(); // Read the Tx Write Pointer
+   	wizWrite(txwr,WIZNET_WRITE_S0TX,buf, buflen);
+   	txwr+=buflen;
+   	wizSetCtl16(SnTX_WR,txwr);//   wizWrite(SnTX_WR,WIZNET_WRITE_S0R,txwr.c,2);
 	wizCmd(CR_SEND); // Now Send the SEND command
 
     return 1;

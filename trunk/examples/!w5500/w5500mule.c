@@ -26,7 +26,7 @@ void sendresp(){
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html>"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>**Olduino Server on Wiznet W5500**</h1></center>";
+						"<center><h1>*Olduino Server on Wiznet W5500*</h1></center>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 	sendconst(hdr1); 	// Now Send the HTTP Response first part
 
@@ -38,7 +38,7 @@ void handlesession(){
 	thisip.l=getip();
 	printf("\nsession established!\n");
 	printf(" ip %d.%d.%d.%d\n",thisip.c[0],thisip.c[1],thisip.c[2],thisip.c[3]); //this would malf if not for promotion
-	rsize=recv_size(); printf("**rsz=%d\n",rsize);
+	rsize=wizGetCtl16(SnRX_RSR); printf("**rsz=%d\n",rsize);
 asm("	seq\n");
 	if (rsize>0){
 		sendresp(); //send a response
@@ -59,11 +59,11 @@ void main(void){
 	printf("\nW5500 Test Mule V2\n");
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
-    wizRead(SnSR,WIZNET_READ_S0R,&socket0status,1);
-	printf("s0s=%cx ",socket0status);
+    socket0status=wizGetCtl8(SnSR); //get the status on socket 0 to poll for a connection
+	//printf("s0s=%cx ",socket0status);
 	while(1){  // Loop forever
-		wizRead(SnSR,WIZNET_READ_S0R,&socket0status,1);
-		printf("s0s=%cx ",socket0status);
+		socket0status=wizGetCtl8(SnSR);
+		//printf("s0s=%cx ",socket0status);
 		switch (socket0status){
 			case SOCK_CLOSED: //initial condition
 				socket0_init();	//initialize socket 0
