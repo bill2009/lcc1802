@@ -18,10 +18,10 @@ union WReg{ //used to retrieve a 16 bit value from the wiznet
 };
 void wizRead(unsigned int addr,unsigned char opcode, unsigned char * data, unsigned int len);
 long getip();
-void wiz_WriteC(unsigned int addr,unsigned char data);
-void wiz_WriteCN(unsigned int addr,unsigned char * data, unsigned int N);
+//void wiz_WriteC(unsigned int addr,unsigned char data);
+//void wiz_WriteCN(unsigned int addr,unsigned char * data, unsigned int N);
 
-unsigned char wiz_ReadC(unsigned int addr);
+//unsigned char wiz_ReadC(unsigned int addr);
 
 void wiz_Init(unsigned char ip_addr[]);// Ethernet Setup
 void socket0_init(); //initialize socket 0 for http server
@@ -31,3 +31,7 @@ void sendnak();
 unsigned int recv0(unsigned char *buf,unsigned int buflen);
 void flush(unsigned int rsize); //this just gets rid of data that i don't want to process
 void wizCmd(unsigned char);
+unsigned char wizGetCtl8(unsigned int ctlregaddr);//read a socket 0 8 bit control register
+void wizSetCtl8(unsigned int ctlreg, unsigned char val);//write to an 8 bit socket 0 control register
+unsigned int wizGetCtl16(unsigned int ctlregaddr);//read a socket 0 16 bit control register
+void wizSetCtl16(unsigned int ctlregaddr, unsigned int ctlregvalue);//write to a socket 0 16 bit control register
