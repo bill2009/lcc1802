@@ -1,7 +1,8 @@
 //14-11-26 routines to address the wiznet w5500
 //14-11-27 switched to single read & write routines
-void wizWrite(unsigned int addr, unsigned char opcode, /*unsigned char*/ void * data, unsigned int len){
-//variable length write to the wiznet W5500 common or socketN areas
+//14-12-8 wrapper routines for
+void wizWrite(unsigned int addr, unsigned char opcode, void * data, unsigned int len){
+//variable length write to the wiznet W5500
 //opcode is xxxx x100
 // xxxxx is 00000 for common area, 00001 for socket 0 register, 00010 for socket 0 tx buffer
   enablewiz();   			// Activate the CS pin
@@ -11,8 +12,8 @@ void wizWrite(unsigned int addr, unsigned char opcode, /*unsigned char*/ void * 
   disablewiz();				// make CS pin not active
 }
 
-void wizRead(unsigned int addr,unsigned char opcode, unsigned char * data, unsigned int len){
-//variable length read from the wiznet w5500 common or socketN areas
+void wizRead(unsigned int addr,unsigned char opcode, void * data, unsigned int len){
+//variable length read from the wiznet w5500
 //opcode is xxxx x000
 // xxxxx is 00000 for common area, 00001 for socket 0 register, 00011 for socket 0 rx buffer
   enablewiz();   			// Activate the CS pin
@@ -75,22 +76,6 @@ long getip(){ //retrieve the requester's ip and return it as a long
 	return thisip.l;
 }
 
-//unsigned int recv_size(void){
-//  union WReg rsz; //spot to hold the received size
-//  wizRead(SnRX_RSR,WIZNET_READ_S0R,rsz.c,2);
-//  return rsz.i;
-//}
-//unsigned int txfree_size(void){
-//  union WReg fsz; //spot to hold the free size
-//  wizRead(SnTX_FSR,WIZNET_READ_S0R,fsz.c,2);
-//  return fsz.i;
-//}
-unsigned int txwr_loc(void){
-  union WReg txwr; //spot to hold the buffer pointer
-  wizRead(SnTX_WR,WIZNET_READ_S0R,txwr.c,2);
-  return txwr.i;
-}
-
 
 #define sendlit(x) send0((unsigned char*)x,sizeof(x)-1)
 #define sendconst(x) send0((unsigned char*)x,sizeof(x)-1)
@@ -110,20 +95,17 @@ unsigned int send0(unsigned char *buf,unsigned int buflen){
      txfree=wizGetCtl16(SnTX_FSR);
      // Timeout for approx 1000 ms
      if (timeout++ > 1000) {
-       printf("TX Free Size Error!\n");
-       // Disconnect the connection
-		wizCmd(CR_DISCON);
-//       disconnect0();
-       return 0;
+       	printf("TX Free Size Error!\n");
+		wizCmd(CR_DISCON);// Disconnect the connection
+       	return 0;
      }
    }
 
 
-   	txwr=wizGetCtl16(SnTX_WR); //txwr_loc(); // Read the Tx Write Pointer
-   	wizWrite(txwr,WIZNET_WRITE_S0TX,buf, buflen);
-   	txwr+=buflen;
-   	wizSetCtl16(SnTX_WR,txwr);//   wizWrite(SnTX_WR,WIZNET_WRITE_S0R,txwr.c,2);
-	wizCmd(CR_SEND); // Now Send the SEND command
+   	txwr=wizGetCtl16(SnTX_WR);  // Read the Tx Write Pointer
+   	wizWrite(txwr,WIZNET_WRITE_S0TX,buf, buflen); //write the outgoing data to the transmit buffer
+   	wizSetCtl16(SnTX_WR,txwr+buflen);//update the buffer pointer
+	wizCmd(CR_SEND); // Now Send the SEND command which tells the wiznet the pointer is updated
 
     return 1;
 }
@@ -134,39 +116,23 @@ void sendnak(){
 void sendack(){
 	sendlit("HTTP/1.0 200 OK\r\n\r\n"); 	// Now Send the HTTP Response
 }
-unsigned int rxrd_loc(void){
-  union WReg rxrd; //spot to hold the buffer pointer
-  wizRead(SnRX_RD,WIZNET_READ_S0R,rxrd.c,2);
-  return rxrd.i;
-}
-
 
 unsigned int recv0(unsigned char *buf,unsigned int buflen){
-    union WReg rxrd;
-    unsigned char crreadback,crrecv=CR_RECV;
-
+	unsigned int rxrd;
     if (buflen <= 0) return 1;
-
     if (buflen > MAX_BUF)	// If the request size > MAX_BUF,just truncate it
         buflen=MAX_BUF - 2;
-    rxrd.i = rxrd_loc();     // Read the Rx Read Pointer
-	wizRead(rxrd.i,WIZNET_READ_S0RX,buf,buflen); //read the data
+    rxrd = wizGetCtl16(SnRX_RD); // get the address where the wiznet is holding the data
+	wizRead(rxrd,WIZNET_READ_S0RX,buf,buflen); //read the data
     *(buf+buflen)='\0';        // terminate string
-    wizWrite(SnRX_RD,WIZNET_WRITE_S0R,rxrd.c,2); //update the read pointer
-
-    // Now Send the RECEIVE command to update the buffer pointer
-	wizCmd(CR_RECV);
     return 1;
 }
 
 void flush(unsigned int rsize){ //this just gets rid of data that i don't want to process
-	union WReg rxrd;
-    unsigned char crreadback,crrecv=CR_RECV;
+	unsigned int rxrd;
 	if (rsize>0){
-  		wizRead(SnRX_RD,WIZNET_READ_S0R,rxrd.c,2); //retrieve read data pointer
-  		rxrd.i+=rsize; //update receive buffer pointer
-  		wizWrite(SnRX_RD,WIZNET_WRITE_S0R,rxrd.c,2); //replace read data pointer
-		wizCmd(CR_RECV);
-
+  		rxrd=wizGetCtl16(SnRX_RD); //retrieve read data pointer
+  		wizSetCtl16(SnRX_RD,rxrd+rsize); //replace read data pointer
+		wizCmd(CR_RECV); //tell the wiznet we`ve retrieved the data
 	}
 }
