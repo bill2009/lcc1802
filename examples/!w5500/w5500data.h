@@ -1,16 +1,13 @@
 //w5500data.h - defines for wiznet w5500 data structures
 
 // Wiznet W5500 Op Codes
-#define WIZNET_WRITE_COMMON 0x04
-#define WIZNET_READ_COMMON 0x00
-#define WIZNET_WRITE_S0R 0x0C  //(000 01 1 00)
-#define WIZNET_READ_S0R 0x08   //(000 01 0 00)
-#define WIZNET_WRITE_S0TX 0x14 //(000 10 1 00)
-#define WIZNET_READ_S0RX 0x18  //(000 11 0 00)
-#define WIZNET_WRITE_S7R 0xEC  //(111 01 1 00)
-#define WIZNET_READ_S7R 0xE8
-//socket registers are addressed as rrryy...
-//where rrr is the register 0-7, yy=01 registers, 10 tx buffer, 11 rx buffer
+#define WIZNET_WRITE_COMMON 0x04 //opcode to write to one of the common block of registers
+#define WIZNET_READ_COMMON 0x00	//opcode to wread one of the common block of registers
+#define WIZNET_WRITE_S0R 0x0C  //(000 01 1 00) opcode to write to one of the socket 0 registers
+#define WIZNET_READ_S0R 0x08   //(000 01 0 00) opcode to read one of the socket 0 registers
+#define WIZNET_WRITE_S0TX 0x14 //(000 10 1 00) opcode to write to the socket 0 transmit buffer
+#define WIZNET_READ_S0RX 0x18  //(000 11 0 00) opcode to read from the socket 0 receive buffer
+
 // Wiznet W5500 Register Addresses
 #define MR     0x0000    // Mode
 #define GAR    0x0001    // Gateway IP address

@@ -22,11 +22,10 @@ union IPaddr thisip={182}; //the ip that a form/request came from
 unsigned char buf[MAX_BUF];			//memory buffer for incoming & outgoing data
 
 void sendresp(){
-	int sendrc,ipslot;
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html>"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>*Olduino Server on Wiznet W5500*</h1></center>";
+						"<center><h1>Olduino Server on Wiznet W5500</h1></center>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 	sendconst(hdr1); 	// Now Send the HTTP Response first part
 
