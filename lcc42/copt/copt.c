@@ -3,12 +3,13 @@
 //May 24 packaging for distribution
 //June 24 poking around
 //Oct 6 counting patterns and substitutions, allowing comments
+//Dec 7, 2014 verbose flag
 #include <ctype.h>
 #include <stdio.h>
 #define HSIZE 107
 #define MAXLINE 100
 
-int debug = 0;
+int debug = 0, verbose=0; //debug and verbose flags
 int npats=0, nsubs=0;	//number of patterns and replacements done oct 6
 struct lnode {
 	char *l_text;
@@ -129,10 +130,13 @@ int main(argc, argv) int argc; char **argv; {
         struct lnode head, *p, *opt(), tail;
 		char ebuf[BUFSIZ];
 		setbuf(stderr, ebuf);
-        fprintf(stderr,"Copt peephole optimizer 1.4: ");
         //while(1);
         for (i = 1; i < argc; i++)
-                if (strcmp(argv[i], "-D") == 0)
+                if (strcmp(argv[i], "-v") == 0){//dec 7
+                        verbose = 1;
+        				fprintf(stderr,"Copt peephole optimizer 1.5: ");
+				}
+                else if (strcmp(argv[i], "-D") == 0)
                         debug = 1;
                 else if (strcmp(argv[i], "-I") == 0)
                         finp = fopen(argv[++i], "r");
@@ -150,7 +154,9 @@ int main(argc, argv) int argc; char **argv; {
                 fputs(p->l_text, fout);
                 nout++;
 		}
-		fprintf(stderr,";%d source lines read, %d lines written, %d patterns, %d substitutions\n",nin,nout,npats,nsubs); //oct 6
+		if (verbose){//dec 7
+			fprintf(stderr,";%d source lines read, %d lines written, %d patterns, %d substitutions\n",nin,nout,npats,nsubs); //oct 6
+		}
 		fflush(stderr);
         return 0;
 }
