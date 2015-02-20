@@ -8,6 +8,7 @@
 //  Compiler     : LCC1802
 //  Created		 : Dec 10, 2014
 *****************************************************************************/
+//15-02-20 added delays after send, put missing > int hdr1, address to 10.0.0.
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -21,7 +22,7 @@ void sendresp(){
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html>"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>Simplest Server on Wiznet W5500<br>(Hello World!)</h1></center";
+						"<center><h1>Simplest Server on Wiznet W5500<br>(Hello World!)</h1></center>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 	sendconst(hdr1); 	// Now Send the HTTP Response first part
 	sendconst(trlr); 	// Now Send the rest of the page
@@ -31,14 +32,17 @@ void handlesession(){
 	rsize=wizGetCtl16(SnRX_RSR); //get the size of the received data
 	if (rsize>0){
 		sendresp(); //send a response
+		delay(5);
 		flush(rsize);	//get rid of the received data
+		delay(5);
 	}
+	delay(5);
 	wizCmd(CR_DISCON);
 }
 
 void main(void){
 	unsigned char socket0status;
-    unsigned char ip_addr[] = {169,254,180,2};
+    unsigned char ip_addr[] = {10,0,0,180};//{169,254,180,2};
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
