@@ -109,6 +109,9 @@ unsigned int send0(unsigned char *buf,unsigned int buflen){
 
     return 1;
 }
+int send0s(char* what){
+	return send0((unsigned char *)what,strlen(what));
+}
 void sendnak(){
 	sendlit("HTTP/1.1 404 Not Found\r\n\r\n"); 	// Now Send the HTTP Response
 }
