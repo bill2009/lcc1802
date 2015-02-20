@@ -21,6 +21,7 @@ void wiz_Init(unsigned char ip_addr[]);// Ethernet Setup
 void socket0_init(); //initialize socket 0 for http server
 unsigned int recv_size(void);
 unsigned int send0(unsigned char *buf,unsigned int buflen);
+int send0s(char* what);//send a string
 void sendnak();
 unsigned int recv0(unsigned char *buf,unsigned int buflen);
 void flush(unsigned int rsize); //this just gets rid of data that i don't want to process
