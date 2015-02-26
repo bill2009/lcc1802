@@ -9,6 +9,7 @@
 //  Created		 : Feb 3, 2015
 *****************************************************************************/
 //15-02-04 added scoring and congratulations
+//15-02-20 added test for <3 digits entered
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -105,7 +106,7 @@ void sendrespform(int pico, int fermi){
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html><body OnLoad=\"document.mf.G.focus();\">"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>Olduino 1802 BAGELS Server</h1></center>";
+						"<center><h1>Olduino 1802 BAGELS Server 2</h1></center>";
 	static unsigned char gform[]="<p><form name=\"mf\" method=\"GET\">\r\n"
 						"<input type=\"text\" name=\"G\">"
 						"<input type=\"submit\" value=\"Enter Your Guess\">\r\n"
@@ -122,6 +123,8 @@ void sendrespform(int pico, int fermi){
 		sendlit("YOU GOT IT!<P>");
 		congratulate();
 		sendconst(pform);
+		sendlit("<a href=\"http://goo.gl/p4C0Cg\">Olduino</a>: An Arduino for the First of Us<p>");
+		sendconst(trlr); 	// Now Send the rest of the page
 	} else {//once we're here we're going to send the guess form
 		if (pico<0){//flag for duplicate digits
 			sendlit("<P>Oh, maybe I didn't tell you.  No two digits are the same.<P>");
@@ -163,7 +166,7 @@ void bagelsturn(){
 	if (guess[0]==secret[1]||guess[0]==secret[2]){pico++;}
 	if (guess[1]==secret[0]||guess[1]==secret[2]){pico++;}
 	if (guess[2]==secret[0]||guess[2]==secret[1]){pico++;}
-	if (guess[0]==guess[1]||guess[0]==guess[2]||guess[1]==guess[2]){pico=-1;}
+	if (guess[0]==guess[1]||guess[0]==guess[2]||guess[1]==guess[2]||strlen((char *)guess)!=3){pico=-1;}
 	sendrespform(pico, fermi);
 }
 
@@ -199,7 +202,7 @@ void handlesession(){	//handle a session once it's established
 
 void main(void){
 	unsigned char socket0status;
-    unsigned char ip_addr[] = {10,0,0,180};//{169,254,180,2};//
+    unsigned char ip_addr[] = {169,254,180,2};//{10,0,0,180};//
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
