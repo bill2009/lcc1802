@@ -25,6 +25,7 @@ void sendresp(){
 						"<center><h1>Simplest Server on Wiznet W5500<br>(Hello World!)</h1></center>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 	sendconst(hdr1); 	// Now Send the HTTP Response first part
+	//sendconst("+++++++++1+++++++++2+++++++++3+++++++++4+++++++++5");
 	sendconst(trlr); 	// Now Send the rest of the page
 }
 void handlesession(){
