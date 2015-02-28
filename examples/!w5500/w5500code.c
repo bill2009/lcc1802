@@ -2,6 +2,7 @@
 //14-11-27 switched to single read & write routines
 //14-12-8 wrapper routines
 //15-02-19 set gateway ip to same as supplied ip but .1 in the, check & reset interrupt status
+//15-02-28 fixed logic error in congratulate, was printing wrong high score.  removed chatter around interrupt reset
 void wizWrite(unsigned int addr, unsigned char opcode, void * data, unsigned int len){
 //variable length write to the wiznet W5500
 //opcode is xxxx x100
@@ -46,7 +47,7 @@ unsigned int wizGetCtl16(unsigned int ctlregaddr){
 void wiz_Init(unsigned char ip_addr[]){// Ethernet Setup
   unsigned char mac_addr[] = {0xDE, 0xAD, 0xBE, 0xE5, 0xFE, 0xED};
   unsigned char sub_mask[] = {255,255,255,0};
-  unsigned char gtw_addr[] = {192,168,0,1};
+  unsigned char gtw_addr[] = {192,168,1,1};
   unsigned char readback_ip[] = {1,2,3,4};
   unsigned char bsz0=0, bsz2=2, bsz4=4;	//
   wizWrite(SHAR,WIZNET_WRITE_COMMON,mac_addr,6);// Set the MAC address - Source Address Register
@@ -60,7 +61,7 @@ void wiz_Init(unsigned char ip_addr[]){// Ethernet Setup
   delay(1);
 
   wizRead(SIPR,WIZNET_READ_COMMON,readback_ip,4); //read back the IP to make sure it "took"
-  printf("Done Wiznet W5500 Initialization on IP address %d.%d.%d.%d\n\n",readback_ip[0],readback_ip[1],readback_ip[2],readback_ip[3]);
+  printf("Done Wiznet W5500 Initialization on IP address %d.%d.%d.%d\n",readback_ip[0],readback_ip[1],readback_ip[2],readback_ip[3]);
   wizRead(GAR,WIZNET_READ_COMMON,readback_ip,4); //read back the Gateway IP to make sure it "took"
   printf("Gateway Address %d.%d.%d.%d\n\n",readback_ip[0],readback_ip[1],readback_ip[2],readback_ip[3]);
 }
@@ -111,12 +112,12 @@ unsigned int send0(unsigned char *buf,unsigned int buflen){
    	wizSetCtl16(SnTX_WR,txwr+buflen);//update the buffer pointer
 	wizCmd(CR_SEND); // Now Send the SEND command which tells the wiznet the pointer is updated
 	intval=wizGetCtl8(SnIR); //get the interrupt status
-	printf ("post send interrupt status is %cx\n",intval);
+	//printf ("post send interrupt status is %cx\n",intval);
 	while((intval&0x10)!=0x10){ //wait for sendok status
 		intval=wizGetCtl8(SnIR); //get the interrupt status
 	}
 	wizSetCtl8(SnIR,0x15);//reset interrupt status
-	printf("Interrupt register reset\n");
+	//printf("Interrupt register reset\n");
     return 1;
 }
 int send0s(char* what){

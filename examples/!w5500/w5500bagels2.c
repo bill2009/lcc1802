@@ -98,7 +98,7 @@ void congratulate(){
 	sendconst("<p>");
 	sendconst("Your IP address is ");sendip(thisip.c); sendconst("<p>");
 	sendconst("Best performance was "); sendip(maxip.c); sendconst(" with ");
-	send0s(itoa(ipgames[thisipslot],strbuf));
+	send0s(itoa(maxipgames,strbuf));
 	sendconst(" wins<p>");
 }
 void sendrespform(int pico, int fermi){
@@ -106,7 +106,7 @@ void sendrespform(int pico, int fermi){
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html><body OnLoad=\"document.mf.G.focus();\">"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>Olduino 1802 BAGELS Server 2</h1></center>";
+						"<center><h1>Olduino 1802 BAGELS Server 2.1</h1></center>";
 	static unsigned char gform[]="<p><form name=\"mf\" method=\"GET\">\r\n"
 						"<input type=\"text\" name=\"G\">"
 						"<input type=\"submit\" value=\"Enter Your Guess\">\r\n"
@@ -202,7 +202,8 @@ void handlesession(){	//handle a session once it's established
 
 void main(void){
 	unsigned char socket0status;
-    unsigned char ip_addr[] = {169,254,180,2};//{10,0,0,180};//
+    unsigned char ip_addr[] = {192,168,1,182};//{169,254,180,2};//{10,0,0,180};//
+    printf("Olduino 1802 BAGELS Server 2.1\n");
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
