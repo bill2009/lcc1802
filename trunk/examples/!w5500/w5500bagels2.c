@@ -10,6 +10,7 @@
 *****************************************************************************/
 //15-02-04 added scoring and congratulations
 //15-02-20 added test for <3 digits entered
+//15-03-01 changed constants in random number generator
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -24,7 +25,7 @@ unsigned char secret[4]="145";
 unsigned char guess [4]={0};
 unsigned int tbrnd(){//random numbers ala tiny basic R:=R*2345+6789
 	static unsigned int R=1;
-	R=R*2345+6789;
+	R=R*58653+13849;//R=R*2345+6789;
 	//printf("%d\n",R);
 	return R;
 }
@@ -94,19 +95,19 @@ void congratulate(){
 		maxipgames=ipgames[thisipslot];
 		maxip=thisip;
 		sendconst(" - A new high score!");
+	}else{
+		sendconst("<p>");
+		sendconst("High score is "); sendip(maxip.c); sendconst(" with ");
+		send0s(itoa(maxipgames,strbuf));
+		sendconst(" wins<p>");
 	}
-	sendconst("<p>");
-	sendconst("Your IP address is ");sendip(thisip.c); sendconst("<p>");
-	sendconst("Best performance was "); sendip(maxip.c); sendconst(" with ");
-	send0s(itoa(maxipgames,strbuf));
-	sendconst(" wins<p>");
 }
 void sendrespform(int pico, int fermi){
 	int sendrc,i;
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html><body OnLoad=\"document.mf.G.focus();\">"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><h1>Olduino 1802 BAGELS Server 2.1</h1></center>";
+						"<center><h1>Olduino 1802 BAGELS Server 2.2</h1></center>";
 	static unsigned char gform[]="<p><form name=\"mf\" method=\"GET\">\r\n"
 						"<input type=\"text\" name=\"G\">"
 						"<input type=\"submit\" value=\"Enter Your Guess\">\r\n"
@@ -203,7 +204,7 @@ void handlesession(){	//handle a session once it's established
 void main(void){
 	unsigned char socket0status;
     unsigned char ip_addr[] = {192,168,1,182};//{169,254,180,2};//{10,0,0,180};//
-    printf("Olduino 1802 BAGELS Server 2.1\n");
+    printf("Olduino 1802 BAGELS Server 2.2\n");
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
