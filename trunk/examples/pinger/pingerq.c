@@ -32,7 +32,7 @@ void main()
 {
 	unsigned int pingdist;  //distance to obstace in cm
 	printf("Pinger Mule Here sept 6 \n");
-	while(1){
+	while(0){
 		asm("	seq\n	seq\n	seq\n	seq\n	seq\n"	//extend the pulse to 20 us
 			"	req\n");
 		delay(400); //100 ms delay
