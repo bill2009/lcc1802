@@ -1,6 +1,6 @@
 
 /*****************************************************************************
-//  File Name    : w5500simplest.c
+//  File Name    : w5500simplinst.c
 //  Version      : 1
 //  Description  : Simplest Functional Web Server With Wiznet w5500
 //                 instrumented with diagnostic prints
@@ -8,7 +8,9 @@
 //  Target       : Olduino
 //  Compiler     : LCC1802
 //  Created		 : February, 2014
+//  15-03-09 adding some instrumentation
 *****************************************************************************/
+
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -29,33 +31,54 @@ void sendresp(){
 }
 void handlesession(){
 	unsigned int rsize;
+	unsigned int tries=10;
 	rsize=wizGetCtl16(SnRX_RSR); //get the size of the received data
-	printf("handling session %d\n",rsize);
+	while(rsize==0 && tries-->0){
+		printf("retry rsize ");
+
+		rsize=wizGetCtl16(SnRX_RSR); //retry size of the received data
+		delay(20);
+	}
+	printf("\nhandling session %d\n",rsize);
 	if (rsize>0){
 		sendresp(); //send a response
 		flush(rsize);	//get rid of the received data
 	}
-	printf("disconnecting\n"
+	printf("disconnecting\n");
 	wizCmd(CR_DISCON);
 }
 
 void main(void){
 	unsigned char socket0status;
-    unsigned char ip_addr[] = {10,0,0,182};//{169,254,180,2};
+    unsigned char ip_addr[] = {192,168,1,182};//{10,0,0,182};//{169,254,180,2};
+    unsigned int SFWs=0;
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
 		socket0status=wizGetCtl8(SnSR); //socket 0 status
+		printf("%cx ",socket0status);
 		switch (socket0status){
 			case SOCK_CLOSED: //initial condition
+				SFWs=0;
 				socket0_init();	//initialize socket 0
 				break;
 			case SOCK_ESTABLISHED: //someone wants to talk to the server
+				SFWs=0;
 				handlesession();
 				break;
 			//following are cases where we have to reset and reopen the socket
-			case SOCK_FIN_WAIT: case SOCK_CLOSING: case SOCK_TIME_WAIT:
+			case SOCK_FIN_WAIT:
+				printf("SOCK_FIN_WAIT:");
+				if (++SFWs>2){
+					printf(" lost patience, closing\n");
+					wizCmd(CR_CLOSE);
+				}else{
+					printf(" ignoring\n");
+				}
+				break;
+			case SOCK_CLOSING: case SOCK_TIME_WAIT:
 			case SOCK_CLOSE_WAIT: case SOCK_LAST_ACK:
+				SFWs=0;
 				wizCmd(CR_CLOSE);
 				break;
 		}
