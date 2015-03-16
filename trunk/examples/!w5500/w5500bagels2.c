@@ -154,10 +154,9 @@ void bagelsturn(){
 	int i, /*ipslot,*/ pico=0, fermi=0;
 	thisipslot=getipslot(thisip);
 	ipturns[thisipslot]++; //count the turn
-	printf("IP: %d.%d.%d.%d,slot %d,secret %s\n",
+	printf("Guess: %d.%d.%d.%d,slot %d,secret %s\n",
 		thisip.c[0],thisip.c[1],thisip.c[2],thisip.c[3],thisipslot,secrets[thisipslot]);
 	strcpy((char*)secret,(char*)secrets[thisipslot]);
-	printf("got a guess\n");
 	cpyguess(guess,buf+8);
 	for (i=0;i<3;i++){
 		if (guess[i]==secret[i]){
@@ -176,7 +175,7 @@ void handlesession(){	//handle a session once it's established
 	rsize=wizGetCtl16(SnRX_RSR); printf("**rsz=%d\n",rsize);
 	if (rsize>0){
 		thisip.l=getip();
-		if (recv0(buf,min(24,rsize))>0){ //get enough characters to distinguish the request
+		if (recv0(buf,min(64,rsize))>0){ //get enough characters to distinguish the request
 			printf("%s\n",buf);
   			if (strncmp((char *)buf,"POST /",6)==0){
   				bagelsinit(); //initialize game, send the form
@@ -196,6 +195,7 @@ void handlesession(){	//handle a session once it's established
 			}
 		}
 	}
+	printf("flushing %d\n",rsize);
   	if (rsize>0) flush(rsize);	//get rid of the received data
 	wizCmd(CR_DISCON);// Disconnect the connection- we're done here
 	printf("done\n>\n");
