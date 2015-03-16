@@ -1,7 +1,8 @@
+//15-03-16 corrected method=PUT to POST, version 1.2
 	static unsigned char hdr1a[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" //beginning of header
 						"<html><body OnLoad=\"document.mf.G.focus();\">"
 						"<span style=\"color:#0000A0\">\r\n"
-						"<center><b>OLDUINO 1802 DOUGHNUTS SERVER 1.1</b>"
+						"<center><b>OLDUINO 1802 DOUGHNUTS SERVER 1.2</b>"
 						"<br>(";
 	static unsigned char hdr1b[]=" pages served)" //end of header
 						"</center>"
@@ -26,7 +27,7 @@
 						"</form>";
 	static unsigned char trlr[]="</body></html>\r\n\r\n";
 
-	static unsigned char pform[]="<p><form method=\"PUT\">\r\n"
+	static unsigned char pform[]="<p><form method=\"POST\">\r\n"
 						"<input type=\"submit\" value=\"Press To Play Again\">\r\n"
 						"</form>";
 
