@@ -9,6 +9,7 @@
 //  Created		 : Mar 12, 2015
 *****************************************************************************/
 //15-03-13 created based on bagels3 with change to doughnuts
+//15-03-16 fixed logic error in response analysis
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -206,11 +207,11 @@ void handlesession(){	//handle a session once it's established
   			else if (strncmp((char *)buf,"GET /?G=",8)==0){
 				bagelsturn();	//give player his turn
 			}
-  			else if (strncmp((char *)buf,"GET /?G=",8)==0){
-				bagelsturn();	//give player his turn
-			}
   			else if (strncmp((char *)buf,"GET /T",6)==0){
  				bagelspeek(); //show the IP table
+			}
+  			else if (strncmp((char *)buf,"GET /",5)==0){
+ 				bagelsinit(0); //initialize game, send the form
 			}
   			else{
 				printf("\nmystery meat\n");
@@ -229,7 +230,7 @@ void main(void){
 	unsigned char socket0status;
     unsigned char ip_addr[] = {192,168,1,182};//{169,254,180,2};//{10,0,0,180};//
     unsigned int SFWs=0; //count of times we've seen SOCK_FIN_WAIT
-    printf("Olduino 1802 Doughnuts Server 1.1\n");
+    printf("Olduino 1802 Doughnuts Server 1.2\n");
 	delay(500);
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
