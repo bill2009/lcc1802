@@ -9,6 +9,8 @@ _dubdab16fo:
 ;r15.0 is bit count(32) and the return value register
 ;r9.0 is digit count
 ;15-03-06 first optimization prep - need to run both shift and pre-check backwards.
+;15-03-07 added master loop/local loop counters
+;15-03-08 cleaned up loop around pre-check
 	cpy2 r8,r13 ;buffer address
 	pushr r7 ;make r7 avail as master loop counter;mlc
 	ldi 1	;mlc
@@ -41,11 +43,10 @@ $$bitloop:
 	glo r7	;mlc
 	shr	;mlc
 	shr	;mlc
+	bz $$noincmlc ;no precheck required for first few passes
 	plo r9
 	cpy2 r8,r14 ;point past the units digit
 $$dcklp:
-	glo r9	;mlc
-	bz $$pastpc ;mlc
 	dec r8
 	ldn r8 	;pick up a digit
 	smi 5	;see if it's greater than 4
@@ -54,7 +55,8 @@ $$dcklp:
 	str r8	;put it back
 $$dnoadd:
 	dec r9	;decrement digit count
-	br $$dcklp ;and back for next digit
+	glo r9
+	bnz $$dcklp ;and back for next digit if necessary
 $$pastpc:
 	bnf $$noincmlc;mlc -- this is an attempt to increment the mlc only if we pre-correct the most significant digit
 	inc r7;mlc
