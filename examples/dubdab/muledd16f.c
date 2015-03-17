@@ -24,10 +24,14 @@ unsigned int ui=255;
 int n=42;
 char buf[7];
 printf("dubdab16f mule\n");
-printf("%s\n",dubdab16fo(n,buf));
+printf("%d %s\n",32767,itoadd(32767,buf));
 
-	for (n=10;n>=-10;n--){
-		printf("%s\n",itoadd(n,buf));
+	for (n=32767;n>=-32768;n--){
+		printf("%s ",itoadd(n,buf));
+		if(strcmp(itoa(n,buf),itoadd(n,buf))){
+			printf("WWT!\n");
+			while(1);
+		}
 	}
 
 	printf("begin itoa\n");
