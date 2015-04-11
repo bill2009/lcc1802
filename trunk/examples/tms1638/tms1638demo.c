@@ -113,12 +113,12 @@ const unsigned char RCA_DATA[] = {
 }
 void sparkle(){  //just run the leds in sequence
 	static unsigned char pos=3,color=tmsred;
-  		setLED(tmsred,pos);
+  		setLED(tmsgreen,pos);
   		delay(150);
   		setLED(0,pos);
   		delay(150);
   		pos=(pos+1)%8;
-  		setLED(tmsred,pos);
+  		setLED(tmsgreen,pos);
   		delay(150);
   		setLED(0,pos);
   		pos=(pos+1)%8;

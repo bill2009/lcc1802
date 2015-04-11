@@ -10,7 +10,7 @@ by Elecfreaks
 #include <nstdlib.h>
 #define putc(x) out(7,x)
 #include <hspi2.h>
-#include "starmap.h"
+//#include "starmap.h"
 #include "smallfont.h"
 #define LCD_WR    4-3   //clock
 #define LCD_RS    3-3   //data/mosi
