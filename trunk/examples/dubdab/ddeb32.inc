@@ -16,21 +16,6 @@ _ultoa:	;unsigned 32 bit conversion to ascii
 	ldi 0
 	str R15
 	dec R15
-; *** now make sure there is something to convert
-	ghi R12
-	bnz ddeb32cont
-	glo R12
-	bnz ddeb32cont
-	ghi R13
-	bnz ddeb32cont
-	glo R13
-	smi 9	;if input is 9 or less there's no need to double dabble
-	bdf ddeb32cont ; input is >9, go convert
-	glo R13	;get it back
-	ori '0' ;make it ascii
-	str R15 ;put it in the buffer
-	cretn ;return to caller, all done for small numbers
-ddeb32cont:
 ; *** store binary number on stack and leave address in R8
 	pushf R13
 	pushl R12
@@ -41,7 +26,7 @@ ddeb32cont:
                 PLO     R10
 ; *** Here the buffer is prepped, R15 points to the end of it
 ;     sp points to the binary number to convert and R10.0 has the bit count
-; *** coredd: is the entry point for all uses of the routine
+; *** DDCORE: is the entry point for all uses of the routine
 DDCORE:		 
 ; -----------------
 ; *** HIGH R9 = BYTE OF BINARY NUMBER
@@ -52,7 +37,11 @@ DOMORE:         LDA     R8		;pick up next byte of binary number and release tthe
                 GLO     R10           ;GET SHIFT COUNT
                 SMI     8            ;SUBTRACT ONE BYTE OF 8 BITS
                 PLO     R10           ;PUT BACK SHIFT COUNT
-                BR      DOMORE       ;GET ANOTHER BINARY BYTE
+                bnz     DOMORE       ;GET ANOTHER BINARY BYTE (unless the whole thing was 0)
+                str	R15		;make the bottom bcd digit 0
+                ldi	1
+                plo	R14		;set number of digits to 1
+                br	asciize		;go convert to ascii and return to caller
 ; -----------------
 ; *** RELOAD BINARY BYTE -- RESET COUNT TO 8
 NOMORE:         PHI     R9
