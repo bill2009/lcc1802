@@ -10,6 +10,24 @@
 ; R14 - LOW BYTE STORES ACTIVE BCD DIGIT COUNT
 ; R14 - HIGH BYTE SAVES CARRY VALUE (DF)
 ; **********************************
+_uitoa:	;unsigned 16 bit binary to ascii conversion
+	ldax R15,R13,6	;point r15 to end of supplied buffer
+	ldi 0		;0
+	str R15		;terminate the result buffer
+	dec R15		;point to the units position
+	pushr R12	;save our 2 byte number
+	cpy2 R8,sp	;point to the work area
+	reserve 2	;dec the stack pointer twice more to synch with 32 bit cleanup
+; -----------------
+; *** SET BINARY BIT COUNT IN LOW BYTE OF R10
+                LDI     16           ;LOWER R10 = TOTAL BIT COUNT
+                PLO     R10
+; -----------------
+; *** COUNTER FOR UPPER BYTES
+                LDI     1
+                PLO     R13
+	br ddcore	;go do the core conversion
+	
 _ultoa:	;unsigned 32 bit conversion to ascii
 	ld2 R15,'O',sp,(2+4); pick up the buffer pointer
 	ldax R15,R15,11	;point to end of buffer for terminating 0
@@ -20,9 +38,6 @@ _ultoa:	;unsigned 32 bit conversion to ascii
 	pushf R13
 	pushl R12
 	cpy2 R8,SP
-; *** start X=R12 pointing at units position of bcd number
-	cpy2 R12,R15
-	sex R12
 ; -----------------
 ; *** SET BINARY BIT COUNT IN LOW BYTE OF R10
                 LDI     32           ;LOWER R10 = TOTAL BIT COUNT
@@ -36,6 +51,9 @@ _ultoa:	;unsigned 32 bit conversion to ascii
 ;     R13.0 has a count of the upper bytes of the binary number
 ; *** DDCORE: is the entry point for all uses of the routine
 DDCORE:		 
+; *** start X=R12 pointing at units position of bcd number
+	cpy2 R12,R15
+	sex R12
 ; -----------------
 ; *** HIGH R9 = BYTE OF BINARY NUMBER
 DOMORE:         LDA     R8		;pick up next byte of binary number
