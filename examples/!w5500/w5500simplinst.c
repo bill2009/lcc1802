@@ -10,7 +10,7 @@
 //  Created		 : February, 2014
 //  15-03-09 adding some instrumentation
 *****************************************************************************/
-
+//15-04-21 change discon to close, reduce main loop delay to 10ms
 #include <nstdlib.h> //for printf etc.
 #include <cpu1802spd4port7.h> //defines processor type, speed, and host port
 #include <olduino.h> //for digitalRead, digitalWrite, delay
@@ -39,23 +39,24 @@ void handlesession(){
 	unsigned int rsize;
 	unsigned int tries=10;
 	rsize=wizGetCtl16(SnRX_RSR); //get the size of the received data
+	printf("SSN %d\n",rsize);
+	thisip.l=getip();
+	printf("IP: %d.%d.%d.%d\n",
+		thisip.c[0],thisip.c[1],thisip.c[2],thisip.c[3]);
 	while(rsize==0 && tries-->0){
 		printf("retry rsize ");
 
 		rsize=wizGetCtl16(SnRX_RSR); //retry size of the received data
 		delay(20);
 	}
-	thisip.l=getip();
-	printf("\nIP: %d.%d.%d.%d ",
-		thisip.c[0],thisip.c[1],thisip.c[2],thisip.c[3]);
 
-	printf(" handling session %d\n",rsize);
+	if (tries<10) printf(" %d\n",rsize);
 	if (rsize>0){
 		sendresp(); //send a response
 		flush(rsize);	//get rid of the received data
 	}
-	printf("disconnecting\n");
-	wizCmd(CR_DISCON);
+	printf("closing\n");
+	wizCmd(CR_CLOSE);//was CR_DISCON
 }
 
 void main(void){
@@ -78,7 +79,7 @@ void main(void){
 				break;
 			//following are cases where we have to reset and reopen the socket
 			case SOCK_FIN_WAIT:
-			//	printf("SOCK_FIN_WAIT:");
+				printf("SOCK_FIN_WAIT:");
 			//	if (++SFWs>2){
 			//		printf(" lost patience, closing\n");
 			//		wizCmd(CR_CLOSE);
@@ -92,7 +93,7 @@ void main(void){
 				wizCmd(CR_CLOSE);
 				break;
 		}
-		delay(100);
+		delay(10);
 	}
 }
 #include <olduino.c>
