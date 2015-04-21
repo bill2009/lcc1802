@@ -20,6 +20,12 @@
 #include "w5500simplestcode.h"  //wiznet code definitions
 #define MAX_BUF 512
 unsigned char buf[MAX_BUF];			//memory buffer for incoming & outgoing data
+union IPaddr thisip={182};
+long getip(){ //retrieve the requester's ip and return it as a long
+	union IPaddr thisip;
+	wizRead(SnDIPR,WIZNET_READ_S0R,thisip.c,4);
+	return thisip.l;
+}
 void sendresp(){
 	static unsigned char hdr1[]="HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n"
 						"<html>"
@@ -39,7 +45,11 @@ void handlesession(){
 		rsize=wizGetCtl16(SnRX_RSR); //retry size of the received data
 		delay(20);
 	}
-	printf("\nhandling session %d\n",rsize);
+	thisip.l=getip();
+	printf("\nIP: %d.%d.%d.%d ",
+		thisip.c[0],thisip.c[1],thisip.c[2],thisip.c[3]);
+
+	printf(" handling session %d\n",rsize);
 	if (rsize>0){
 		sendresp(); //send a response
 		flush(rsize);	//get rid of the received data
@@ -56,7 +66,7 @@ void main(void){
     wiz_Init(ip_addr); //initialize the wiznet chip
 	while(1){  // Loop forever
 		socket0status=wizGetCtl8(SnSR); //socket 0 status
-		printf("%cx ",socket0status);
+		//printf("%cx ",socket0status);
 		switch (socket0status){
 			case SOCK_CLOSED: //initial condition
 				SFWs=0;
@@ -68,14 +78,14 @@ void main(void){
 				break;
 			//following are cases where we have to reset and reopen the socket
 			case SOCK_FIN_WAIT:
-				printf("SOCK_FIN_WAIT:");
-				if (++SFWs>2){
-					printf(" lost patience, closing\n");
-					wizCmd(CR_CLOSE);
-				}else{
-					printf(" ignoring\n");
-				}
-				break;
+			//	printf("SOCK_FIN_WAIT:");
+			//	if (++SFWs>2){
+			//		printf(" lost patience, closing\n");
+			//		wizCmd(CR_CLOSE);
+			//	}else{
+			//		printf(" ignoring\n");
+			//	}
+			//	break;
 			case SOCK_CLOSING: case SOCK_TIME_WAIT:
 			case SOCK_CLOSE_WAIT: case SOCK_LAST_ACK:
 				SFWs=0;
