@@ -1,16 +1,18 @@
 //olduino carbot simple version Jan 24, 2015
-//
+//15-04-26 using <> version of cpu1802spd4port7.h
+//15-04-29 cruising speed increased, left turn now 5 ms
 #include <olduino.h>
 #include <nstdlib.h> //supports c d s x l cx
-#include "cpu1802spd4port7.h"
+#include <cpu1802spd4port7.h>
 #include "softpwm.h"
 #include "carbot.h"
 #include "pingBN.h"
 unsigned int wdist,oldwdist, fprox; // distance to wall on right current & previous, proximity of barrier in front
 #define maxfprox 160 //max front barrier proximity
-#define minwdist 30 //min right barrier dist
-#define basespeed 192
-#define lowspeed 32
+#define maxwdist 30 //min right barrier dist
+#define minwdist 25 //min right barrier dist
+#define basespeed 255	//was 192
+#define lowspeed 64	//was 32
 unsigned int sharpy(){  //reads the Sharp GP2D12 IR rangefinder via the MCP3002 ADC, returns raw ADC value
 	asm("	dec	sp\n" //make a work area
 		"	sex 3\n"	//set x to pc
@@ -29,13 +31,13 @@ void killdrive(){//stops both motors
 	digitalWrite(pwmb,LOW);//kill power right
 	digitalWrite(pwma,LOW);//kill power left
 }
-void hardleft(){//60 ms turn with left wheel running backwards
+void hardleft(){//5 ms turn with left wheel running backwards
 	printf("L>\n");
 	digitalWrite(pwmb,HIGH);//full power right
 	digitalWrite(pwma,HIGH);//full power left
 	digitalWrite(bin1,HIGH); digitalWrite(bin2,LOW);
 	digitalWrite(ain1,LOW); digitalWrite(ain2,HIGH); //reverse left wheel
-	delay(60);
+	delay(1); //nominal delay only
 }
 
 void tooclose(){ //if we are closer than minwdist to the wall on our right side
@@ -58,14 +60,22 @@ void toofar(){//if we are further than minwdist from the wall on our right side
 		printf(" wvrt ");
     }
 }
+
+void inthezone(){ //if we are between minwdist and maxwdist
+	analogWrite(pwma,basespeed);analogWrite(pwmb,basespeed); //proceed
+	printf(" wf-3 ");
+}
+
 void cruiseAlongWall(){
 	if (0!=wdist) oldwdist=wdist; //track the wall distance after the first time
 	wdist=pingQ()/2; //get the wall distance in cm
 	printf("cw %d\n",wdist);
 	if (wdist<minwdist){
 		tooclose();
-	}else{
+	}else if (wdist>maxwdist){
 		toofar();
+	}else{
+		inthezone();
 	}
 	//the routines above will have set the motor power levels, now we activate them
 	digitalWrite(bin1,HIGH); digitalWrite(bin2,LOW);
@@ -75,10 +85,10 @@ void cruiseAlongWall(){
 
 void main(){
 	unsigned int ttl=300; //time to live limit,
-	printf("Simpler Panopticon Carbot O-carbotS1.c\n");
+	printf("Simpler Panopticon Carbot(L=1,B=255,S=64,min/max=25/30) O-carbotS1.c\n");
 	PIN4=0x80;out(4,0x80);
 	while(ttl!=00){
-		printf("@ %d:",ttl);
+		printf("@%d:",ttl);
 		digitalWrite(7,LOW);fprox=sharpy(); digitalWrite(7,HIGH);
 		printf("<%d ",fprox);
 		if (fprox<maxfprox){ // more than 1 ft from barrier
