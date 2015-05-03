@@ -4,7 +4,7 @@ char * dubdab16(int, char *);
 char * dubdab16v(int, char *);
 void inc(){
 	asm("\tinclude dd16.inc\n");
-	asm("\tinclude dd16v.inc\n");
+	asm("\tinclude dd16v120.inc\n");
 }
 
 char * itoavd(int s, char *buffer){ //convert an integer to printable ascii in a buffer supplied by the caller
@@ -22,8 +22,9 @@ void main(){
 unsigned int ui=255;
 int n=42;
 char buf[7],bufv[7];
-//dubdab16(12345,buf);
+dubdab16v(12345,buf);
 dubdab16v(192,bufv);
+dubdab16v(0,bufv);
 //dubdab16fo(12345,buf);
 printf("dubdab16v mule\n");
 //printf("%d %s\n",32767,itoavd(32767,buf));
