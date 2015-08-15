@@ -93,11 +93,10 @@ void cruiseAlongWall(){
 void main(){
 	unsigned int ttl=300; //time to live limit,
 	printf("Carbot O-carbotS1-15-08-15.c with deliberate reverse at end of turn \n");
-	printf("maxfprox %d, minwdist %d\n",maxfprox,minwdist);
-	printf("basespeed %d, lowspeed %d\n",basespeed,lowspeed);
-	printf("leftdelay %d, cruisecycles %d\n",leftdelay,cruisecycles);
+	//printf("maxfprox %d, minwdist %d\n",maxfprox,minwdist);
+	//printf("basespeed %d, lowspeed %d\n",basespeed,lowspeed);
+	//printf("leftdelay %d, cruisecycles %d\n",basespeed,lowspeed,leftdelay,cruisecycles);
 	printf("no chatter\n");
-while(1);
 	PIN4=0x80;out(4,0x80);
 	while(ttl!=00){
 		//printf("@ %d:",ttl);
@@ -117,49 +116,3 @@ while(1);
 #include <nstdlib.c>
 #include "softpwm.c"
 #include "pingBN.c"
-/* noon trial - turned a bit too far
-@ 267:<191 L>
-11:54:50.198> @ 266:<195 L>
-11:54:50.307> @ 265:<207 L>
-11:54:50.432> @ 264:<211 L>
-11:54:50.432> @ 263:<202 L>
-11:54:50.619> @ 262:<173 L>
-** 5 cycles 420 ms
-
-Later on test stand, no motor
-13:49:28.815> @ 300:<260 L>
-13:49:28.815> @ 299:<261 L>
-13:49:28.815> @ 298:<260 L>
-13:49:29.064> @ 297:<257 L>
-13:49:29.064> @ 296:<259 L>
-13:49:29.064> @ 295:<257 L>
-13:49:29.064> @ 294:<264 L>
-13:49:29.283> @ 293:<259 L>
-**8 cycles 500 ms
-
-Later on test stand WITH motor and some free run lead in
-13:57:41.088> @ 262:223 L>
-13:57:41.088> @ 261:<224 L>
-13:57:41.229> @ 260:<234 L>
-13:57:41.229> @ 259:<247 L>
-13:57:41.354> @ 258:<143 F>
-**5 cycles 250 ms
-
-Later on test stand witn NO motor and some free run lead in
-14:01:19.832>  wvlft @ 280:<229 L>
-14:01:19.894> @ 279:<260 L>
-14:01:20.019> @ 278:<283 L>
-14:01:20.081> @ 277:<283 L>
-14:01:20.144> @ 276:<282 L>
-14:01:20.222> @ 275:<286 L>
-**5 cycles in 330 ms
-
-
-No ttl print
-14:09:26.021> <165 L>
-14:09:26.021> <180 L>
-14:09:26.099> <177 L>
-14:09:26.146> <183 L>
-14:09:26.208> <175 L>
-**5 cycles 190 ms
-*/
