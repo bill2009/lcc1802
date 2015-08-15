@@ -26,6 +26,19 @@ unsigned int sharp2(){//read the sensor twice and return the lower reading to ig
 	digitalWrite(7,LOW);fprox2=sharpy(); digitalWrite(7,HIGH);
 	return min(fprox1,fprox2);
 }
+void killdrive(){//stops both motors
+	digitalWrite(pwmb,LOW);//kill power right
+	digitalWrite(pwma,LOW);//kill power left
+}
+void turn(unsigned int howlong){
+		digitalWrite(pwmb,HIGH);//full power right
+		digitalWrite(pwma,HIGH);//full power left
+		digitalWrite(bin1,HIGH); digitalWrite(bin2,LOW);
+		digitalWrite(ain1,LOW); digitalWrite(ain2,HIGH); //reverse left wheel
+		delay(howlong);
+		digitalWrite(pwmb,LOW);//kill power right
+		digitalWrite(pwma,LOW);//kill power left
+}
 void main(){
 	unsigned int fprox=0,ttl=5;
 	printf("Carbot Turn Mule maxfprof=%d ttl=%d\n",fprox,ttl);
@@ -34,18 +47,24 @@ void main(){
 	fprox=sharp2();
 	while(fprox<maxfprox){
 		fprox=sharp2();
-
 	}
 	asm(" seq\n");
-	digitalWrite(pwmb,HIGH);//full power right
-	digitalWrite(pwma,HIGH);//full power left
-	digitalWrite(bin1,HIGH); digitalWrite(bin2,LOW);
-	digitalWrite(ain1,LOW); digitalWrite(ain2,HIGH); //reverse left wheel
+	turn(5);
+	//delay(5);
 	fprox=sharp2();
-	while(fprox>=(maxfprox+10)){
+	while(fprox>=(maxfprox-50)){
+		turn(5);
+		//delay(5);
 		fprox=sharp2();
 	}
 	asm(" req\n");
+	//following is an attempt to stop dead by briefly reversing the motors
+		digitalWrite(ain1,HIGH); digitalWrite(ain2,LOW);
+		digitalWrite(bin1,LOW); digitalWrite(bin2,HIGH);
+		digitalWrite(pwmb,HIGH);//full power right
+		digitalWrite(pwma,HIGH);//full power left
+		delay(5);
+
 	PIN4=0;out(4,0); //kill it all
   }
 }
