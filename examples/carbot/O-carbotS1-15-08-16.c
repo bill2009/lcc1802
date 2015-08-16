@@ -10,8 +10,8 @@ unsigned int wdist,oldwdist, fprox; // distance to wall on right current & previ
 #define maxfprox 200 //max front barrier proximity
 #define clearfprox 150 //indicates the road ahead is clear
 #define minwdist 30 //min right barrier dist
-#define basespeed 128
-#define lowspeed 0
+#define basespeed 192 //128/0/15 worked fairly well but slow
+#define lowspeed 16
 #define leftdelay 5
 #define cruisecycles 15
 
