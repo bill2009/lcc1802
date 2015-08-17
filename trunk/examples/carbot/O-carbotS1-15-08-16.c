@@ -1,5 +1,6 @@
 //olduino carbot with sharp front sensor
 //Trying lessons from the mule: sharp reverse at end of turn, no chatter, double call to sharpy
+//fairly successful
 #include <olduino.h>
 #include <nstdlib.h> //supports c d s x l cx
 #include "cpu1802spd4port7.h"
