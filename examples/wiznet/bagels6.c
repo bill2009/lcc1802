@@ -14,6 +14,7 @@
 //14-07-18 refactoring, using wizcode.h and .c
 //14-07-21 bagels5.c bringing in iptable for multiple players
 //14-10-12 trying OnLoad in body tag to give focus to text field
+//15-04-21 retrying 0 size
 #define	nofloats			//not using floating point
 #include <nstdlib.h> //for printf etc.
 #define putc(x) out(7,x)
@@ -157,8 +158,15 @@ void bagelsturn(){
 	sendrespform(pico, fermi);
 }
 void handlesession(){	//handle a session once it's established
-	unsigned int rsize,strncmpval;
+	unsigned int rsize,strncmpval,tries=10;
 	rsize=recv_size(); printf("**rsz=%d\n",rsize);
+	while(rsize==0 && tries-->0){
+		printf("re-size ");
+
+		rsize=recv_size(); //retry size of the received data
+		delay(20);
+	}
+	printf("**rsz=%d\n",rsize);
 	if (rsize>0){
 		thisip.l=getip();
 		if (recv0(buf,min(24,rsize))>0){ //get enough characters to distinguish the request
@@ -189,7 +197,7 @@ void handlesession(){	//handle a session once it's established
 
 void main(void){
 	int socket0status;
-    unsigned char ip_addr[] = {10,0,0,180};//{169,254,180,2}; //{192,168,0,182}; //
+    unsigned char ip_addr[] = {192,168,1,182};//{169,254,180,2}; //{192,168,0,182}; //
 	delay(100);
 	printf("\nOlduino Bagels Server V5\n");
     wiz_Init(ip_addr); //initialize the wiznet chip
@@ -210,7 +218,7 @@ void main(void){
 				break;
 		}
 		tbrnd();//keep the random number generator cycling
-		delay(100);
+		delay(1);
 	}
 }
 #include <olduino.c>
