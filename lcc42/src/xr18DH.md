@@ -40,6 +40,7 @@
  * Oct 19 experimenting with stmt: EQI2(CVUI2(INDIRU1(indaddr)),CVUI2(INDIRU1(indaddr))) "surely not %0,%1,%a\n" 0
  * Oct 23 redecorating ASGNI2(addr,reg)/U2/P2 so the same peephole rule picks them up
  * Dec 23 removing *s from loadx2(reg) so a common rule can pick them up
+ * Nov 12 2016 fixing case of epilog& prolog.inc file names
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -590,9 +591,9 @@ stmt: IASMV                 "# emit inline assembly\n"
 
 %%
 static void progend(void){
-		print(	"\tinclude lcc1802EpiloDH.inc\n");
+		print(	"\tinclude lcc1802epiloDH.inc\n");
 		if (wjrfloats){
-			print("\tinclude LCC1802fp.inc\n");
+			print("\tinclude LCC1802FP.inc\n");
 		}
 		print("\tinclude IO1802.inc\n");
 
@@ -628,7 +629,7 @@ static void progbeg(int argc, char *argv[]) {
         printf("SP:\tequ	%d ;stack pointer\n" "memAddr: equ	%d\n" "retAddr: equ	%d\n" //pass on reg definitions to assembler
         	"retVal:\tequ\t%d\n" "regArg1: equ	%d\n" "regArg2: equ	%d\n",
         	reg_sp_actual,REG_MEMADDR,REG_RETADDR,REG_RETVAL,REG_FIRST_ARG,REG_FIRST_ARG+1);
-	print("\tlisting off\n" "\tinclude lcc1802ProloDH.inc\n" "\tlisting on\n");//include the macro package but turn off the listing for now
+	print("\tlisting off\n" "\tinclude lcc1802proloDH.inc\n" "\tlisting on\n");//include the macro package but turn off the listing for now
 		
 
         for (i = 0; i < NUM_IREGS; i++)
