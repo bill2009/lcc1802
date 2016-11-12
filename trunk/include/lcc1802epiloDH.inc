@@ -14,11 +14,16 @@
 ;april 4 adding digit count argument to dubdabx
 ;Oct 2, 2013 redoing mulu2 for faster results with small arg1 - dhrystone
 ;oct 12 divu2 redone for faster perf on small numbers, remainder now in regarg1 - modu2/modi2 changed to match
+;16-09-20 allow stack relocation 
 rwork	equ	memAddr	;work register
 lcc1802init:	
 	ldiReg	RCALL,_call
 	ldiReg	RRET,_return
-	ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1
+  IFNDEF  LCCSTACKLOC		;wjr 16-09-20 allow stack relocation
+	ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
+  ELSEIF				;wjr 16-09-20
+	ldiReg	SP,LCCSTACKLOC	;wjr 16-09-20 start stack as specified
+  ENDIF				;wjr 16-09-20
 	sex	SP
 	ldiReg	RPC,$$_00000
 	sep	RPC
