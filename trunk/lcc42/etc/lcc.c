@@ -118,7 +118,7 @@ main(int argc, char *argv[]) {
 				outfile = argv[i];
 				continue;
 			} else {
-				fprintf(stderr,"unrecognized option `%s' with i at %d of &d\n", argv[i-1],i,argc); //wjr debug
+				fprintf(stderr,"unrecognized option `%s' with i at %d of %d\n", argv[i-1],i,argc); //wjr debug
 				error("unrecognized option `%s'", argv[i-1]);
 				exit(8);
 			}
@@ -226,7 +226,7 @@ char *basepath(char *name) {
 #define _P_WAIT 0
 extern int fork(void);
 extern int wait(int *);
-extern void execv(const char *, char *[]);
+extern int execv(const char *, char *[]);//wjr 16-11-15
 
 static int _spawnvp(int mode, const char *cmdname, const char *const argv[]) {
 	int pid, n, status;
