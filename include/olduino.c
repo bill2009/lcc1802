@@ -12,7 +12,7 @@ void delay(unsigned int howlong){
 }
 void olduinoincluder(){
 	asm("\tinclude olduino.inc\n");
-#ifndef __CPUSPEED4
+#ifdef __CPUSPEED4
 	asm("LCC1802CPUSPEED set 4000000"); //for 4mhz 1802
 #endif
 }
