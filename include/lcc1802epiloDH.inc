@@ -15,6 +15,7 @@
 ;Oct 2, 2013 redoing mulu2 for faster results with small arg1 - dhrystone
 ;oct 12 divu2 redone for faster perf on small numbers, remainder now in regarg1 - modu2/modi2 changed to match
 ;16-09-20 allow stack relocation 
+;16-11-26 calculate onems delay from cpu speed in LCC1802CPUSPEED
 rwork	equ	memAddr	;work register
 lcc1802init:	
 	ldiReg	RCALL,_call
@@ -99,8 +100,15 @@ _return	glo	retAddr	;transfer the current return address to RPC
 	plo	retAddr
 	br	_return-1
 
-_oneMs:		;execute 100 instructions including call(15)/return(10) sequence. takes about 1 ms
-	ldi	(100-15-10-2)/2
+_oneMs:		;execute 1ms worth of instructions including call(15)/return(10) sequence. takes about 1 ms
+;subroutine overhead soaks up 27 instruction time.
+;each loop is 2 instruction times
+;so the number of loops needed is 
+;CPU speed/16000 less the 27 all divide by two
+	IFNDEF	LCC1802CPUSPEED
+LCC1802CPUSPEED EQU 1600000	;1.6MHZ default
+	ENDIF
+	ldi	(LCC1802CPUSPEED/1000/16-15-10-2)/2
 $$mslp:	smi	1
 	bnz	$$mslp
 	Cretn
