@@ -950,7 +950,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                 }
         }
         assert(!caller[i]);
-        offset = 2; //wjr jan 8 allow for spot taken br saved return address
+        offset = 2; //wjr jan 8 allow for spot taken by saved return address
         gencode(caller, callee);  //while generating the dag tree, gencode will set offsets for locals,
         			//count calls in ncalls and mark what registers are used in usedmask
         usedmask[IREG] &= INT_CALLEE_SAVE;	//limit regs to be saved to those the callee is responsible for (basically the variables)
@@ -965,7 +965,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                 + sizefsave + sizeisave 	//the float and int reg save areas,
                 + roundup(maxoffset, 2);       		// and the area for locals
         printf("%s:\t\t;framesize=%d\n", f->x.name,framesize); //wjr june 27 2013
-	printf("\tadjspfor1806 ;adjust SP for 1806 SCAL kludge\n"); 
+	printf("\tcentry6 ;adjust SP for 1806 SCAL kludge\n"); 
         if (framesize > 2) { 
         		if (0!=(usedmask[IREG]+usedmask[FREG])){  //if there are regs to save
         			if (roundup(maxoffset,2)>2){
@@ -1058,7 +1058,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
                 print("\trelease %d\n", framesize-2); //wjr jan 14 - release the stack frame 
         }
  */
-        print("\tCretn\n\n");
+        print("\tCretn6\n\n");
 }
 static void defconst(int suffix, int size, Value v) {
         if (suffix == F && size == 4) {
