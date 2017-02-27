@@ -26,6 +26,11 @@
 ;oct 4,	added st2i 2 byte immediate sore, pushf,pushm,pushl sequences, 
 ;oct 24, added ldaXs for stack pointed addresses, added mvcn1, mvc1 for 1 byte storage to storage moves, jneu1i for single byte immediate compare
 ;Feb 17 2014 added "inc sp" to restore stack pointer in jeqI1, affected strncmp.
+;Feb 18 2017 added org to LCCCODELOC to allow for non-zero origin
+  IFDEF  LCCCODELOC		;wjr 17-02-18 allow code relocation
+	org	LCCCODELOC	;wjr 17-02-18 allow code relocation
+  ENDIF				;wjr 17-02-18
+
 R0:	equ	0
 R1:	equ	1
 R2:	equ	2
