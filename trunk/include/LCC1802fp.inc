@@ -1,3 +1,4 @@
+;17-03-06 changing sep rret to cretn, sep rcall to ccall
 ;from http://www.elf-emulation.com/software/fp.asm - thanks to mike Reilley
 ;maybe originally from RCA
 ;these routines use ALL the registers from 6-15!
@@ -122,7 +123,7 @@ passes:    smi     0                   ; signal success
            lskp
 fails:     adi     0                   ; signal failure
            glo     r14                 ; recover character
-           sep     RRET                ; and return; *******************************
+           cretn	                ; and return; ******************************* 17-03-06
 ; *** Shift R8:F9 right 1 bit ***
 ; *******************************
 fp_shr_1:  ghi   r8                    ; shift high word right
@@ -154,7 +155,7 @@ fp_shl_1:  glo   F9
            ghi   r8
            shlc
            phi   r8
-           sep   RRET
+           cretn	;17-03-06
 
 ; **********************
 ; *** R8:F9 += RA:FB ***
@@ -253,7 +254,7 @@ fp_getexp: glo   r8                    ; get exponent of arg1 (bit 0)
            ghi   R10                    ; get top 7 bits
            shlc                        ; shift in first bit
            plo   R15                    ; put into RF
-           sep   RRET                  ; return to caller
+           cretn	                  ; return to caller 17-03-06
 
 ; ************************************
 ; *** Get signs from arguments     ***
@@ -628,8 +629,7 @@ div_go:    glo   FB                    ; see if div > man
            glo   F7
            or
            plo   F7
-div_nope:  sep   RCALL                 ; shift quotient right
-           dw    fp_shr_fd
+div_nope:  ccall fp_shr_fd              ; shift quotient right 17-03-06
            ghi   R10                    ; shift divisor right
            shr
            phi   R10
@@ -851,10 +851,8 @@ mul_dn:    irx                         ; recover ct
 mul_lp2:   glo   R12                    ; get ct
            smi   2                     ; see if <2
            lbnf  mul_nxt1              ; jump if so
-           sep   RCALL                 ; shift answer to the right
-           dw    fp_shr_1
-           sep   RCALL                 ; shift resH right
-           dw    fp_shr_fd
+           ccall    fp_shr_1           ; shift answer to the right 17-03-06
+           ccall    fp_shr_fd          ; shift resH right 17-03-06
            lbnf  mul_lp2a              ; jump if no carry into low word
            glo   r8                    ; set high bit
            ori   080h
@@ -973,8 +971,7 @@ atof_lp2:  glo   R12                    ; see if done making bcd
            smi   17
            lbz   atof_dn3              ; jump if so
            ldn   R15                    ; get character
-           sep   RCALL                 ; is it numeric
-           dw    f_isnum
+           ccall    f_isnum                 ; is it numeric
            lbnf  atof_dn3              ; jump if not
            lda   R15                    ; get character
            smi   '0'                   ; converto to binary
