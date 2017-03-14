@@ -11,6 +11,7 @@
 //Sept 29 - adding include for assembly versions of strcpy, strcmp for dhrystone optimization
 //Nov 23 added scungy %cx hack for printing single char as hex.
 //jan 29 - changing out(5,x) to putc(x)
+//Mar 14 2017 inserting conditional NOP's into printstr, printf to slow down on 1806
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -40,7 +41,10 @@ unsigned int strlen(char *str)
    return slen;
 }
 void printstr(char *ptr){
-    while(*ptr) putc(*ptr++); //jan 29
+    while(*ptr){
+		putc(*ptr++); //jan 29
+		asm(" nop1806\n nop1806\n nop1806\n"); //17-03-09
+	}
 }
 #ifndef nofloats
 static const float round_nums[8] = {
@@ -183,6 +187,7 @@ void printf(char *ptr,...){ //limited implementation of printf
 		c=*ptr++;
 		if (c!='%'){
 			putc(c);
+			asm(" nop1806\n nop1806\n nop1806\n"); //17-03-13
 		} else{
 			c=*ptr++;
 			switch (c){
