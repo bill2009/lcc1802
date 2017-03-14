@@ -27,6 +27,7 @@
 ;oct 24, added ldaXs for stack pointed addresses, added mvcn1, mvc1 for 1 byte storage to storage moves, jneu1i for single byte immediate compare
 ;Feb 17 2014 added "inc sp" to restore stack pointer in jeqI1, affected strncmp.
 ;Feb 18 2017 added org to LCCCODELOC to allow for non-zero origin
+;17-03-10 adding nop1806 for forward compatability
   IFDEF  LCCCODELOC		;wjr 17-02-18 allow code relocation
 	org	LCCCODELOC	;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -62,6 +63,12 @@ RPC:	equ 	3 ; standard program counter
 	listing	off
 	macexp off	;this seems to have to go before the definitions
 ;macro definitions
+nop1806: macro	;used to inject no-ops to balance timing with an 1802
+ if MOMCPU=$1805
+	nop	;waste 1.5 instruction times
+ endif
+	endm
+
 jumpv:	macro	addrReg	;jump to an address in a register
 	pushr	r6	;save the real return address
 	cpy2	r6,addrReg	;put the jump address into R6
