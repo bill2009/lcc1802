@@ -1,5 +1,24 @@
 #14-07-22 adding opt6.1
 #15-04-15 disabling opt14 for R0
+#17-01-24 trying to warn on assignment/comparison errors
+	ldaD %1,%2; reg:acon
+	cpy1 %3,%1;LOADU1(reg)
+	jnzU1 %1,%4; NEI2(CVUI2(reg),con0)
+=
+	ldaD %1,%2; reg:acon
+	cpy1 %3,%1;LOADU1(reg)
+	MESSAGE "%l ASSIGNMENT USED AS COMPARISON OPERATOR? - IS THAT WHAT YOU WANTED?"
+	jnzU1 %1,%4; NEI2(CVUI2(reg),con0)
+
+	ld2z %3
+	st2I %1,'O',sp,(%2); ASGNI2(addr,acon)
+	jzU2 %3,%4; EQ 0
+=
+	ld2z %3 
+	st2I %1,'O',sp,(%2); ASGNI2(addr,acon)
+	MESSAGE "ASSIGNMENT USED AS COMPARISON OPERATOR? - IS THAT WHAT YOU WANTED?"
+	jzU2 %3,%4; EQ 0 
+
 	release 0; release room for local variables 
 =
 
