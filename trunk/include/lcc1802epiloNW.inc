@@ -16,10 +16,12 @@
 ;oct 12 divu2 redone for faster perf on small numbers, remainder now in regarg1 - modu2/modi2 changed to match
 ;16-09-20 allow stack relocation 
 ;16-11-26 calculate onems delay from cpu speed in LCC1802CPUSPEED
+;17-03-07 adjusting stack offset for 1805/6 stack discipline
+;17-03-13 protecting work areas in divi2,divi4 routines from 1806 SCAL
 rwork	equ	memAddr	;work register
 lcc1802init:	
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
+	ldiReg	RCALL,$$_die; _call
+	ldiReg	RRET,$$_die; _return
   IFNDEF  LCCSTACKLOC		;wjr 16-09-20 allow stack relocation
 	ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
   ELSEIF				;wjr 16-09-20
@@ -206,7 +208,6 @@ $$again:	;this is the divisor doubling phase
 ;signed integer division retVal=regArg1/regArg2, remainder in regArg1
 ;uses unsigned division of absolute values then negates the quotient if the signs were originally different
 _divI2:
-    ;pushr retAddr	;save the return address NG doesnot need
     dec	sp	;leave a work area available
     ghi regArg1
     str sp	;save the sign of the 1st arg
@@ -222,14 +223,19 @@ $$pos1: ;1st is now +v, check 2nd
     bnf $$pos2	;if the 2nd arg is -v
     negI2 regArg2,regArg2 ;flip it to +v
 $$pos2: ; both args now +v
+ if MOMCPU=$1805
+    dec sp	;protect workarea on the 1802
     Ccall _divU2	;call unsigned division
+    inc sp	;recover work area
+ else
+    Ccall _divU2	;call unsigned division
+ endif 
 ;now the quotient is in retVal and the remainder is in regArg2
     lda	sp ;get back the sign bits and restore SP
     shl
     bnf $$done ;if the signs were different
     negI2 retVal,retVal ;negate the quotient
 $$done:
-    ;popr RetAddr ;restore the return address NG doesnot need
     Cretn ;and we're done - I hope!
 
 
@@ -327,7 +333,13 @@ $$pos1: ;1st is now +v, check 2nd
     bnf $$pos2	;if the 2nd arg is -v
     negI4 RL10,RL10 ;flip it to +v
 $$pos2: ; both args now +v
+ if MOMCPU=$1805
+    dec sp	;protect workarea on the 1802
     Ccall _divU4	;call unsigned division
+    inc sp	;recover work area
+ else
+    Ccall _divU4	;call unsigned division
+ endif 
 ;now the quotient is in RL8 and the remainder is in Rp1p2
     lda	sp ;get back the sign bits and restore SP
     shl
@@ -340,15 +352,20 @@ _dubdabx:
 ;experimental binay-ascii conversion using the double-dabble algorithm
 ;thanks to Charles Richmond for the suggestion and code
 ;long interger is passed in rp1p2
-;buffer pointer is passed at sp+2+4
+;buffer pointer is passed at sp+2+4**+1 for 1806
 ;a pointer to the 1st non-zero byte in the buffer is passed back in r15
 ;r8-11 are used as temps
 ;r8 is the working pointer
 ;r15.0 is bit count(32) and the return value register
 ;r9.0 is digit count
 ;r10 is the number of digits wanted in the result including leading 0's - 0 means no leading 0's
+ if MOMCPU=$1805
+	ld2 r8,'O',sp,(2+4+1); pick up the buffer pointer
+	ld2 r10,'O',sp,(2+4+2+1); pick up the number of digits wanted
+ else
 	ld2 r8,'O',sp,(2+4); pick up the buffer pointer
 	ld2 r10,'O',sp,(2+4+2); pick up the number of digits wanted
+ endif
 	cpy2 r15,r8 ;save address for now
 	ldi 11	;digit count+1 for trailing 0
 	plo r9
@@ -421,8 +438,11 @@ $$upnxt:
 	dec r9		;counter
 	glo r9
 	bnz $$upnxt	;upgrade all 10 spots
-	
-	ldaX memaddr,sp,(2+4+2+1)	;point to lsb of desired digit count
+ if MOMCPU=$1805	
+	ldaX memaddr,sp,(2+4+2+1+1)	;point to lsb of desired digit count
+ else
+ 	ldaX memaddr,sp,(2+4+2+1)	;point to lsb of desired digit count
+ endif
 	sex memaddr	;set up
 	ldi 10		;max number of 0's to skip
 	sm		;desired number of digits to skip

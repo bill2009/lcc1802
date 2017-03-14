@@ -28,6 +28,9 @@
 ;Feb 17 2014 added "inc sp" to restore stack pointer in jeqI1, affected strncmp.
 ;Feb 18 2017 added org to LCCCODELOC to allow for non-zero origin
 ;Feb 19 2017 beginning to adapt for 1806
+;17-03-06 remove inc/dec from ccall, cretn6, add inc to popr
+;17-03-07 add popf,popm,popl for optimization
+;17-03-14 removed savemi, rldmi,cretn6
   IFDEF  LCCCODELOC		;wjr 17-02-18 allow code relocation
 	org	LCCCODELOC	;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -134,7 +137,9 @@ $$done:
 	endm
 	
 jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
+ if MOMCPU<>$1805
 	dec	sp ;make a work area
+ endif
 	glo	reg2
 	str	sp 
 	glo	reg1
@@ -145,7 +150,9 @@ jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
 	smb          ;that's a standard signed subtraction
 	ghi	reg1 ;
 	xor           ;sets the top bit if the signs are different
+ if MOMCPU<>$1805
 	inc	sp ;release the work area
+ endif
 	shlc          ;the original df is now in bit 0 and df=1 if signs were different
 	lsnf	;bypass the flip if signs were the same
 	xri	01     ;invert original df if signs were different
@@ -317,33 +324,49 @@ jzU2:	macro	reg1,label	;8 bytes, lbr@1-8, lbr@5
 +
 	endm
 jeqI4:	macro	reg1,reg2,label	;36 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33
-	dec	sp	;make a work area
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	glo	reg2	;get the low byte of the low register of the pair for the 2nd operand
 	str	sp
 	glo	reg1
 	sm		;subtract from corresponding byte of the 1st operand
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
 	inc	sp
+ endif
 	lbnz	$$nobr	;bail on test if not equal
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	ghi	reg2	;repeat for high order byte of low register
 	str	sp
 	ghi	reg1
 	sm
-	inc	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	inc	sp ;release work ares
+ endif
 	lbnz	$$nobr
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	glo	reg2-1	;low order byte of high order register
 	str	sp
 	glo	reg1-1
 	sm
-	inc	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	inc	sp ;release work ares
+ endif
 	lbnz	$$nobr
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	ghi	reg2-1	;lhigh order byte of high order register
 	str	sp
 	ghi	reg1-1
 	sm
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
 	inc	sp
+ endif
 	lbz	label	;if we get to here all other bytes have been equal so branch if this one is too
 $$nobr:
 	endm
@@ -355,29 +378,41 @@ jneu4:	macro	reg1,reg2,label	;39 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33-39
 	endm
 
 jeqI2:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	glo	reg2
 	str	sp
 	glo	reg1
 	sm
-	inc	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	inc	sp ;release work ares
+ endif
 	lbnz	$$nobr
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	ghi	reg2
 	str	sp
 	ghi	reg1
 	smb
-	inc	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	inc	sp ;release work ares
+ endif
 	lbz	label
 $$nobr:
 	endm
 jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
-	dec	sp
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	dec	sp ;make a work ares
+ endif
 	glo	reg2
 	str	sp
 	glo	reg1
 	sm
-	inc	sp	;added Feb 17
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
+	inc	sp ;releae work ares
+ endif
 	lbz	label
 	endm
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
@@ -595,7 +630,9 @@ alu2I: macro	tgt,src,imm,op1,op2	;2 byte register/immediate alu operation
 	phi	tgt
 	endm
 alu2: macro	tgt,src1,src2,op1,op2	;2 byte register/register alu operation 
+ if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
 	dec	sp ;make a work ares
+ endif
 	glo 	src2
 	str	sp
 	glo	src1
@@ -606,7 +643,9 @@ alu2: macro	tgt,src1,src2,op1,op2	;2 byte register/register alu operation
 	ghi	src1
 	op2		;calculate the high byte
 	phi	tgt
+ if MOMCPU<>$1805
 	inc	sp 	;release the work area
+ endif
 	endm	
 alu2RRS: macro 	tgtreg,opreg,OorD,basereg,offset,op1,op2 ;adds register to storage result in register
 	lda2	memaddr,OorD,basereg,offset+1
@@ -727,31 +766,23 @@ str2I:	macro	immedval,addrReg ;2 byte immediate store to address pointed to by a
 	dec	addrReg
 	endm
 
-;the 1806 SCAL does not decrement SP before pushing the return address 
-;and the SRET increments it before reloading it
-;to accommodate my convention I bracket call/returns with inc/dec as required
-;note that the function prolog contains a call to centry6 which completes the cycle
 	
-centry6: macro	;need to inc the stack to accommodate 1806 - kludge
+nop1806: macro	;used to inject no-ops to balance timing with an 1802
  if MOMCPU=$1805
- 	inc 	2	;leaves sp pointing to last byte of return address
+	nop	;waste 1.5 instruction times
  endif
 	endm
+
 Ccall:	macro	target
  if MOMCPU=$1805
- 	sex	2
- 	dec	2
  	SCAL	6
 	dw	target
- 	inc	2
  else
 	sep	RCALL
 	dw	target
  endif
 	endm
-;Cretn gets used a lot in assembly routines which don't need to manipulate sp
-;Cretn6 is used by the compiler and it incorporates the sp manipulation.
-;this is all kind of awful
+
 Cretn:	macro
  if MOMCPU=$1805
  	sret	6
@@ -759,33 +790,17 @@ Cretn:	macro
 	sep	RRET
  endif
 	endm
-Cretn6:	macro
- if MOMCPU=$1805
- 	dec	2
- 	sret	6
- else
-	sep	RRET
- endif
-	endm
-savmi:	macro	reg	;this is a form of push used in a sequence of register saves
-	dec	sp
-	glo	reg
-	stxd
-	ghi	reg
-	str	sp	
-	endm
-rldmi:	macro	reg,ptr	;this is a form of pop used to reload sequence of registers
-	lda	ptr	;reg ptr is primed to the spot to start the reloads
-	phi	reg
-	lda	ptr	;and it end up where needed to do the next one
-	plo	reg
-	endm
+
 pushr:	macro	reg
+ if MOMCPU=$1805
+ 	RSXD	reg
+ else
 	dec	sp
 	glo	reg
 	stxd
 	ghi	reg
 	str	sp
+ endif
 	endm
 pushf:	macro	reg	;push 1st in a sequence of registers
 	dec	sp
@@ -810,9 +825,47 @@ pushl:	macro	reg	;push last in a sequence of registers
 	ghi	reg
 	str	sp
 	endm
-popr:	macro	reg
+popr:	macro	reg	;routine standalone pop - inc's sp before load
+ if MOMCPU=$1805
+ 	inc	sp
+ 	lda	sp
+ 	phi	reg
+ 	ldn	sp
+ 	plo	reg
+ else
+	lda	sp
+	phi	reg
+	lda	sp
+	plo 	reg
+ endif
+	endm
+popf:	macro	reg	;first pop in a string - uses RLXA, leaves stack 'dirty'
+ if MOMCPU=$1805
+ 	inc 	sp
+ 	RLXA	reg
+ else
+	lda	sp
+	phi	reg
+	lda	sp
+	plo 	reg
+ endif
+	endm
+popm:	macro	reg	;middle pop - uses RLXA
  if MOMCPU=$1805
  	RLXA	reg
+ else
+	lda	sp
+	phi	reg
+	lda	sp
+	plo 	reg
+ endif
+	endm
+popl:	macro	reg	;final pop - assumes sp already inc'd - leaves stack 'clean'
+ if MOMCPU=$1805
+ 	lda	sp
+ 	phi	reg
+ 	ldn	sp
+ 	plo	reg
  else
 	lda	sp
 	phi	reg
