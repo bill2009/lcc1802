@@ -8,7 +8,7 @@ static char rcsid[] = "$Id: stmt.c,v 1.1 2002/08/28 23:12:46 drh Exp $";
 
 struct code codehead = { Start };
 Code codelist = &codehead;
-float density = 1.1;//17-02-27 don't allow jump table **wjr**
+float density = 0.5;
 Table stmtlabs;
 
 static int foldcond(Tree e1, Tree e2);
