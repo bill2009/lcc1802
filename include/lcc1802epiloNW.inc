@@ -18,6 +18,7 @@
 ;16-11-26 calculate onems delay from cpu speed in LCC1802CPUSPEED
 ;17-03-07 adjusting stack offset for 1805/6 stack discipline
 ;17-03-13 protecting work areas in divi2,divi4 routines from 1806 SCAL
+;17-03-15 onems compensates for reduced subroutine overhead in 1806
 rwork	equ	memAddr	;work register
 lcc1802init:	
 	ldiReg	RCALL,$$_die; _call
@@ -108,7 +109,12 @@ _oneMs:		;execute 1ms worth of instructions including call(15)/return(10) sequen
 	IFNDEF	LCC1802CPUSPEED
 LCC1802CPUSPEED EQU 1600000	;1.6MHZ default
 	ENDIF
-	ldi	(LCC1802CPUSPEED/1000/16-15-10-2)/2
+ if MOMCPU=$1805		;for 1806 SCAL
+LCC1802SUBOVHD  EQU 14		;1806 SCAL/SRET subroutine overhead
+ else
+LCC1802SUBOVHD  EQU 27		;default SCRT subroutine overhead
+ endif 
+	ldi	(LCC1802CPUSPEED/1000/16-LCC1802SUBOVHD)/2
 $$mslp:	smi	1
 	bnz	$$mslp
 	Cretn
