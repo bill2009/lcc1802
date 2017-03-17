@@ -1,4 +1,6 @@
 ;Standalone reg save included at front of lcc1802init
+;16-02-05 changed bnz to lbnz for page error
+;16-02-06 changed another bnz to lbnz
 	seq
 	ldad r15,0x7f00+127	;begin register save
 	sex r15			;set up for reg saves
@@ -26,7 +28,7 @@ $$stm:
 	inc r15
 	dec r13
 	glo r13
-	bnz $$stm
+	lbnz $$stm
 ;now copy top 128+16 bytes of  stack area
 	ldad r15,0x7f70
 	ldad r14,0x7e70
@@ -38,7 +40,7 @@ $$stk:
 	inc r15
 	dec r13
 	glo r13
-	bnz $$stk
+	lbnz $$stk
 ;end of standalone save
 	req
 	
