@@ -228,7 +228,7 @@ void handlesession(){	//handle a session once it's established
 
 void main(void){
 	unsigned char socket0status;
-    unsigned char ip_addr[] = {192,168,1,182};//{169,254,180,2};//{10,0,0,180};//
+    unsigned char ip_addr[] = {169,254,180,2};//{192,168,1,182};//{10,0,0,180};//
     unsigned int SFWs=0; //count of times we've seen SOCK_FIN_WAIT
     printf("Olduino 1802 Doughnuts Server 1.2\n");
 	delay(500);
