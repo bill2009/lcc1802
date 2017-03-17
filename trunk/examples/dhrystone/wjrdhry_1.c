@@ -1,5 +1,6 @@
 //kludged sept 2013 to work with lcc1802
 //remove timing functions, scanf, #include dhry2
+//17-03-12 including cpu1802spd4port7.h for cpu type/speed/port
 #define nofloats 1
 /*
  ****************************************************************************
@@ -19,7 +20,7 @@
  */
 
 #include "wjrdhry.h"
-
+#include <cpu1802spd4port7.h>
 /* Global Variables: */
 
 Rec_Pointer     Ptr_Glob,
@@ -213,7 +214,7 @@ main ()
   printf ("        should be:   DHRYSTONE PROGRAM, 1'ST STRING\n");
   printf ("Str_2_Loc:           %s\n", Str_2_Loc);
   printf ("        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n");
-  printf ("\n");
+  printf ("done\n");
 
 
 }
