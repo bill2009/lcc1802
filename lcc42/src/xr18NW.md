@@ -45,6 +45,7 @@
  addr: ADDRLP2  "'O',sp,(%A+1)"
    also in open code
  * Mar 14 cleanup, get rid of cretn6
+ * Mar 28 cleanup of working copy on dell laptop special case of EQUI2 with 8 bit constant. function begin/end markers
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -528,6 +529,7 @@ stmt: LTU4(reg,reg)  "\tjcU4 R%0,R%1,lbnf,%a; LT=lbnf i.e. subtract B from A and
 stmt: NEI4(reg,reg)  "\tjneU4 R%0,R%1,%a; NE\n"   2   
 stmt: NEU4(reg,reg)  "\tjneU4 R%0,R%1,%a; NE\n"   2   
 
+stmt: EQI2(CVUI2(reg),con8bit)  "\tjeqU1I R%0,%1,%a;EQI2(CVUI2(reg),con8bit)**\n"   2
 stmt: EQI2(reg,con)  "\tjeqU2I R%0,%1,%a;EQI2(reg,con)\n"   2
 stmt: EQI4(reg,con)  "\tjeqU4I R%0,%1,%a\n"   2
 stmt: EQU2(reg,con)  "\tjeqU2I R%0,%1,%a;EQU2(reg,con)*\n"   2
@@ -970,6 +972,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
         framesize = maxargoffset 	//the frame includes the outgoing argument area, 
                 + sizefsave + sizeisave 	//the float and int reg save areas,
                 + roundup(maxoffset, 2);       		// and the area for locals
+ 	print(";$$function start$$ %s\n",f->x.name);
         printf("%s:\t\t;framesize=%d\n", f->x.name,framesize); //wjr june 27 2013
         if (framesize > 2) { 
         		if (0!=(usedmask[IREG]+usedmask[FREG])){  //if there are regs to save
@@ -1064,6 +1067,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
         }
  */
         print("\tCretn\n\n");
+ 	print(";$$function end$$ %s\n",f->x.name);
 }
 static void defconst(int suffix, int size, Value v) {
         if (suffix == F && size == 4) {
