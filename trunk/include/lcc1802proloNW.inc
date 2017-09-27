@@ -31,6 +31,7 @@
 ;17-03-06 remove inc/dec from ccall, cretn6, add inc to popr
 ;17-03-07 add popf,popm,popl for optimization
 ;17-03-14 removed savemi, rldmi,cretn6
+;17-03-27 added jequ1i
   IFDEF  LCCCODELOC		;wjr 17-02-18 allow code relocation
 	org	LCCCODELOC	;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -413,6 +414,11 @@ jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
  if MOMCPU<>$1805	;not needed for the 1806 - stack is always clean
 	inc	sp ;releae work ares
  endif
+	lbz	label
+	endm
+jeqU1I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
+	glo	reg1
+	smi	(ival)#256
 	lbz	label
 	endm
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
