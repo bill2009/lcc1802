@@ -20,7 +20,10 @@
  */
 
 #include "wjrdhry.h"
-#include <cpu1802spd4port7.h>
+//#include <cpu1802spd4port7.h>
+#define putc(x) putcpace(7,x) //limits output rate to the host
+#define __CPUSPEED 10000000
+#define __CPUTYPE1802
 /* Global Variables: */
 
 Rec_Pointer     Ptr_Glob,
@@ -101,7 +104,7 @@ main ()
   printf ("Please give the number of runs through the benchmark: ");
   {
     int n;
-    n=1; //scanf ("%d", &n);
+    n=1000; //scanf ("%d", &n);
     Number_Of_Runs = n;
   }
   printf ("\n");
