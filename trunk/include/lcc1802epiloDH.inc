@@ -16,6 +16,7 @@
 ;oct 12 divu2 redone for faster perf on small numbers, remainder now in regarg1 - modu2/modi2 changed to match
 ;16-09-20 allow stack relocation 
 ;16-11-26 calculate onems delay from cpu speed in LCC1802CPUSPEED
+;17-10-17 allow for cpu speed >8MHz in ms calculation!
 rwork	equ	memAddr	;work register
 lcc1802init:	
 	ldiReg	RCALL,_call
@@ -105,12 +106,21 @@ _oneMs:		;execute 1ms worth of instructions including call(15)/return(10) sequen
 ;each loop is 2 instruction times
 ;so the number of loops needed is 
 ;CPU speed/16000 less the 27 all divide by two
-	IFNDEF	LCC1802CPUSPEED
+  IFNDEF LCC1802CPUSPEED
 LCC1802CPUSPEED EQU 1600000	;1.6MHZ default
-	ENDIF
+  ENDIF
+  
+  IF LCC1802CPUSPEED<=8000000
 	ldi	(LCC1802CPUSPEED/1000/16-15-10-2)/2
 $$mslp:	smi	1
 	bnz	$$mslp
+  ELSE
+	ldi	(LCC1802CPUSPEED/1000/16-15-10-2)/4
+$$mslf:	smi	1
+	sex	2
+	sex	2
+	bnz	$$mslf
+  ENDIF
 	Cretn
 
 
