@@ -12,6 +12,7 @@
 //Nov 23 added scungy %cx hack for printing single char as hex.
 //jan 29 - changing out(5,x) to putc(x)
 //Mar 14 2017 inserting conditional NOP's into printstr, printf to slow down on 1806
+//17-10-19 register variable declaration in printf
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -177,19 +178,20 @@ void putx(unsigned char x){ //print a unsigned char as ascii hex
 	putxn(x>>4);
 	putxn(x & 0x0F);
 }
-void printf(char *ptr,...){ //limited implementation of printf
+void printf(char *pptr,...){ //limited implementation of printf
 //								supports only c,d,s,x,l formats without width or other qualifiers
 	unsigned char c,xord;
+	register char* ptr=pptr; //try to save on loads/spills
 	int argslot=0;	//used to align longs
-	int * this=(int *)&ptr;
+	int * this=(int *)&pptr;
 	this++; argslot++; //advance argument pointer and slot #
     while(*ptr) {
-		c=*ptr++;
+		c=*ptr; ptr++;
 		if (c!='%'){
 			putc(c);
 			asm(" nop1806\n nop1806\n nop1806\n"); //17-03-13
 		} else{
-			c=*ptr++;
+			c=*ptr;ptr++;
 			switch (c){
 				case 'i': case 'd':
 					printint(*this++);
