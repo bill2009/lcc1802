@@ -19,14 +19,23 @@
 ;17-03-07 adjusting stack offset for 1805/6 stack discipline
 ;17-03-13 protecting work areas in divi2,divi4 routines from 1806 SCAL
 ;17-03-15 onems compensates for reduced subroutine overhead in 1806
+;17-04-09 don't include call/return for 1806
+;17-10-17 SCRT routines changed to clean stack model i.e. push is stxd stxd, pop is inc lda inc ldn
+;17-10-19 using CPUSPEED instead of LCC1802CPUSPEED, also STACKLOC instead of LCCSTACKLOC
+;17-10-23 extending work area protection from 10-13 above for 1802 as well as 1805
 rwork	equ	memAddr	;work register
 lcc1802init:	
+  IF    MOMCPU<>$1805		;for 1806 use SCAL 
+	ldiReg	RCALL,_call
+	ldiReg	RRET,_return
+  ELSE
 	ldiReg	RCALL,$$_die; _call
 	ldiReg	RRET,$$_die; _return
-  IFNDEF  LCCSTACKLOC		;wjr 16-09-20 allow stack relocation
+  ENDIF
+  IFNDEF  STACKLOC		;wjr 16-09-20 allow stack relocation
 	ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
   ELSEIF				;wjr 16-09-20
-	ldiReg	SP,LCCSTACKLOC	;wjr 16-09-20 start stack as specified
+	ldiReg	SP,STACKLOC	;wjr 16-09-20 start stack as specified
   ENDIF				;wjr 16-09-20
 	sex	SP
 	ldiReg	RPC,$$_00000
@@ -43,7 +52,7 @@ _setqOn:
 _setqOff:
 	req
 	Cretn
-
+ IFNDEF  LCCNOMATH		;wjr 17-04-09 disable 16 bit math
 _modU2:	;16 bit unsigned remainder
 	; just calls the 16 bit division then puts remainder into return value
     Ccall _divU2
@@ -61,7 +70,7 @@ _modI2:	;16 bit signed remainder
     ghi regArg1
     phi retVal
     Cretn
-
+ ENDIF
 _out4:	
 	glo	regArg1
 	dec	sp
@@ -70,15 +79,15 @@ _out4:
 	Cretn
 
 ;the following routines have short branches so all the code has to stay within the same page
-	align 256
+  if MOMCPU<>$1805		;for 1806 use SCAL
+	align 16
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
 _call	sex	SP ;make sure X=SP
 	glo	retAddr ;save previous return pointer on stack
-	dec	sp
 	stxd
 	ghi	retAddr
-	str	sp	
+	stxd	
 	glo	RPC ;copy old PC to retAddr
 	plo	retAddr
 	ghi	RPC
@@ -90,37 +99,49 @@ _call	sex	SP ;make sure X=SP
 	br	_call-1
 
 ;Standard subroutine return 
+	align 16
 	sep	RPC	;return to the original program
 _return	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
 	ghi	retAddr
 	phi	RPC
+	inc 	SP
 	lda	SP	;pick up old return address
 	phi	retAddr
-	lda	SP
+	ldn	SP
 	plo	retAddr
 	br	_return-1
-
+ ENDIF
+	align 8
 _oneMs:		;execute 1ms worth of instructions including call(15)/return(10) sequence. takes about 1 ms
 ;subroutine overhead soaks up 27 instruction time.
 ;each loop is 2 instruction times
 ;so the number of loops needed is 
 ;CPU speed/16000 less the 27 all divide by two
-	IFNDEF	LCC1802CPUSPEED
-LCC1802CPUSPEED EQU 1600000	;1.6MHZ default
+	IFNDEF	CPUSPEED
+CPUSPEED EQU 1600000	;1.6MHZ default
 	ENDIF
  if MOMCPU=$1805		;for 1806 SCAL
-LCC1802SUBOVHD  EQU 14		;1806 SCAL/SRET subroutine overhead
+SUBOVHD  EQU 14		;1806 SCAL/SRET subroutine overhead
  else
-LCC1802SUBOVHD  EQU 27		;default SCRT subroutine overhead
+SUBOVHD  EQU 27		;default SCRT subroutine overhead
  endif 
-	ldi	(LCC1802CPUSPEED/1000/16-LCC1802SUBOVHD)/2
+  IF CPUSPEED<=8000000
+	ldi	(CPUSPEED/1000/16-SUBOVHD)/2
 $$mslp:	smi	1
 	bnz	$$mslp
+  ELSE
+	ldi	(CPUSPEED/1000/16-SUBOVHD)/4
+$$mslf:	smi	1
+	sex	2
+	sex	2
+	bnz	$$mslf
+  ENDIF
 	Cretn
 
 
-	
+ IFNDEF  LCCNOMATH		;wjr 17-04-09 disable 16 bit math	
+	align 256
 ;16 bit right shifting multiply which is faster for smaller operands
 ; credit to http://map.grauw.nl/articles/mult_div_shifts.php#lrmultr
 _mulU2:		;retval(product)=regarg1(multiplicand)*regarg2(multiplier)
@@ -161,7 +182,8 @@ testsub: macro reg1,reg2	;test subtraction of reg2 from reg1
 	smb
 	endm
 	
-	pushf R10	;save R10 & leave stack down 1
+;	pushf R10	;save R10 & leave stack down 1
+	pushr R10	;default push leaves stack clean
 	glo R11		;and bottom
 	stxd		;of R11 - leaves stack clear of work area
 	cpy2 R10,regarg1
@@ -206,7 +228,7 @@ $$again:	;this is the divisor doubling phase
  $$out:
  ;here the quotient is in retval, remainder in regarg1
   	inc sp	;release work area
-	lda sp	;recover
+	ldn sp	;recover
 	plo R11	;bottom byte of R11
 	popr R10 ;and all of R10
 	cretn	;and we're done
@@ -229,13 +251,9 @@ $$pos1: ;1st is now +v, check 2nd
     bnf $$pos2	;if the 2nd arg is -v
     negI2 regArg2,regArg2 ;flip it to +v
 $$pos2: ; both args now +v
- if MOMCPU=$1805
     dec sp	;protect workarea on the 1802
     Ccall _divU2	;call unsigned division
     inc sp	;recover work area
- else
-    Ccall _divU2	;call unsigned division
- endif 
 ;now the quotient is in retVal and the remainder is in regArg2
     lda	sp ;get back the sign bits and restore SP
     shl
@@ -243,8 +261,8 @@ $$pos2: ; both args now +v
     negI2 retVal,retVal ;negate the quotient
 $$done:
     Cretn ;and we're done - I hope!
-
-
+ ENDIF
+ IFNDEF  LCCNOLONG		;wjr 17-04-09 disable 32 bit math
 	align 256    ;32 bit operations follow
 _divu4:
 ;This is an unsigned 32 bit restoring division
@@ -339,13 +357,9 @@ $$pos1: ;1st is now +v, check 2nd
     bnf $$pos2	;if the 2nd arg is -v
     negI4 RL10,RL10 ;flip it to +v
 $$pos2: ; both args now +v
- if MOMCPU=$1805
     dec sp	;protect workarea on the 1802
     Ccall _divU4	;call unsigned division
     inc sp	;recover work area
- else
-    Ccall _divU4	;call unsigned division
- endif 
 ;now the quotient is in RL8 and the remainder is in Rp1p2
     lda	sp ;get back the sign bits and restore SP
     shl
@@ -353,7 +367,8 @@ $$pos2: ; both args now +v
     negI4 RL8,RL8 ;negate the quotient
 $$done:
     Cretn ;and we're done - I hope!
-
+ ENDIF
+ IFNDEF  LCCNOMATH		;wjr 17-04-09 disable 16 bit math
 _dubdabx:	
 ;experimental binay-ascii conversion using the double-dabble algorithm
 ;thanks to Charles Richmond for the suggestion and code
@@ -365,13 +380,8 @@ _dubdabx:
 ;r15.0 is bit count(32) and the return value register
 ;r9.0 is digit count
 ;r10 is the number of digits wanted in the result including leading 0's - 0 means no leading 0's
- if MOMCPU=$1805
 	ld2 r8,'O',sp,(2+4+1); pick up the buffer pointer
 	ld2 r10,'O',sp,(2+4+2+1); pick up the number of digits wanted
- else
-	ld2 r8,'O',sp,(2+4); pick up the buffer pointer
-	ld2 r10,'O',sp,(2+4+2); pick up the number of digits wanted
- endif
 	cpy2 r15,r8 ;save address for now
 	ldi 11	;digit count+1 for trailing 0
 	plo r9
@@ -444,11 +454,7 @@ $$upnxt:
 	dec r9		;counter
 	glo r9
 	bnz $$upnxt	;upgrade all 10 spots
- if MOMCPU=$1805	
 	ldaX memaddr,sp,(2+4+2+1+1)	;point to lsb of desired digit count
- else
- 	ldaX memaddr,sp,(2+4+2+1)	;point to lsb of desired digit count
- endif
 	sex memaddr	;set up
 	ldi 10		;max number of 0's to skip
 	sm		;desired number of digits to skip
@@ -464,8 +470,8 @@ $$cknext:
 	bnz $$cknext
 $$done:
 	cretn
-	
-	
+ ENDIF	
+ IFNDEF  LCCNOLONG		;wjr 17-04-09 disable 32 bit math	
 _modU4:	;32 bit unsigned remainder
 	; just calls the 32 bit division then puts remainder into return value
     Ccall _divU4
@@ -477,4 +483,4 @@ _modI4:	;32 bit signed remainder
     Ccall _divI4
     cpy4 RL8,Rp1p2
     Cretn
-	
+ ENDIF	
