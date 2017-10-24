@@ -1,7 +1,25 @@
 unsigned int millis=0; unsigned char fractmillis=0;
+
 void LDC(unsigned char c){
 	asm(" glo r12 ; pick up the value\n"
 		" LDC ;		set the timer\n");
+}
+void tone(int freq, int dur){ //tone at a particular frequency for a period
+	unsigned char t;
+	if (0!=freq){
+		asm(" STPC ; stop the timer\n");
+		if (freq>7800) t=1;
+		else if (freq<30) t=255;
+		else t=7800/freq;
+		printf("f=%d,t=%d\n",freq,t);
+		LDC(t);
+		asm(" ETQ;  enable the Q toggle\n");
+		asm(" STM; start the timer\n");
+		delay(dur);
+		asm(" STPC\n");
+	}else{
+		delay(dur);
+	}
 }
 unsigned char GEC(){
 	asm(" GEC ;		get the value\n"
