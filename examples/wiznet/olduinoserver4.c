@@ -12,6 +12,8 @@
 *****************************************************************************/
 #define	nofloats			//not using floating point
 #include <nstdlib.h> //for printf etc.
+#include <cpu1802spd4port7.h> //for port 7 16-09-04
+#define putc(x) out(7,x) //for port 7 16-09-04
 #include <olduino.h> //for digitalRead, digitalWrite, delay
 #include <fastspi.h> //fastspi header
 #include "wiznet.h"  //wiznet definitions
