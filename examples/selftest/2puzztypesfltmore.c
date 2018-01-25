@@ -5,7 +5,7 @@
 #define uint  unsigned int
 #define check(EX) if(!(EX)) /*printstr("checkfail\n"); */ printf("check fail %s in %s line %d\n",(int)#EX,__FILE__,__LINE__);
 #include "nstdlib.h"
-
+#include <cpu1802spd4port7.h>
 #define px printf("%d\n",x)
 #define p(int) printf("%d\n",int)
 #define pn(int) printf(#int " = %d\n",int)
@@ -29,7 +29,6 @@ int i=2, y;
 	y=d * (x=2.5/d); PRINT1(y);
 	x=d * (y = ((int)2.9+1.1)/d); PRINT2(x,y);
 	printstr("done\n");
-
 }
 
 #include "nstdlib.c"

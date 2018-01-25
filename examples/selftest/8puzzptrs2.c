@@ -7,6 +7,7 @@
 #define putchar putc
 
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 #include "defs.h"
 #define check(EX) if(!(EX)) printf("check fail %s in %s line %d\n\007",(int)#EX,__FILE__,__LINE__)
 #define check2(EX1,EX2) check(EX1); check(EX2)
@@ -27,6 +28,7 @@ char **cp[]={c+3,c+2,c+1};
 char ***cpp=cp;
 main( ) {
 	printstr("look for checkfail's and check final line\n");
+	printstr("checks are based on loading at 0x0000\n");
 	PRINT2(d,(int)a,*a);check2((int)a==3,*a==0);
 	PRINT3(d,(int)p,(int)*p,**p);check3((int)p==13,(int)*p==3,**pp==0);
 	PRINT3(d,(int)pp,(int)*pp,**pp);check3((int)pp==13,(int)*pp==3,**pp==0);

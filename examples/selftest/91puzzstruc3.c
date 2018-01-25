@@ -2,6 +2,7 @@
     programs from the C Puzzle Book
 */
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 #include "defs.h"
 
 struct S1{

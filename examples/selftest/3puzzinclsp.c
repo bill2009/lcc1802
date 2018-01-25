@@ -6,6 +6,7 @@
 
 
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 #include "defs.h"
 #define check(EX) if(!(EX)) /*printstr("checkfail\n"); */ printf("check fail %s in %s line %d\n",(int)#EX,__FILE__,__LINE__);
 int global2=2;
