@@ -4,6 +4,7 @@
 #define uchar unsigned char
 #define uint  unsigned int
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 #define check(EX) if(!(EX)) printf("check fail %s in %s line %d\n",(int)#EX,__FILE__,__LINE__)
 #define check3(EX1,EX2,EX3) check(EX1); check(EX2); check(EX3)
 
@@ -75,6 +76,7 @@ void main()
 	++x || ++y && ++z; check3(x==0,y==0,z==-1);;
 	x=y=z=-1;
 	++x && ++y && ++z; check3(x==0,y==-1,z==-1);
+	printf("done\n");
 }
 
 #define nofloats 1

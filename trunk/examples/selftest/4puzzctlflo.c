@@ -4,6 +4,7 @@
 #define uchar unsigned char
 #define uint unsigned int
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 #include "defs.h"
 #define check(EX) if(!(EX)) printf("check fail %s in %s line %d\n",(int)#EX,__FILE__,__LINE__)
 #define check2(EX1,EX2) check(EX1); check(EX2)
