@@ -8,6 +8,7 @@
 */
 #include <olduino.h>
 #include <nstdlib.h>
+#include <cpu1802spd4port7.h>
 #include <hspi2.h>
 #include <hspi2Lcd.h>
 #include <spiship.h>
@@ -39,6 +40,8 @@ void animate(){
 #define LcdSS 4
 void main()
 {
+ 	printf("hwspilcd2main.c here\n");
+ 	while(1);
  	PIN4=0;
  	digitalWrite(LcdSS,HIGH);
  	setqon();
