@@ -1,4 +1,5 @@
 #include "nstdlib.h"
+#include <cpu1802spd4port7.h>
 int up[15], down[15], rows[8], x[8];
 void queens(int);
 void print();
