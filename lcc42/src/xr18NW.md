@@ -49,6 +49,7 @@
  * 17-10-20 SCRT routines in lcc1802proloNW now use clean stack so stack offsets are the same for 1802/1804/5/6
  * 17-10-21 adding option -cpu1805 to put regs 4&5 into variable pool, set CPU value for assembler
  *          changed how -volatile set the regs
+ * 18-01-25 corrected how -volatile set the regs
  *
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
@@ -681,7 +682,7 @@ static void progbeg(int argc, char *argv[]) {
         vmask[IREG] = vmask[FREG] = INTVAR; //1802 register variables
         if (wjrvolatile){
         	fprintf(stderr,"reduced register variables\n");
-        	vmask[IREG] = vmask[FREG] & ~REGSVOLATILE; //eliminate 0&1
+        	vmask[IREG] = vmask[FREG] =INTVAR & ~REGSVOLATILE; //eliminate 0&1
         }
         if (wjrcpu1805){
         	fprintf(stderr,"1805 register variables\n");
