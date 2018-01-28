@@ -1,0 +1,91 @@
+ AS V1.42 Beta [Bld 123] - source file testseg.asm - page 1 - 1/24/2018 16:22:06
+
+
+       1/       0 :                     ;testing output to the boyd LED segments
+       2/       0 :                     	relaxed on
+       3/       0 : 7A                  	req
+       4/       1 : 7B                  	seq
+       5/       2 : E0                  	sex 0
+       6/       3 : 67                  	out 7
+       7/       4 : FF                  	db  0xff
+       8/       5 : 7A                  	req
+       9/       6 :                     	
+      10/       6 : 67                  	out 7
+      11/       7 : 3D                  	db  d
+      12/       8 : 67                  	out 7
+      13/       9 : 37                  	db y
+      14/       A : 67                  	out 7
+      15/       B : 1D                  	db  o
+      16/       C : 67                  	out 7
+      17/       D : 1F                  	db  b
+      18/       E : 67                  	out 7
+      19/       F : 0B                  	db  L
+      20/      10 : 67                  	out 7
+      21/      11 : 0B                  	db  L
+      22/      12 : 67                  	out 7
+      23/      13 : 30                  	db  one
+      24/      14 : 67                  	out 7
+      25/      15 : 1F                  	db  b
+      26/      16 :                     
+      27/      16 : 30 16               	br  $
+      28/      18 : =7EH                A	equ 0b01111110 ;A
+      29/      18 : =1FH                b	equ 0b00011111 ;b
+      30/      18 : =4BH                C	equ 0b01001011 ;C
+      31/      18 : =3DH                d	equ 0b00111101 ;d
+      32/      18 : =10H                i	equ 0b00010000 ;i
+      33/      18 : =BH                 L	equ 0b00001011 ;L
+      34/      18 : =1DH                o	equ 0b00011101 ;o
+      35/      18 : =37H                y	equ 0b00110111 ;y
+      36/      18 : =7BH                zero	equ 0b01111011 ;0
+      37/      18 : =30H                one	equ 0b00110000 ;1
+      38/      18 : =6DH                two	equ 0b01101101 ;2
+      39/      18 : =7FH                eight	equ 0b01111111 ;8
+      40/      18 : =0H                 sp	equ 0
+      41/      18 :                     
+      42/      18 :                     
+ AS V1.42 Beta [Bld 123] - source file testseg.asm - page 2 - 1/24/2018 16:22:06
+
+
+  symbol table (* = unused):
+  ------------------------
+
+*A :                             7E - | *ARCHITECTURE :  i386-unknown-win32 - |
+ B :                             1F - | *BIGENDIAN :                      0 - |
+*BRANCHEXT :                      0 - | *C :                             4B - |
+*CASESENSITIVE :                  0 - | *CONSTPI :        3.141592653589793 - |
+ D :                             3D - | *DATE :                   1/24/2018 - |
+*EIGHT :                         7F - | *FALSE :                          0 - |
+*FULLPMMU :                       1 - | *HAS64 :                          1 - |
+*HASDSP :                         0 - | *HASFPU :                         0 - |
+*HASPMMU :                        0 - | *I :                             10 - |
+*INEXTMODE :                      0 - | *INLWORDMODE :                    0 - |
+*INMAXMODE :                      0 - | *INSRCMODE :                      0 - |
+*INSUPMODE :                      0 - |  L :                              B - |
+*LISTON :                         1 - | *MACEXP :                         7 - |
+*MOMCPU :                      1805 - | *MOMCPUNAME :                  1805 - |
+*NESTMAX :                      100 - |  O :                             1D - |
+ ONE :                           30 - | *PACKING :                        0 - |
+*PADDING :                        1 - | *RELAXED :                        1 - |
+*SP :                             0 - | *TIME :                    16:22:06 - |
+*TRUE :                           1 - | *TWO :                           6D - |
+*VERSION :                     142F - |  Y :                             37 - |
+*ZERO :                          7B - |
+
+     41 symbols
+     35 unused symbols
+
+ AS V1.42 Beta [Bld 123] - source file testseg.asm - page 3 - 1/24/2018 16:22:06
+
+
+  codepages:
+  ----------
+
+STANDARD (0 changed characters)
+
+
+0.03 seconds assembly time
+
+     42 lines source file
+      2 passes
+      0 errors
+      0 warnings
