@@ -23,8 +23,13 @@
 ;17-10-17 SCRT routines changed to clean stack model i.e. push is stxd stxd, pop is inc lda inc ldn
 ;17-10-19 using CPUSPEED instead of LCC1802CPUSPEED, also STACKLOC instead of LCCSTACKLOC
 ;17-10-23 extending work area protection from 10-13 above for 1802 as well as 1805
+;17-11-25 conditional include for register saves
+;18-01-28 changed onems() to always use 4 instruction loop, accommodate slower CPU speed
 rwork	equ	memAddr	;work register
-lcc1802init:	
+lcc1802init:
+  IFDEF SAVEREGS
+    include "saveregs.inc"
+  ENDIF
   IF    MOMCPU<>$1805		;for 1806 use SCAL 
 	ldiReg	RCALL,_call
 	ldiReg	RRET,_return
@@ -126,11 +131,7 @@ SUBOVHD  EQU 14		;1806 SCAL/SRET subroutine overhead
  else
 SUBOVHD  EQU 27		;default SCRT subroutine overhead
  endif 
-  IF CPUSPEED<=8000000
-	ldi	(CPUSPEED/1000/16-SUBOVHD)/2
-$$mslp:	smi	1
-	bnz	$$mslp
-  ELSE
+      IF (CPUSPEED/16000)>=(SUBOVHD+4);fast enough to need more than subroutine overhead
 	ldi	(CPUSPEED/1000/16-SUBOVHD)/4
 $$mslf:	smi	1
 	sex	2
