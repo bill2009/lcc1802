@@ -35,6 +35,8 @@
 ;17-10-17 compatability with clean stack discipline
 ;         changed pushr, removed pushf pushr pushm, removed many dec/inc sp's for work areas
 ;17-10-19 changed LCCCODELOC to CODELOC
+;18-01-11 changed MACEXP OFF to MACEXP_DFT for version 1.42 of the assembler
+;18-01-25 changed syntax for SCAL
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -71,7 +73,11 @@ RRET:	equ 	5 ;standard return register
 RPC:	equ 	3 ; standard program counter
 
 ;	listing	off
-	macexp off	;this seems to have to go before the definitions
+	IF VERSION<0x142F ;syntax for turning off macro expansion changed with version 4.1.2
+		MACEXP OFF	
+	ELSE	
+		MACEXP_DFT OFF
+	ENDIF
 ;macro definitions
 jumpv:	macro	addrReg	;jump to an address in a register
 	pushr	r6	;save the real return address
@@ -733,8 +739,13 @@ nop1806: macro	;used to inject no-ops to balance timing with an 1802
 
 Ccall:	macro	target
  if MOMCPU=$1805
- 	SCAL	6
-	dw	target
+ 	IF VERSION<0x142F ;syntax for SCAL changed with version 4.1.2
+ 		SCAL	6
+		dw	target
+ 	ELSE	
+ 		SCAL	6,target
+ 	ENDIF
+
  else
 	sep	RCALL
 	dw	target
