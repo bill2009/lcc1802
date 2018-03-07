@@ -1,5 +1,6 @@
 ;IO1802.inc contains input/output runtime routines for LCC1802
 ;The port is in regArg1, the output byte is in regArg2
+;18-02-23 changed label + to $$no0 in _inp: to eliminate this style of temporary
 	align 64
 _putc:
 _out5:	
@@ -15,7 +16,7 @@ _inp:		;raw port input
 	stxd		
 	glo	regarg1	;get the port number
 	ani	0x07	;clean it
-	bz	+	; inp(0) isn't valid
+	bz	$$no0	; inp(0) isn't valid
 	ori	0x68	;make it an input instruction
 	stxd		;store it for execution
 	cpy2	rt1,sp	;rt1&sp now point to an empty byte to be overwritten by the inp instruction
@@ -26,7 +27,7 @@ _inp:		;raw port input
 	plo	retVal	;save it to return
 	ldi	0
 	phi	retval	;clear top byte
-+	inc	sp	;need to get rid of the 6x instruction
+$$no0	inc	sp	;need to get rid of the 6x instruction
 	inc	sp	;and the D3
 	Cretn		;and we're done
 	
@@ -49,7 +50,7 @@ _out:		;raw port output
 	str	sp	;store it where sp points
 	sep	rt1	;execute it
 ;we will come back to here with sp stepped up by one
-+	inc	sp	;need to get rid of the 6x instruction
+	inc	sp	;need to get rid of the 6x instruction
 	inc	sp	;and the D3
 	Cretn		;and we're done
 	
