@@ -79,7 +79,7 @@ byte tF_initFAT(byte speed)
 {
 	int rc;
 	rc=mmc_initialize(speed);
-
+	printf("mmc_initialize sez %d\n",rc);
 // Read MBR
 	if (RES_OK == mmc_readSector(buffer, 0))
 	{
