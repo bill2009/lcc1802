@@ -10,6 +10,7 @@ FB	equ	11	;was R9
 F9	equ	9	;was R7
 F7	equ	7	;was RB
 ;April 1 added code to fp_add to restore resgisters when returning a 0 - around add_nz:
+;18-02-09 moved labels atof_div,div_nope,div_a2nz and others off of macro statement
 ; *** Convert signed long to float
 ; *** RL8-1:RL8 is the number to convert(8:9)
 ; *** result in same register
@@ -56,7 +57,8 @@ $$setsgn: ghi	memaddr	;get the original sign byte
 	ghi	RL8-1	;get the sign byte
 	ori	0x80	;set the sign bit
 	phi	RL8-1	;place it
-$$done:	Cretn		;and we're done
+$$done:			;;moved off macro
+	Cretn		;and we're done
 	
 
 
@@ -90,14 +92,16 @@ cvfi4:
 ;**********note df is set from subtraction before setting mantissa
 	bnf	$$lsh ; if the shift count is negative
 
-$$shr:	shru4	RL8
+$$shr:			;separated from macro
+	shru4	RL8
 	dec	memaddr	;check shift count
 	glo	memaddr
 	bnz	$$shr	;complete the shift
 	br	$$sign
 
 ;handle negative shift as best I can - gigo
-$$lsh: 	shl4	RL8	;shift once
+$$lsh: 			;separated from macro
+	shl4	RL8	;shift once
 	inc	memaddr
 	glo	memaddr
 	bnz	$$lsh	
@@ -108,7 +112,8 @@ $$sign:	ghi	memaddr	;now the sign
 	negi4	RL8,RL8	;negate the number if needed
 	br	$$done	; and return
 
-$$done:	Cretn		;and we're done
+$$done:			;moved off macro
+	Cretn		;and we're done
 
 ; *** Check if character is numeric
 ; *** D - char to check
@@ -307,7 +312,8 @@ add_a1nz:  ghi   R10                    ; check arg2 for zero
            lbnz  add_a2nz
            Cretn                       ; return arg1 as answer
            
-add_a2nz:  pushr F7	;wjr save c variable register
+add_a2nz:  
+	   pushr F7	;wjr save c variable register
 	   pushr R12	;wjr save param regs
 	   pushr R13	;wjr
 	   dec	r2	;wjr - make a work area
@@ -348,7 +354,8 @@ add_a2nz:  pushr F7	;wjr save c variable register
            phi   R15
            glo   R14
            plo   R15
-add_ns:    ccall fp_getsgn              ; get signs of arguments
+add_ns:    				;moved off macro
+	   ccall fp_getsgn              ; get signs of arguments
            ldi   0                     ; setup mantissas
            phi   r8
            phi   R10
@@ -513,7 +520,8 @@ div_a1nz:  ghi   R10                    ; check arg2 for zero
            plo   F9
            Cretn                  	; and return to caller
 
-div_a2nz:  pushr F7	;wjr save the C variable
+div_a2nz:  				; 18-02-09 moved off of macro
+	   pushr F7	;wjr save the C variable
 	   pushr R12	;wjr save param regs
 	   pushr R13	;wjr
 	   dec r2	;wjr make a work area -r7 is restores and 2 inc'd in the cleanup routine fp_sc_up
@@ -629,7 +637,8 @@ div_go:    glo   FB                    ; see if div > man
            glo   F7
            or
            plo   F7
-div_nope:  ccall fp_shr_fd              ; shift quotient right 17-03-06
+div_nope:  				;18-02-09 moved label off macro
+	   ccall fp_shr_fd              ; shift quotient right 17-03-06
            ghi   R10                    ; shift divisor right
            shr
            phi   R10
@@ -667,7 +676,8 @@ div_z:     ghi   R12                    ; move result to arg1
 ; ***        RF.1 - exponent of arg2  ***
 ; ***        F7.0 - signs             ***
 ; ***************************************
-fp_mul:    pushr F7	;wjr save the C variable
+fp_mul:    		;separated from macro
+	   pushr F7	;wjr save the C variable
 	   pushr R12	;wjr save param regs
 	   pushr R13	;wjr
 	   dec r2	;wjr make a work area -r7 is restores and 2 inc'd in the cleanup routine fp_sc_up
@@ -1129,7 +1139,8 @@ atof_dn5:  glo   R12                    ; see if done
            lbz   atof_div              ; jump if negative
            Ccall fp_mul                 ; multiply by 10
            lbr   atof_go5              ; clean up call
-atof_div:  Ccall fp_div                 ; divice by 10
+atof_div:  				;18-02-09 moved label off macro statement
+           Ccall fp_div                 ; divide by 10
 atof_go5:  irx                         ; recover variables
            ldxa
            phi   R15
