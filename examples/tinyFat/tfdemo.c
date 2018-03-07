@@ -4,6 +4,7 @@
 #include <hspi2.h>
 #include "tinyFAT.h"
 #include "mmc.h"
+#define putc(x) out(7,x)
 #define nofloats
 
 char *verboseError(byte err)
