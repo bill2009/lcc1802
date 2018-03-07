@@ -102,16 +102,20 @@ uint8_t mmc_initialize(uint8_t speed)
 	uint32_t arg;
 	uint8_t status_,i;
 	digitalWrite(SD_SS, HIGH); // set sd card's slave select high
-	for (i = 0; i < 10; i++) spiSend(0XFF);	//send clocks to put it in spi mode
-
+	asm(" seq\n");
+	for (i = 0; i < 100; i++) spiSend(0XFF);	//send clocks to put it in spi mode
+	asm(" req\n");
 	digitalWrite(SD_SS, LOW); // set sd card's slave select low
 	while ((status_ = mmc_cardCommand(GO_IDLE_STATE, 0)) != STATUS_IN_IDLE)
 	{
 		if (!(t0--))
 		{
 			mmc__errorCode = SD_CARD_ERROR_CMD0;
+			printf("card error from status %cx\n",status_);
 			goto fail;
 		}
+		spisend(0x255);
+		delay(1);
 	}
 
 	// check SD version
