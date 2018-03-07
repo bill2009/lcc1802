@@ -17,7 +17,7 @@
 #include <nstdint.h>
 #include "SD_defines.h"
 #include "HW_1802_defines.h"
-#define SD_SS 7	//slave select pin for sd card
+#define SD_SS 3	//slave select pin for sd card (equivalnto arduino pin 6 - change for robotdyn logger card 18-02-28
 const uint16_t BYTESPERSECTOR = 512;
 const uint16_t SD_INIT_TIMEOUT = 2000;			/** init timeout ms */
 const uint16_t SD_ERASE_TIMEOUT = 10000;		/** erase timeout ms */
