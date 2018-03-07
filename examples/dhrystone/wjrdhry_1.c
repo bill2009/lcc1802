@@ -20,8 +20,8 @@
  */
 
 #include "wjrdhry.h"
-//#include <cpu1802spd4port7.h>
-#define putc(x) putcpace(7,x) //limits output rate to the host
+#include <cpu1802spd4port7.h>
+#define putc(x) out(7,x)
 #define __CPUSPEED 10000000
 #define __CPUTYPE1802
 /* Global Variables: */
