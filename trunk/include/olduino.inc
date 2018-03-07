@@ -1,5 +1,6 @@
 ;Feb 8 2013, first version of assembler routines for olduino support	
 ;may 31 - incredibly, there's an error in digitalWrite.  lda2 changed to ldAD
+;Feb 5 2018 changing temp label + in _digitalRead to $$skp, separating label from macro
 ;digitalWrite(unsigned char n, unsigned char hilo){ //set a bit in the output port on or off
 	align 64	;needed to make sure all on same page
 _digitalWrite:
@@ -36,6 +37,7 @@ _digitalRead:
 	ldi 0		;default is false
 	plo R15
 	phi R15
-	b3 +		;i have to reverse the sense of the external line
+	b3 $$skp		;i have to reverse the sense of the external line
 	inc R15		;if external line is high, supply a 1
-+	cretn
+$$skp: 
+	cretn
