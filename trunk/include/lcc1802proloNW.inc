@@ -35,6 +35,9 @@
 ;17-10-17 compatability with clean stack discipline
 ;         changed pushr, removed pushf pushr pushm, removed many dec/inc sp's for work areas
 ;17-10-19 changed LCCCODELOC to CODELOC
+;18-02-08 changed branch to lcc1802Init to lcc1802init to match epilog
+;18-02-09 moved labels off macro calls e.g. $$rcomp
+;18-02-14 replaced $$nobr temporary label with + in jequ2i, jeqi2
 ;18-01-11 changed MACEXP OFF to MACEXP_DFT for version 1.42 of the assembler
 ;18-01-25 changed syntax for SCAL
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
@@ -365,13 +368,13 @@ jeqI2:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	str	sp
 	glo	reg1
 	sm
-	lbnz	$$nobr
+	lbnz	+
 	ghi	reg2
 	str	sp
 	ghi	reg1
 	smb
 	lbz	label
-$$nobr:
++:
 	endm
 jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	glo	reg2
@@ -388,11 +391,11 @@ jeqU1I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
 	glo	reg1
 	smi	(ival)#256
-	lbnz	$$nobr
+	lbnz	+
 	ghi	reg1
 	smbi	(ival)>>8; was/256
 	lbz	label
-$$nobr:
++:
 	endm
 ld2z:	macro	reg1	;load zero into a 16 bit register
 	ldi	0
@@ -1063,11 +1066,13 @@ jcF4:	macro	reg1,reg2,brop,label		;jump if float reg 1< float reg 2
 	ghi	reg2-1		;check 2nd reg
 	shl
 	lbdf	$$rcomp
-$$comp:	jcI4	reg1,reg2,brop,label	;as long as one register is +v
+$$comp:					;moved off macro
+	jcI4	reg1,reg2,brop,label	;as long as one register is +v
 	lbr	$$done
-$$rcomp: jcI4	reg2,reg1,brop,label	;reverse the order of the operands
+$$rcomp: 				;18-02-09 moved off macro
+	jcI4	reg2,reg1,brop,label	;reverse the order of the operands
 $$done:
 	endm
 	listing	on
-	lbr	lcc1802Init
+	lbr	lcc1802init
 	
