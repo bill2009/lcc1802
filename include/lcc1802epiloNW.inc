@@ -23,9 +23,9 @@
 ;17-10-17 SCRT routines changed to clean stack model i.e. push is stxd stxd, pop is inc lda inc ldn
 ;17-10-19 using CPUSPEED instead of LCC1802CPUSPEED, also STACKLOC instead of LCCSTACKLOC
 ;17-10-23 extending work area protection from 10-13 above for 1802 as well as 1805
+rwork:	equ	memAddr	;work register
 ;17-11-25 conditional include for register saves
 ;18-01-28 changed onems() to always use 4 instruction loop, accommodate slower CPU speed
-rwork	equ	memAddr	;work register
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
@@ -88,7 +88,7 @@ _out4:
 	align 16
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
-_call	sex	SP ;make sure X=SP
+_call:	sex	SP ;make sure X=SP
 	glo	retAddr ;save previous return pointer on stack
 	stxd
 	ghi	retAddr
@@ -106,7 +106,7 @@ _call	sex	SP ;make sure X=SP
 ;Standard subroutine return 
 	align 16
 	sep	RPC	;return to the original program
-_return	glo	retAddr	;transfer the current return address to RPC
+_return: glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
 	ghi	retAddr
 	phi	RPC
