@@ -26,6 +26,8 @@
 	License along with this library; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+//18-03-02 prefixed some of the code defines(e.g. EOF) with (unsigned int)
+//
 #ifndef tinyFAT_h
 #define tinyFAT_h
 
@@ -38,11 +40,11 @@
 #define	ERROR_MBR_INVALID_FS		0xF2
 #define ERROR_BOOTSEC_READ_ERROR	0xE0
 #define	ERROR_BOOTSEC_SIGNATURE		0xE1
-#define ERROR_NO_FILE_OPEN			0xFFF0
-#define ERROR_WRONG_FILEMODE		0xFFF1
-#define FILE_IS_EMPTY				0xFFFD
-#define BUFFER_OVERFLOW				0xFFFE
-#define EOF							0xFFFF
+#define ERROR_NO_FILE_OPEN			(unsigned int)0xFFF0
+#define ERROR_WRONG_FILEMODE		(unsigned int)0xFFF1
+#define FILE_IS_EMPTY				(unsigned int)0xFFFD
+#define BUFFER_OVERFLOW				(unsigned int)0xFFFE
+#define EOF							(unsigned int)0xFFFF
 
 #define FILEMODE_BINARY				0x01
 #define FILEMODE_TEXT_READ			0x02
