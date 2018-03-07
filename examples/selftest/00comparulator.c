@@ -1,5 +1,6 @@
 #include "nstdlib.h"
-//#include <cpu1802spd4port7.h>
+#include <cpu1802spd4port7.h>
+#define putc(x) out(7,x)
 void comparulator(unsigned long x,unsigned long y){
 	unsigned int ix=x; unsigned int iy=y;
 	printf("for %d:%d comparulator sez ",ix,iy);
