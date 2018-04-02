@@ -1,4 +1,5 @@
 %{
+//stmt: ASGNP2(addr,ADDP2(reg,consm))  "\tincm R%c,%1\n\tst2 R%c,%0; ASGNP2(addr,ADDP2(reg,consm))**\n"  1
 /* This is the XR1NW machine description file for the 1804/5/6.
  * adapted from xr16.md to target the 1802 microprocessor
  * jan 28 beginning work on the Birthday Compiler
@@ -358,7 +359,7 @@ reg: SUBI2(reg,consm) "?\tcpy2 R%c,R%0	;SUBI2(reg,consm)\n\tdecm R%c,%1	;SUBI2(r
 reg: SUBU2(reg,consm) "?\tcpy2 R%c,R%0	;SUBU2(reg,consm)\n\tdecm R%c,%1	;SUBU2(reg,consm)\n"  1
 reg: SUBP2(reg,consm) "?\tcpy2 R%c,R%0\n\tdecm R%c,%1	; SUBP2(reg,consm)\n"  1
 
-reg: con0  "\tld2z R%c\n" 1
+reg: con0  "\tld2z R%c; reg:con0\n" 1
 reg: acon  "\tldaD R%c,%0; reg:acon\n" 1
 reg: addr  "\tldA2 R%c,%0; reg:addr\n"  2
 
@@ -366,12 +367,14 @@ stmt: ASGNI1(addr,reg)  "\tst1 R%1,%0; ASGNI1\n"  10
 stmt: ASGNI1(indaddr,reg)  "\tstr1 R%1,%0; ASGNI1(indaddr,reg)	DH\n"  5
 stmt: ASGNU1(indaddr,acon)  "\tstr1I %1,%0; ASGNU1(indaddr,acon)	DH\n"  5
 stmt: ASGNU1(addr,reg)  "\tst1 R%1,%0; ASGNU1\n"  10
-stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)		DH\n"  5
+stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)		DH*\n"  5
+stmt: ASGNU1(indaddr,LOADU1(LOADU2(reg)))  "\tstr1 R%1,%0; ASGNU1(indaddr,LOADU1(LOADU2(reg))) 18-03-21\n"  1
 stmt: ASGNI2(addr,acon)  "\tst2I %1,%0; ASGNI2(addr,acon)\n"  5
 stmt: ASGNI2(addr,reg)  "\tst2 R%1,%0; ASGNI2(addr,reg)\n"  10
 stmt: ASGNI2(addr,LOADI2(reg))  "\tst2 R%1,%0; ASGNI2(addr,LOADI2(reg)) 18-02-26\n"  10
 stmt: ASGNU2(addr,reg)  "\tst2 R%1,%0; ASGNU2(addr,reg)\n"  10
 stmt: ASGNU2(addr,LOADU2(reg))  "\tst2 R%1,%0; ASGNU2(addr,LOADU2(reg)) 18-02-26\n"  10
+stmt: ASGNI2(addr,LOADI2(reg))  "\tst2 R%1,%0; ASGNI2(addr,LOADI2(reg)) 18-03-22\n"  10
 stmt: ASGNP2(addr,reg)  "\tst2 R%1,%0; ASGNP2(addr,reg)\n"  1
 stmt: ASGNI4(addr,reg)  "\tst4 R%1,%0\n"  1
 stmt: ASGNU4(addr,reg)  "\tst4 R%1,%0; ASGNU4\n"  1
@@ -1001,7 +1004,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
         framesize = maxargoffset 	//the frame includes the outgoing argument area, 
                 + sizefsave + sizeisave 	//the float and int reg save areas,
                 + roundup(maxoffset, 2);       		// and the area for locals
- 	print(";$$function start$$ %s\n",f->x.name);
+ 	print(";$$function_start$$:%s=%t\n",f->x.name, f->type);
         printf("%s:\t\t;framesize=%d\n", f->x.name,framesize); //wjr june 27 2013
         if (framesize > 2) { 
         		if (0!=(usedmask[IREG]+usedmask[FREG])){  //if there are regs to save
@@ -1096,7 +1099,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
         }
  */
         print("\tCretn\n\n");
- 	print(";$$function end$$ %s\n",f->x.name);
+ 	print(";$$function_end$$ %s\n",f->x.name);
 }
 static void defconst(int suffix, int size, Value v) {
         if (suffix == F && size == 4) {
