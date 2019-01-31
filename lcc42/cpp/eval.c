@@ -1,9 +1,10 @@
+//19-1-31 increased NSTAK WJR
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cpp.h"
 
-#define	NSTAK	32
+#define	NSTAK	64 //was 32 WJR
 #define	SGN	0
 #define	UNS	1
 #define	UND	2
