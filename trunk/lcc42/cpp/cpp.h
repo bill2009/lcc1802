@@ -1,10 +1,11 @@
 /* $Id: cpp.h,v 1.6 2001/06/04 22:42:04 drh Exp $ */
+//19-01-31 increased NINCLUDE NIF
 #include <stdio.h>
 #define	INS	32768		/* input buffer */
 #define	OBS	4096		/* outbut buffer */
 #define	NARG	32		/* Max number arguments to a macro */
-#define	NINCLUDE 32		/* Max number of include directories (-I) */
-#define	NIF	32		/* depth of nesting of #if */
+#define	NINCLUDE 64	 //was 32 WJR	/* Max number of include directories (-I) */
+#define	NIF	64		 //was 32 WJR  /* depth of nesting of #if */
 #ifndef EOF
 #define	EOF	(-1)
 #endif
