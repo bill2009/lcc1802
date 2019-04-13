@@ -6,6 +6,7 @@
 # may 15 trying to add copt modeled on cpp
 #Oct 2 2013 replacing xr18ng with xr18DH
 #Feb 22 2017 replacing xr182b with NW - beginning 1806 adaptation
+#Jan 31 2019 remove -Zi from CFLAGS and LDFLAGS to reduce debug info
 HOSTFILE=etc/win32.c
 TARGET=x86\win32
 TEMPDIR=\\temp
@@ -13,9 +14,9 @@ A=.lib
 O=.obj
 E=.exe
 CC=cl -nologo
-CFLAGS=-DWIN32 -Zi  -Fd$(BUILDDIR)^\
+CFLAGS=-DWIN32   -Fd$(BUILDDIR)^\
 LD=cl -nologo
-LDFLAGS=-Zi  -Fd$(BUILDDIR)^\
+LDFLAGS=  -Fd$(BUILDDIR)^\
 TSTDIR=$(BUILDDIR)\$(TARGET)\tst
 B=$(BUILDDIR)^\
 T=$(TSTDIR)^\
