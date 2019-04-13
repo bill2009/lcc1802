@@ -8,6 +8,7 @@
 //May 13 added char *peep[] for copt optimizer
 //May 24 making xr182b the default target
 //Oct 2  making XR18DH default
+//April 13, 2019 making XR18NW default, adding -r $-$ to p2hex invocation for non-zero code location
 #include <string.h>
 
 static char rcsid[] = "$Id: win32.c,v 1.19 2001/07/09 18:00:13 drh Exp $";
@@ -27,7 +28,7 @@ char *com[] = { LCCDIR "bin\\" "rcc", "-target=xr18DH", "$1", "$2", "$3", 0 }; /
 //char *as[] = { "asw", "-cpu 1802", "-i ..\\..\\include", "-L", "", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
 char *as[] = { LCCDIR "bin\\"  "asw", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
 
-char *ld[] = { LCCDIR "bin\\"  "p2hex", "", //wjr dec 27
+char *ld[] = { LCCDIR "bin\\"  "p2hex", "-r $-$", //wjr dec 27 wjr 19-4-13
 	"", "", "",
 	"$2", "$3", "","               ",0 }; //wjr dec 12
 char *peep[] = { LCCDIR "bin\\copt", LCCDIR "include\\lcc1802.opt", "-I", "$2", "-O", "$3", 0 };
