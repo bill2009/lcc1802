@@ -53,6 +53,7 @@
  * 18-01-25 corrected how -volatile set the regs
  * 18-02-26 attempting some combinations 
  * 18-03-04 another combination rule CVIU4(CVUI2(INDIRU1(addr)))
+ * 18-04-13 xr18NW is the default, commented out display of register mask
  *
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
@@ -696,7 +697,7 @@ static void progbeg(int argc, char *argv[]) {
         	fprintf(stderr,"1805 register variables\n");
         	vmask[IREG] = vmask[FREG] | REGS1805; //allow 4&5
         }
-        fprintf(stderr,"Register mask for variables %X\n",vmask[IREG]);
+        // fprintf(stderr,"Register mask for variables %X\n",vmask[IREG]);
         blkreg = mkreg(SZ_REG_FIRST_TEMP, REG_FIRST_TEMP, 7, IREG);	//which regs to use for block copies and moves
 }
 static Symbol rmap(int opk) {
