@@ -4,7 +4,7 @@
 #include <string.h>
 #include "cpp.h"
 
-#define	NSTAK	64 //was 32 WJR
+#define	NSTAK 64 //was 32 WJR
 #define	SGN	0
 #define	UNS	1
 #define	UND	2
