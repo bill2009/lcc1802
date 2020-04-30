@@ -5,6 +5,7 @@
 //april 23 replace xr18 with xr182b
 //Oct 2 replace XR18ng with xr18DH
 //Feb 22 2017 replacing xr182b with xr18NW - 1806 adaptation
+//20-04-28 replacing xr18no with xr18CX
 #include "c.h"
 #undef yy
 #define yy \
@@ -14,7 +15,7 @@ xx(m1,    		 m1IR) \
 xx(xr16,    	 xr16IR) \
 xx(xr18NW,    	 xr18NWIR) \
 xx(xr18DH,    	 xr18DHIR) \
-xx(xr18no,    	 xr18noIR) \
+xx(xr18CX,    	 xr18CXIR) \
 xx(xr18fl,    	 xr18flIR) \
 xx(sparc/sun,    sparcIR) \
 xx(sparc/solaris,solarisIR) \
