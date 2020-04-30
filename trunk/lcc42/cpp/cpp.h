@@ -1,5 +1,5 @@
-/* $Id: cpp.h,v 1.6 2001/06/04 22:42:04 drh Exp $ */
-//19-01-31 increased NINCLUDE NIF
+/* $Id: cpp.h,v 1.6 2001/06/04 22:4s2:04 drh Exp $ */
+//19-01-31 increased NINCLUDE  NIF
 #include <stdio.h>
 #define	INS	32768		/* input buffer */
 #define	OBS	4096		/* outbut buffer */
