@@ -42,6 +42,8 @@ LCCCX	equ	1		;wjr 20-04-28 set  up for COMX
   	pushr 9	
   	pushr 11
   	pushr 15
+	ldiReg	RCALL,_call
+	ldiReg	RRET,_return
   	Ccall _main		;wjr 20-04-28 start the C program
   	popr  15		;wjr 20-04-29 save/restore BASIC registers
   	popr  11
@@ -106,7 +108,7 @@ _out4:
 
 ;the following routines have short branches so all the code has to stay within the same page
   if MOMCPU<>$1805		;for 1806 use SCAL
-	align 16
+	align 32
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
 _call:	sex	SP ;make sure X=SP
@@ -127,7 +129,7 @@ _call:	sex	SP ;make sure X=SP
 	br	_call-1
 
 ;Standard subroutine return 
-	align 16
+;	align 16
 	sep	RPC	;return to the original program
 _return: phi	r15	;save D #wjr 20-05-01
 	glo	retAddr	;transfer the current return address to RPC
