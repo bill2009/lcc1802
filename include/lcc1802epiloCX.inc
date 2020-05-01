@@ -29,6 +29,7 @@ rwork:	equ	memAddr	;work register
 ;20-04-28 specific version for COMX-35/Crosslib
 ;20-04-29 saving registers for COMX basic
 ;20-04-30 changing init for COMX - saving R4&5, using my own SCRT routines.
+;20-05-01 saving D around Call/return
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
@@ -41,8 +42,6 @@ LCCCX	equ	1		;wjr 20-04-28 set  up for COMX
   	pushr 9	
   	pushr 11
   	pushr 15
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
   	Ccall _main		;wjr 20-04-28 start the C program
   	popr  15		;wjr 20-04-29 save/restore BASIC registers
   	popr  11
@@ -111,6 +110,7 @@ _out4:
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
 _call:	sex	SP ;make sure X=SP
+	phi	r15	;save D #wjr 20-05-01
 	glo	retAddr ;save previous return pointer on stack
 	stxd
 	ghi	retAddr
@@ -123,12 +123,14 @@ _call:	sex	SP ;make sure X=SP
 	phi	RPC
 	lda	retAddr
 	plo	RPC
+	ghi	r15	;save D #wjr 20-05-01
 	br	_call-1
 
 ;Standard subroutine return 
 	align 16
 	sep	RPC	;return to the original program
-_return: glo	retAddr	;transfer the current return address to RPC
+_return: phi	r15	;save D #wjr 20-05-01
+	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
 	ghi	retAddr
 	phi	RPC
@@ -137,6 +139,7 @@ _return: glo	retAddr	;transfer the current return address to RPC
 	phi	retAddr
 	ldn	SP
 	plo	retAddr
+	ghi	r15	;save D #wjr 20-05-01
 	br	_return-1
  ENDIF
 	align 8

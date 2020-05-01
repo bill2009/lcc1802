@@ -42,6 +42,7 @@
 ;18-01-25 changed syntax for SCAL
 ;20-04-28 specific version for COMX-35/Crosslib
 ;20-05-01 fixed names of pushf, pushr, pushm.  may indicate a problem somewhere.
+;20-05-01 copying R15.1 to D before returns to accommodate COMX call/return
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ELSE				;wjr 20-04-28
@@ -763,6 +764,7 @@ Cretn:	macro
  if MOMCPU=$1805
  	sret	6
  else
+ 	ghi	r15	;#20-05-01 for COMX
 	sep	RRET
  endif
 	endm
