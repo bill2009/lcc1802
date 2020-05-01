@@ -1,4 +1,5 @@
 # $Id: makefile,v 2.3 2002/09/03 23:39:22 drh Exp $
+# 20-05-01 xr18CX replaces xr18no
 A=.a
 O=.o
 E=
@@ -65,7 +66,7 @@ RCCOBJS=$Balloc$O \
 	$Bxr16$O \
 	$Bxr182b$O \
 	$Bxr18DH$O \
-	$Bxr18no$O \
+	$Bxr18CX$O \
 	$Bxr18fl$O \
 	$Bsparc$O \
 	$Bstab$O \
@@ -117,7 +118,7 @@ $Bm1$O:		$Bm1.c;		$(CC) $(CFLAGS) -c -Isrc -o $@ $Bm1.c
 $Bxr16$O:	$Bxr16.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr16.c
 $Bxr182b$O:	$Bxr182b.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr182b.c
 $Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18DH.c
-$Bxr18no$O:	$Bxr18no.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18no.c
+$Bxr18CX$O:	$Bxr18CX.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18CX.c
 $Bxr18fl$O:	$Bxr18fl.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18fl.c
 $Bsparc$O:	$Bsparc.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bsparc.c
 $Bx86$O:	$Bx86.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bx86.c
@@ -130,7 +131,7 @@ $Bm1.c:		$Blburg$E src/m1.md;	   $Blburg src/m1.md       $@
 $Bxr16.c:	$Blburg$E src/xr16.md;	   $Blburg src/xr16.md       $@
 $Bxr182b.c:	$Blburg$E src/xr182b.md;   $Blburg src/xr182b.md       $@
 $Bxr18DH.c:	$Blburg$E src/xr18DH.md;   $Blburg src/xr18DH.md       $@
-$Bxr18no.c:	$Blburg$E src/xr18no.md;   $Blburg src/xr18no.md       $@
+$Bxr18CX.c:	$Blburg$E src/xr18CX.md;   $Blburg src/xr18CX.md       $@
 $Bxr18fl.c:	$Blburg$E src/xr18fl.md;   $Blburg src/xr18fl.md       $@
 $Bsparc.c:	$Blburg$E src/sparc.md;    $Blburg src/sparc.md    $@
 $Bx86.c:	$Blburg$E src/x86.md;      $Blburg src/x86.md      $@
@@ -243,7 +244,7 @@ testclean:
 
 clean::		testclean
 		$(RM) $B*$O
-		$(RM) $Bdagcheck.c $Balpha.c $Bmips.c $Bx86.c $Bsparc.c $Bx86linux.c $Bm1.c $Bxr16.c $Bxr182b.c $Bxr18DH.c $Bxr18fl.c $Bxr18no.c
+		$(RM) $Bdagcheck.c $Balpha.c $Bmips.c $Bx86.c $Bsparc.c $Bx86linux.c $Bm1.c $Bxr16.c $Bxr182b.c $Bxr18DH.c $Bxr18fl.c $Bxr18CX.c
 		$(RM) $Blibrcc$A $Bliblcc$A
 #		$(RM) $Brcc1$E $Brcc1$E $B1rcc$E $B2rcc$E
 		$(RM) $B*.ilk
@@ -288,7 +289,7 @@ RCCSRCS=src/alloc.c \
 	$Bxr16.c \
 	$Bxr182b.c \
 	$Bxr18DH.c \
-	$Bxr18no.c \
+	$Bxr18CX.c \
 	$Bxr18fl.c \
 	$Bsparc.c \
 	$Bx86linux.c \
