@@ -41,6 +41,7 @@
 ;18-01-11 changed MACEXP OFF to MACEXP_DFT for version 1.42 of the assembler
 ;18-01-25 changed syntax for SCAL
 ;20-04-28 specific version for COMX-35/Crosslib
+;20-05-01 fixed names of pushf, pushr, pushm.  may indicate a problem somewhere.
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ELSE				;wjr 20-04-28
@@ -776,14 +777,14 @@ pushr:	macro	reg
 	stxd
  endif
 	endm
-xushf:	macro	reg	;push 1st in a sequence of registers
+pushf:	macro	reg	;push 1st in a sequence of registers
 	dec	sp
 	glo	reg
 	stxd
 	ghi	reg
 	stxd
 	endm
-xushm:	macro	reg	;push middle in a sequence of registers
+pushm:	macro	reg	;push middle in a sequence of registers
  if MOMCPU=$1805
  	RSXD	reg
  else
@@ -793,7 +794,7 @@ xushm:	macro	reg	;push middle in a sequence of registers
 	stxd
  endif
 	endm
-xushl:	macro	reg	;push last in a sequence of registers
+pushl:	macro	reg	;push last in a sequence of registers
 	glo	reg
 	stxd
 	ghi	reg
