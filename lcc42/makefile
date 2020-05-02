@@ -1,6 +1,9 @@
 # $Id: makefile,v 2.3 2002/09/03 23:39:22 drh Exp $
 # 20-05-01 xr18CX replaces xr18no
 # 20-05-02 xr18NW replaces xr182b (this is an old change ported from makefile.nt
+# 20-05-02 adding HOSTFILE and TARGET assignments to MAKEFILE
+HOSTFILE=etc/linux.c
+TARGET=x86\linux
 A=.a
 O=.o
 E=
