@@ -1,4 +1,4 @@
-%{ 
+%{
 //stmt: ASGNP2(addr,ADDP2(reg,consm))  "\tincm R%c,%1\n\tst2 R%c,%0; ASGNP2(addr,ADDP2(reg,consm))**\n"  1
 /* This is the XR1CX machine description file for the 1802 COMX-35.
  * adapted from xr16.md to target the 1802 microprocessor
