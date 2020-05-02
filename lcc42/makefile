@@ -1,5 +1,6 @@
 # $Id: makefile,v 2.3 2002/09/03 23:39:22 drh Exp $
 # 20-05-01 xr18CX replaces xr18no
+# 20-05-02 xr18NW replaces xr182b (this is an old change ported from makefile.nt
 A=.a
 O=.o
 E=
@@ -64,7 +65,7 @@ RCCOBJS=$Balloc$O \
 	$Bmips$O \
 	$Bm1$O \
 	$Bxr16$O \
-	$Bxr182b$O \
+	$Bxr18NW$O \
 	$Bxr18DH$O \
 	$Bxr18CX$O \
 	$Bxr18fl$O \
@@ -116,7 +117,7 @@ $Balpha$O:	$Balpha.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Balpha.c
 $Bmips$O:	$Bmips.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bmips.c
 $Bm1$O:		$Bm1.c;		$(CC) $(CFLAGS) -c -Isrc -o $@ $Bm1.c
 $Bxr16$O:	$Bxr16.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr16.c
-$Bxr182b$O:	$Bxr182b.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr182b.c
+$Bxr18NW$O:	$Bxr18NW.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18NW.c
 $Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18DH.c
 $Bxr18CX$O:	$Bxr18CX.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18CX.c
 $Bxr18fl$O:	$Bxr18fl.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bxr18fl.c
@@ -129,7 +130,7 @@ $Balpha.c:	$Blburg$E src/alpha.md;    $Blburg src/alpha.md    $@
 $Bmips.c:	$Blburg$E src/mips.md;     $Blburg src/mips.md     $@
 $Bm1.c:		$Blburg$E src/m1.md;	   $Blburg src/m1.md       $@
 $Bxr16.c:	$Blburg$E src/xr16.md;	   $Blburg src/xr16.md       $@
-$Bxr182b.c:	$Blburg$E src/xr182b.md;   $Blburg src/xr182b.md       $@
+$Bxr18NW.c:	$Blburg$E src/xr18NW.md;   $Blburg src/xr18NW.md       $@
 $Bxr18DH.c:	$Blburg$E src/xr18DH.md;   $Blburg src/xr18DH.md       $@
 $Bxr18CX.c:	$Blburg$E src/xr18CX.md;   $Blburg src/xr18CX.md       $@
 $Bxr18fl.c:	$Blburg$E src/xr18fl.md;   $Blburg src/xr18fl.md       $@
@@ -244,7 +245,7 @@ testclean:
 
 clean::		testclean
 		$(RM) $B*$O
-		$(RM) $Bdagcheck.c $Balpha.c $Bmips.c $Bx86.c $Bsparc.c $Bx86linux.c $Bm1.c $Bxr16.c $Bxr182b.c $Bxr18DH.c $Bxr18fl.c $Bxr18CX.c
+		$(RM) $Bdagcheck.c $Balpha.c $Bmips.c $Bx86.c $Bsparc.c $Bx86linux.c $Bm1.c $Bxr16.c $Bxr18NW.c $Bxr18DH.c $Bxr18fl.c $Bxr18CX.c
 		$(RM) $Blibrcc$A $Bliblcc$A
 #		$(RM) $Brcc1$E $Brcc1$E $B1rcc$E $B2rcc$E
 		$(RM) $B*.ilk
@@ -287,7 +288,7 @@ RCCSRCS=src/alloc.c \
 	$Bmips.c \
 	$Bm1.c \
 	$Bxr16.c \
-	$Bxr182b.c \
+	$Bxr18NW.c \
 	$Bxr18DH.c \
 	$Bxr18CX.c \
 	$Bxr18fl.c \
