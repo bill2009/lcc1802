@@ -43,6 +43,7 @@
 ;20-04-28 specific version for COMX-35/Crosslib
 ;20-05-01 fixed names of pushf, pushr, pushm.  may indicate a problem somewhere.
 ;20-05-01 copying R15.1 to D before returns to accommodate COMX call/return
+;20-05-07 imlementing Ccallv macro for calls to a function pointer
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ELSE				;wjr 20-04-28
@@ -744,8 +745,7 @@ nop1806: macro	;used to inject no-ops to balance timing with an 1802
 	nop	;waste 1.5 instruction times
  endif
 	endm
-
-Ccall:	macro	target
+CcallD:	macro	target ;direct call
  if MOMCPU=$1805
  	IF VERSION<0x142F ;syntax for SCAL changed with version 4.1.2
  		SCAL	6
@@ -779,6 +779,22 @@ pushr:	macro	reg
 	stxd
  endif
 	endm
+Ccall  macro   addr    ;call to an address that may be in a register
+        if      substr("addr",0,1)="R"
+   	  ;address is in a register so we use an indirect call
+	  pushr	r6	;save reg 6
+	  ldi	$$ret&255 ;return address low byte
+	  stxd
+	  ldi	($$ret>>8)&255 ;return address high byte
+	  stxd
+	  cpy2	r6,addr	;put the jump address into R6
+	  Cretn		;and "return" to it
+$$ret:
+        elseif
+	  CcallD addr ;use the original call macro
+        endif
+        endm
+
 pushf:	macro	reg	;push 1st in a sequence of registers
 	dec	sp
 	glo	reg
