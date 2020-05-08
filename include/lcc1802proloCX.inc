@@ -43,7 +43,8 @@
 ;20-04-28 specific version for COMX-35/Crosslib
 ;20-05-01 fixed names of pushf, pushr, pushm.  may indicate a problem somewhere.
 ;20-05-01 copying R15.1 to D before returns to accommodate COMX call/return
-;20-05-07 imlementing Ccallv macro for calls to a function pointer
+;20-05-07 imlementing Ccall macro for calls to a function pointer
+;20-05-08 goobered pushf/m/l to just pushr - should never have changed names.
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ELSE				;wjr 20-04-28
@@ -796,27 +797,13 @@ $$ret:
         endm
 
 pushf:	macro	reg	;push 1st in a sequence of registers
-	dec	sp
-	glo	reg
-	stxd
-	ghi	reg
-	stxd
+	pushr	reg
 	endm
 pushm:	macro	reg	;push middle in a sequence of registers
- if MOMCPU=$1805
- 	RSXD	reg
- else
-	glo	reg
-	stxd
-	ghi	reg
-	stxd
- endif
+	pushr	reg
 	endm
 pushl:	macro	reg	;push last in a sequence of registers
-	glo	reg
-	stxd
-	ghi	reg
-	str	sp
+	pushr	reg
 	endm
 popr:	macro	reg	;routine standalone pop - inc's sp before load
  	inc	sp
