@@ -34,7 +34,6 @@ lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
   ENDIF
-LCCCX	equ	1		;wjr 20-04-28 set  up for COMX
   IFDEF LCCCX			;wjr 20-04-28 setup for COMX - don't set stack or PC, return to BASIC at end
   	pushr 4
   	pushr 5
@@ -112,7 +111,9 @@ _out4:
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
 _call:	sex	SP ;make sure X=SP
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
 	phi	r15	;save D #wjr 20-05-01
+  ENDIF
 	glo	retAddr ;save previous return pointer on stack
 	stxd
 	ghi	retAddr
@@ -125,13 +126,18 @@ _call:	sex	SP ;make sure X=SP
 	phi	RPC
 	lda	retAddr
 	plo	RPC
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
 	ghi	r15	;save D #wjr 20-05-01
+  ENDIF
 	br	_call-1
 
 ;Standard subroutine return 
 ;	align 16
 	sep	RPC	;return to the original program
-_return: phi	r15	;save D #wjr 20-05-01
+_return: 
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
+	phi	r15	;save D #wjr 20-05-01
+  ENDIF
 	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
 	ghi	retAddr
@@ -141,7 +147,9 @@ _return: phi	r15	;save D #wjr 20-05-01
 	phi	retAddr
 	ldn	SP
 	plo	retAddr
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
 	ghi	r15	;save D #wjr 20-05-01
+  ENDIF
 	br	_return-1
  ENDIF
 	align 8

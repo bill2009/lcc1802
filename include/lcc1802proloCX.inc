@@ -45,10 +45,9 @@
 ;20-05-01 copying R15.1 to D before returns to accommodate COMX call/return
 ;20-05-07 imlementing Ccall macro for calls to a function pointer
 ;20-05-08 goobered pushf/m/l to just pushr - should never have changed names.
+;20-05-10 changed indirect call to detect * as the signal i.e. ccall *R11  means call the address in R11
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
-  ELSE				;wjr 20-04-28
-  	org	0x4400		;wjr 20-04-28 specific to COMX-35
   ENDIF				;wjr 17-02-18
 
 R0:	equ	0
@@ -81,6 +80,7 @@ Rt2:	equ	9  ;2nd temp register
 RCALL:	equ 	4 ;standard call routine
 RRET:	equ 	5 ;standard return register
 RPC:	equ 	3 ; standard program counter
+
 
 	listing	off
 	IF VERSION<=0x142F ;syntax for turning off macro expansion changed with version 4.1.2
@@ -765,7 +765,9 @@ Cretn:	macro
  if MOMCPU=$1805
  	sret	6
  else
+   IFDEF LCCCX
  	ghi	r15	;#20-05-01 for COMX
+   ENDIF
 	sep	RRET
  endif
 	endm
@@ -781,14 +783,14 @@ pushr:	macro	reg
  endif
 	endm
 Ccall  macro   addr    ;call to an address that may be in a register
-        if      substr("addr",0,1)="R"
+        if      substr("addr",0,1)="*"
    	  ;address is in a register so we use an indirect call
 	  pushr	r6	;save reg 6
 	  ldi	$$ret&255 ;return address low byte
 	  stxd
 	  ldi	($$ret>>8)&255 ;return address high byte
 	  stxd
-	  cpy2	r6,addr	;put the jump address into R6
+	  cpy2	r6,VAL(substr("addr",1,strlen("addr")-1)) ;put the jump address into R6
 	  Cretn		;and "return" to it
 $$ret:
         elseif
