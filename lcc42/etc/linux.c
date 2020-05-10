@@ -1,5 +1,5 @@
 /* x86s running Linux */
-
+//20-05-10 default version xr18CX
 #include <string.h>
 
 static char rcsid[] = "$Id: linux.c,v 1.5 1998/09/16 20:41:09 drh Exp $";
@@ -12,10 +12,10 @@ char *suffixes[] = { ".c", ".i", ".s", ".o", ".out", 0 };
 char inputs[256] = "";
 char *include[] = {"-I" LCCDIR "include", "-I/usr/include", 0 };
 char *cpp[] = { LCCDIR "cpp", "-D__STRICT_ANSI__", "$1", "$2", "$3", 0 };
-char *com[] = { LCCDIR "rcc", "-target=xr18DH", "$1", "$2", "$3", 0 };
+char *com[] = { LCCDIR "rcc", "-target=xr18CX", "$1", "$2", "$3", 0 }; //wjr 20-18-10
 char *as[] = { LCCDIR "asl", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o", "$3", "$1", "$2", 0 };
 char *ld[] = { LCCDIR "p2hex", "", "", "", "", "$2", "$3", "","",0 }; //wjr dec 12
-char *peep[] = { LCCDIR "copt", LCCDIR "include/lcc1802.opt", "-I", "$2", "-O", "$3", 0 }; //scp oct 10
+char *peep[] = { LCCDIR "copt", LCCDIR "include/lcc1806.opt", "-I", "$2", "-O", "$3", 0 }; //#wjr 20-05-10
 
 extern char *concat(char *, char *);
 
@@ -31,7 +31,7 @@ int option(char *arg) {
 		//ld[7] = "/usr/lib/gcrt1.o";
 		//ld[18] = "-lgmon";
 		;
-	} else if (strcmp(arg, "-b") == 0) 
+	} else if (strcmp(arg, "-b") == 0)
 		;
 	else if (strcmp(arg, "-g") == 0)
 		;

@@ -9,6 +9,7 @@
 //May 24 making xr182b the default target
 //Oct 2  making XR18DH default
 //April 13, 2019 making XR18NW default, adding -r $-$ to p2hex invocation for non-zero code location
+//20-05-10 Making CX the default, lcc1806.opt optimization rules
 #include <string.h>
 
 static char rcsid[] = "$Id: win32.c,v 1.19 2001/07/09 18:00:13 drh Exp $";
@@ -23,7 +24,7 @@ char *cpp[] = { LCCDIR "bin\\" "cpp", "-D__STDC__=1", "-Dwin32", "-D_WIN32", "-D
 	"$1", "$2", "$3", 0 };
 char *include[] = { "-I" LCCDIR "include", 0 };
 
-char *com[] = { LCCDIR "bin\\" "rcc", "-target=xr18DH", "$1", "$2", "$3", 0 }; //wjr dec 12, 27
+char *com[] = { LCCDIR "bin\\" "rcc", "-target=xr18CX", "$1", "$2", "$3", 0 }; //wjr dec 12, 27
 
 //char *as[] = { "asw", "-cpu 1802", "-i ..\\..\\include", "-L", "", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
 char *as[] = { LCCDIR "bin\\"  "asw", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o $3","$1", "$2", 0 }; //wjr dec 12
@@ -31,7 +32,7 @@ char *as[] = { LCCDIR "bin\\"  "asw", "-cpu 1802", "-i " LCCDIR "include", "-L",
 char *ld[] = { LCCDIR "bin\\"  "p2hex", "-r $-$", //wjr dec 27 wjr 19-4-13
 	"", "", "",
 	"$2", "$3", "","               ",0 }; //wjr dec 12
-char *peep[] = { LCCDIR "bin\\copt", LCCDIR "include\\lcc1802.opt", "-I", "$2", "-O", "$3", 0 };
+char *peep[] = { LCCDIR "bin\\copt", LCCDIR "include\\lcc1806.opt", "-I", "$2", "-O", "$3", 0 };
 
 extern char *concat(char *, char *);
 extern char *replace(const char *, int, int);
