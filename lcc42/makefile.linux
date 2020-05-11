@@ -16,8 +16,12 @@ RM=rm -f
 TSTDIR=$(BUILDDIR)/$(TARGET)/tst
 CUSTOM=custom.mk
 include $(CUSTOM)
-B=$(BUILDDIR)/
-T=$(TSTDIR)/
+B=$(BUILDDIR)
+T=$(TSTDIR)
+HOSTFILE=etc/linux.c #wjr
+TARGET=x86/linux #wjr
+BUILDDIR=~/lcc1802
+LCCDIR=~/lcc1802
 
 all::	rcc lburg cpp lcc bprint liblcc copt
 
@@ -114,7 +118,7 @@ $Bmips$O:	$Bmips.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bmips.c
 $Bsparc$O:	$Bsparc.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bsparc.c
 $Bx86$O:	$Bx86.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bx86.c
 $Bx86linux$O:	$Bx86linux.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bx86linux.c
-$Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -o$@ $Bxr18DX.c
+$Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -o$@ $Bxr18DH.c
 $Bxr18CX$O:	$Bxr18CX.c;	$(CC) $(CFLAGS) -c -Isrc -o$@ $Bxr18CX.c
 
 $Bdagcheck.c:	$Blburg$E src/dagcheck.md; $Blburg src/dagcheck.md $@
