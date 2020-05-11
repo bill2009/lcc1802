@@ -67,7 +67,7 @@ RCCOBJS=$Balloc$O \
 	$Bstab$O \
 	$Bx86$O \
 	$Bx86linux$O\
-	$Bxr18CX$O\
+	$Bxr18DH$O\
 	$Bxr18CX$O
 
 $Brcc$E::	$Bmain$O $Blibrcc$A $(EXTRAOBJS)
