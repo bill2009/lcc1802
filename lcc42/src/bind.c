@@ -11,12 +11,7 @@
 #define yy \
 xx(alpha/osf,    alphaIR) \
 xx(mips/irix,    mipsebIR) \
-xx(m1,    		 m1IR) \
-xx(xr16,    	 xr16IR) \
-xx(xr18NW,    	 xr18NWIR) \
 xx(xr18DH,    	 xr18DHIR) \
-xx(xr18CX,    	 xr18CXIR) \
-xx(xr18fl,    	 xr18flIR) \
 xx(sparc/sun,    sparcIR) \
 xx(sparc/solaris,solarisIR) \
 xx(x86/win32,    x86IR) \
