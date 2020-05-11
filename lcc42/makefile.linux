@@ -1,6 +1,7 @@
 # $Id: makefile,v 2.3 2002/09/03 23:39:22 drh Exp $
 # 15-01-09 adding XR18CX for LCC1802
 # 20-05-10 XR18CX replaces XR19DH
+# 20-05-11 adding back lines to keep xr18DH and CX
 A=.a
 O=.o
 E=
@@ -66,6 +67,7 @@ RCCOBJS=$Balloc$O \
 	$Bstab$O \
 	$Bx86$O \
 	$Bx86linux$O\
+	$Bxr18CX$O\
 	$Bxr18CX$O
 
 $Brcc$E::	$Bmain$O $Blibrcc$A $(EXTRAOBJS)
@@ -112,6 +114,7 @@ $Bmips$O:	$Bmips.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bmips.c
 $Bsparc$O:	$Bsparc.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bsparc.c
 $Bx86$O:	$Bx86.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bx86.c
 $Bx86linux$O:	$Bx86linux.c;	$(CC) $(CFLAGS) -c -Isrc -o $@ $Bx86linux.c
+$Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -o$@ $Bxr18DX.c
 $Bxr18CX$O:	$Bxr18CX.c;	$(CC) $(CFLAGS) -c -Isrc -o$@ $Bxr18CX.c
 
 $Bdagcheck.c:	$Blburg$E src/dagcheck.md; $Blburg src/dagcheck.md $@
@@ -120,6 +123,7 @@ $Bmips.c:	$Blburg$E src/mips.md;     $Blburg src/mips.md     $@
 $Bsparc.c:	$Blburg$E src/sparc.md;    $Blburg src/sparc.md    $@
 $Bx86.c:	$Blburg$E src/x86.md;      $Blburg src/x86.md      $@
 $Bx86linux.c:	$Blburg$E src/x86linux.md; $Blburg src/x86linux.md $@
+$Bxr18DH.c:	$Blburg$E src/xr18DH.md;   $Blburg src/xr18DH.md       $@
 $Bxr18CX.c:	$Blburg$E src/xr18CX.md;   $Blburg src/xr18CX.md       $@
 
 $Bbprint$E:	$Bbprint$O;		$(LD) $(LDFLAGS) -o $@ $Bbprint$O
@@ -234,7 +238,8 @@ testclean:
 clean::		testclean
 		$(RM) $B*$O
 		$(RM) $Bdagcheck.c $Balpha.c $Bmips.c $Bx86.c $Bsparc.c $Bx86linux.c
-		$(RM) $Bxr18cx.c
+		$(RM) $Bxr18DH.c
+		$(RM) $Bxr18CX.c
 		$(RM) $Brcc1$E $Brcc1$E $B1rcc$E $B2rcc$E
 		$(RM) $B*.ilk
 
@@ -277,7 +282,8 @@ RCCSRCS=src/alloc.c \
 	$Bsparc.c \
 	$Bx86linux.c \
 	$Bx86.c \
-	$Bxr18cx.c
+	$Bxr18DH.c\
+	$Bxr18CX.c
 
 C=$Blcc -A -d0.6 -Wo-lccdir=$(BUILDDIR) -Isrc -I$(BUILDDIR)
 triple:	$B2rcc$E
