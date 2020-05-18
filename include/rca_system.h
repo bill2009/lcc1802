@@ -1,7 +1,7 @@
 #ifndef _RCA_SYSTEM_H
 #define _RCA_SYSTEM_H
 
-//rca_rand header
+//rca_system header
 void disableinterrupt();
 void enableinterrupt();
 void rca_system_includer(){
