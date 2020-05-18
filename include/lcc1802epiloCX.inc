@@ -30,6 +30,7 @@ rwork:	equ	memAddr	;work register
 ;20-04-29 saving registers for COMX basic
 ;20-04-30 changing init for COMX - saving R4&5, using my own SCRT routines.
 ;20-05-01 saving D around Call/return
+;20-05-18 added sex r2 in SCRT return routine
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
@@ -137,6 +138,7 @@ _call:	sex	SP ;make sure X=SP
 _return: 
   IFDEF LCCCX			;wjr 20-04-28 setup for COMX
 	phi	r15	;save D #wjr 20-05-01
+    sex r2
   ENDIF
 	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
