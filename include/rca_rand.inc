@@ -11,14 +11,22 @@
 ; 
 	align	32
 _rand:
+  IFNDEF LCCCX
+	br $$rand0
+$$seed:
+	db 0xac				; Initial eed value for none LCCCX machines
+	db 0xe1
+$$rand0:
+	ldireg R8, $$seed	; Pointer to Seed value for none LCCCX machines
+  ENDIF
   IFDEF  PECOM 
-	ldireg R8, 0x2be	; COMX PECOM RND seed value
+	ldireg R8, 0x2be	; Pointer to COMX PECOM RND seed value
   ELSE
-	ldireg R8, 0x42be	; COMX BASIC RND seed value
+	ldireg R8, 0x42be	; Pointer to COMX BASIC RND seed value
   ENDIF
 	lda R8	
 	bnz $$rand1			; Do rand if high byte of seed value != 0
-;  IFDEF PECOM|COMX
+  IFDEF LCCCX
 $$zerolow:
 	glo R0					
 	bz $$zerolow		; Wait until R0.0 != 0
@@ -27,12 +35,12 @@ $$zerohigh:
 	ghi R0
 	bnz $$rand2			; If R0.1 != 0 use as high byte of seed value
 	br $$zerohigh		; Wait until R0.1 != 0
-;  ELSE
-;	ldi 0xAC			
-;	phi R15
-;	ldi 0xE1			; fixed seed value
-;	lskp
-; ENDIF
+  ELSE
+	ldi 0xAC			
+	phi R15
+	ldi 0xE1			; fixed seed value
+	lskp
+  ENDIF
 $$rand1:
 	phi R15				; R15.1 = high byte of seed value
 	ldn 8	

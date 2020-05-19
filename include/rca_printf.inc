@@ -26,50 +26,60 @@ _putlcccx:				; R12 = character to output
 	align	32
 _gotoxy:				; R12 = x, R13 = y 
   IFDEF  PECOM 
-	 ldireg R8, 0x7CC6
+	sex R3
+	out 1
+	db  2
+	ldireg R8, 0x7CC5	; R8 = pointer to current cursor position
+	lda R8			
+	phi R15
+	ldn 8
+	plo R15				; R15 = current cursor position
+	ldi 0x20
+	b1 $
+	str R15				; Put a space on current cursor position
   ELSE
-	 ldireg R8, 0x419A 
-	 sex R8 
-	 glo R13 
-	 stxd 
+	ldireg R8, 0x419A	; R8 = pointer to column position
+	sex R8 
+	glo R13 
+	stxd				; Store new column position
   ENDIF
-	 ldi 5 
+	ldi 5				 
 $$loop40: 
-	 plo R15 
-	 glo R13 
-	 shl 
-	 plo R13 
-	 ghi R13 
-	 shlc 
-	 phi R13 
-	 dec R15 
-	 glo R15 
-	 bnz $$loop40 
-	 sex R2 
-	 glo R13 
-	 str R2 
-	 glo R12 
-	 add 
-	 plo R12 
-	 ghi R13 
-	 str R2 
-	 ghi R12 
-	 adc 
-	 phi R12 
-	 sex R8 
+	plo R15				; D=5 to do 5 shifts left on R13, which is R13 = 13 *40, to get R13 = y * 40
+	glo R13 
+	shl 
+	plo R13 
+	ghi R13 
+	shlc 
+	phi R13 
+	dec R15 
+	glo R15 
+	bnz $$loop40 
+	sex R2				
+	glo R13 
+	str R2 
+	glo R12 
+	add 
+	plo R12 
+	ghi R13 
+	str R2 
+	ghi R12 
+	adc 
+	phi R12				; R12 = R13 * 40 + R12, i.e. R12 is new cursor position
+	sex R8 
   IFDEF  COMX 
-	 dec R8 
-	 glo R12 
-	 stxd 
-	 ghi R12 
-	 stxd 
-	 dec R8 
-	 dec R8 
+	dec R8				
+	glo R12 
+	stxd 
+	ghi R12 
+	stxd				; On COMX store new cursor position 0x4197/0x4198 in range 0 - 0x3BF
+	dec R8 
+	dec R8 
   ENDIF
-	 glo R12 
-	 stxd 
-	 ghi R12 
-	 adi 0xf8 
-	 stxd 
-     sex R2
+	glo R12 
+	stxd 
+	ghi R12 
+	adi 0xf8 
+	stxd				; Store new cursor postion in range 0xF800 - 0xFBBF
+    sex R2
 	cretn
