@@ -72,6 +72,11 @@ $$end:
 	align	16
 _vidclr:			; clear screen by writing 0's to video memory
 					; vidmem pointer is R12, vidlen is R13
+  IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+  ENDIF
 $$cpy:
   IFDEF TMC600
 	ldi 0x20		; source a 0 for clearing the screen
@@ -86,6 +91,9 @@ $$cpy:
 	bnz $$cpy
 	ghi R13			; top byte
 	bnz $$cpy
+ IFDEF  PECOM 
+    sex R2
+  ENDIF
 	cretn
 
   IFNDEF TMC600

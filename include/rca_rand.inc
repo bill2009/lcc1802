@@ -9,31 +9,10 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
-	align	32 
+	align	32
 _rand:
-  IFNDEF LCCCX
-	br $$rand0
-$$seed:
-	db 0xac				; Initial eed value for none LCCCX machines
-	db 0xe1
-$$rand0:
-	ldireg R8, $$seed	; Pointer to Seed value for none LCCCX machines
-  ENDIF
-  IFDEF TMC600
-	br $$rand0
-$$seed:
-	db 0xac				; Initial eed value for none LCCCX machines
-	db 0xe1
-$$rand0:
-	ldireg R8, $$seed	; Pointer to Seed value for none LCCCX machines
-  ENDIF 
-  IFDEF PECOM 
-	ldireg R8, 0x2be	; Pointer to COMX PECOM RND seed value
-  ENDIF
-  IFDEF COMX 
-	ldireg R8, 0x42be	; Pointer to COMX BASIC RND seed value
-  ENDIF
-	lda R8	
+    ldireg R12, _seedvalue
+	lda R12	
 	bnz $$rand1			; Do rand if high byte of seed value != 0
   IFDEF PECOM 
 $$zerolow:
@@ -69,7 +48,7 @@ $$zerohigh:
   ENDIF
 $$rand1:
 	phi R15				; R15.1 = high byte of seed value
-	ldn 8	
+	ldn R12	
 $$rand2:
 	plo R15				; R15.0 = low byte of seed value
 	ani 1
@@ -94,14 +73,14 @@ $$rand2:
 	shr					; DF = new input bit
 	ghi R15
 	shrc
-	dec R8
-	str R8				; Store high byte new seed value, 
+	dec R12
+	str R12				; Store high byte new seed value, 
 						; R15.1 >> 1, MSB = DF, new input bit, DF = LSB
 	ani 0x7f
 	phi R15				; R15.1 = seed value & 0x7f, allowing only postivie numbers
 	glo R15
 	shrc
 	plo R15				; R15.0 >> 1, MSB = DF, DF = LSB
-	inc R8
-	str R8				; Store low byte new seed value
+	inc R12
+	str R12				; Store low byte new seed value
 	cretn
