@@ -13,16 +13,28 @@
 _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   IFDEF  PECOM 
 	ldireg R8, 0x7cc8
-  ELSE
+  ENDIF
+  IFDEF  COMX 
 	ldireg R8, 0x4195
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R8, 0x6002
   ENDIF
 	ghi R12
 	str R8
 	inc R8
 	glo R12
 	str R8
-	sex R12
+  IFDEF  TMC600 
+    sex R3
     out 7
+    db 0x70					; select VIS register 7
+    sex 12
+    out 5					; set new baseaddress
+  ELSE
+	sex R12
+    out 7					; set new baseaddress
+  ENDIF
     sex R2
 	cretn
 
@@ -61,7 +73,11 @@ $$end:
 _vidclr:			; clear screen by writing 0's to video memory
 					; vidmem pointer is R12, vidlen is R13
 $$cpy:
+  IFDEF TMC600
+	ldi 0x20		; source a 0 for clearing the screen
+  ELSE
 	ldi 0			; source a 0 for clearing the screen
+  ENDIF
 	b1  $			; wait til video is quiet
 	str R12			; move the byte
 	inc R12			; ++
@@ -72,6 +88,7 @@ $$cpy:
 	bnz $$cpy
 	cretn
 
+  IFNDEF TMC600
 	align	32
 _shapechar:			; shape 'number' of charcters from 'shapelocation'
 					; shapelocation pointer is R12, number of shapes is R13
@@ -108,7 +125,9 @@ $$nextline:
 	glo r13
 	bnz $$nextshape
 	cretn
-	
+  ENDIF
+  
+  IFNDEF TMC600
 	align 64
 _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 'color' on R2/R15
 						; This routine will recolor characters starting from the character number given in 
@@ -179,7 +198,8 @@ $$nextline:
 	sex  R2     
 $$exit:
 	cretn
-	
+  ENDIF
+
 _bgcolor:			; set background to 'color' in R12.0
 					; 0: black
 					; 1: green
@@ -191,8 +211,12 @@ _bgcolor:			; set background to 'color' in R12.0
 					; 7: white
   IFDEF  PECOM 
 	ldireg R8, 0x7cc4
-  ELSE
-	ldireg R8, 0x41C0
+  ENDIF
+  IFDEF  COMX 
+	ldireg R8, 0x41c0
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R8, 0x600b
   ENDIF
 	ldn R8			; get latest out 3 value
 	ani 7			; get old background color
@@ -206,11 +230,43 @@ _bgcolor:			; set background to 'color' in R12.0
 	ani 7			; limit to 3 bits
 	or				; new color or latest out3 value
 	str R8			; store new value 
+  IFDEF  TMC600 
+    sex R3
+    out 7
+    db 0x30			; select VIS register 3
+    sex R8
+    out 5			; set new color valu
+  ELSE	
 	sex R8
 	out 3			; set new color value
+  ENDIF
 	sex R2
 	cretn
 
+  IFDEF TMC600
+_textcolor:			; set text to 'color' in R12.0
+					; 0: black
+					; 1: green
+					; 2: blue
+					; 3: cyan
+					; 4: red
+					; 5: yellow
+					; 6: magenta
+					; 7: white
+					; bit 3 = 1: blink, 0: no blink
+    sex R3
+    out 7
+    db 0x20			; select VIS register 2
+    sex R2
+   	glo R12			; get color
+	ani 0xf			
+	str R2
+	out 5			; set new color value
+	dec R2
+	cretn
+  ENDIF
+  
+  IFNDEF TMC600
 _textcolordefinition:	; set text color to definition in R12.0
 					;  b1	b0	RED	 BLUE	GREEN
 					;   0	 0	CB0	 Cb1	PCB
@@ -236,7 +292,9 @@ _textcolordefinition:	; set text color to definition in R12.0
 	out 3			; set new color definition value
 	sex R2
 	cretn
-
+  ENDIF
+  
+  IFNDEF TMC600
 _monochrome:		; set video to mono if mono=1, set to color if 0
   IFDEF  PECOM 
 	ldireg R8, 0x7cc4
@@ -257,3 +315,4 @@ _monochrome:		; set video to mono if mono=1, set to color if 0
 	out 3			; set new cfc value
 	sex R2
 	cretn
+  ENDIF

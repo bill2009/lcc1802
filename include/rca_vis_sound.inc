@@ -33,8 +33,16 @@ $$toneon:
 	ani 0x7f	
 	phi R15				; R15 = tone		
 $$tone:
+  IFDEF  TMC600 
+    sex R3
+    out 7
+    db 0x40				; select VIS register 4
+	sex R15				; tone generation value
+    out 5				
+  ELSE	
 	sex R15				; tone generation value
 	out 4
+  ENDIF
 	sex R2
 	cretn
 
@@ -42,8 +50,12 @@ $$tone:
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
   IFDEF  PECOM 
 	ldireg R8,0x7CC3	; load current OUT 5 (low byte) video setting from 0x7cc3
-  ELSE
+  ENDIF  
+  IFDEF  COMX 
 	ldireg R8,0x41C3	; load current OUT 5 (low byte) video setting from 0x41C3
+  ENDIF  
+  IFDEF  TMC600 
+	ldireg R8,0x600C	; load current OUT 5 (low byte) video setting from 0x600C
   ENDIF  
     glo R13 
 	ani 0xf
@@ -66,6 +78,11 @@ $$noiseon:
 	ldn R8				; get low byte video value	
 	plo R15				; store in R15.0
 $$noise:					  
+  IFDEF  TMC600 
+    sex R3
+    out 7
+    db 0x50				; select VIS register 5
+  ENDIF	
 	sex R15				; Noise  generation value
 	out 5
 	sex R2

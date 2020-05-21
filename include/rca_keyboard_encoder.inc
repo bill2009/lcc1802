@@ -222,3 +222,284 @@ $$keypressed:
 	cretn
 
   ENDIF
+
+  IFDEF  TMC600 
+	align	32
+_getkey:			; get key value if pressed, otherwise return 0
+	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+$$checknext:
+	smi 1	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	bnz $$checknext ; check next key
+	ldi 0
+	plo R15
+	phi R15
+	cretn			; all keys checked - return 0
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 _getkey		; if key not pressed continue checking
+	ldireg R8,keytable	
+	glo R8
+	add
+	plo R8
+	ldn R8
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+	
+	align	32
+_cgetc:				; wait for key press 
+	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+$$checknext:
+	smi 1	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	bnz $$checknext ; check next key
+	br _cgetc		; no key pressed, check again
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 _cgetc		; if key not pressed continue checking
+	ldireg R8,keytable	
+	glo R8
+	add
+	plo R8
+	ldn R8
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+
+	align 32
+_kbhit:				; return 1 if a key is pressed, 0 if not
+	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+$$checknext:
+	smi 1	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	bnz $$checknext ; check next key
+	ldi 0
+	br  $$exit		; all keys checked - return 0
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 _kbhit		; if key not pressed continue checking
+	ldi 1			; key pressed - return 1
+$$exit:
+	plo R15
+	ldi 0
+	phi R15
+    sex R2
+	cretn
+	
+		align	64
+_getkey_game:		; get game key value if pressed, otherwise return 0
+	ldi 0x3f		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+	plo R15
+$$checknext:
+	glo R15	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	dec R15
+	glo R15
+	smi 0x3a
+	bnz $$arrowkeys
+	ldi 0x30
+	plo R15
+	br $$checknext ; check next key
+$$arrowkeys
+	glo R15
+	smi 0x2f
+	bnz $$checknext ; check next key
+	ldi 0
+	plo R15
+	phi R15
+	cretn			; all keys checked - return 0
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 $$checknext	; if key not pressed continue checking
+	ldireg R8,keytable	
+	glo R8
+	add
+	plo R8
+	ldn R8
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+	
+	align	64
+_cgetc_game:		; wait for game key press 
+	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+	plo R15
+$$checknext:
+	glo R15	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	dec R15
+	glo R15
+	smi 0x3a
+	bnz $$arrowkeys
+	ldi 0x30
+	plo R15
+	br $$checknext ; check next key
+$$arrowkeys
+	glo R15
+	smi 0x2f
+	bnz $$checknext ; check next key
+	br _cgetc_game	; no key pressed, check again
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 _cgetc_game ; if key not pressed continue checking
+	ldireg R8,keytable	
+	glo R8
+	add
+	plo R8
+	ldn R8
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+
+	align 64
+_kbhit_game:		; return 1 if a game key is pressed, 0 if not
+	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
+	plo R15
+$$checknext:
+	glo R15	
+	str R2			; store keyboard latch on stack
+	out 3			; test for key press
+	dec r2
+	b3  $$keypressed
+	dec R15
+	glo R15
+	smi 0x3a
+	bnz $$arrowkeys
+	ldi 0x30
+	plo R15
+	br $$checknext ; check next key
+$$arrowkeys
+	glo R15
+	smi 0x2f
+	bnz $$checknext ; check next key
+	ldi 0
+	br  $$exit		; all keys checked - return 0
+$$keypressed:
+	ldi 4
+	phi R8
+$$keydelay:
+	dec R8
+	ghi R8
+	bnz $$keydelay	; delay loop before we check if the key was really pressed
+	bn3 _kbhit_game ; if key not pressed continue checking
+	ldi 1			; key pressed - return 1
+$$exit:
+	plo R15
+	ldi 0
+	phi R15
+    sex R2
+	cretn
+	
+	align	64
+keytable:
+	db 0x30
+	db 0x31
+	db 0x32
+	db 0x33
+	db 0x34
+	db 0x35
+	db 0x36
+	db 0x37
+	db 0x38
+	db 0x39
+	db 0x3a
+	db 0x3b
+	db 0x3c
+	db 0x3d
+	db 0x3e
+	db 0x3f
+	db 0x40
+	db 0x41
+	db 0x42
+	db 0x43
+	db 0x44
+	db 0x45
+	db 0x46
+	db 0x47
+	db 0x48
+	db 0x49
+	db 0x4a
+	db 0x4b
+	db 0x4c
+	db 0x4d
+	db 0x4e
+	db 0x4f
+	db 0x50
+	db 0x51
+	db 0x52
+	db 0x53
+	db 0x54
+	db 0x55
+	db 0x56
+	db 0x57
+	db 0x58
+	db 0x59
+	db 0x5a
+	db 0x5b
+	db 0x5c
+	db 0x5d
+	db 0x5e
+	db 0x20
+	db 0x20
+	db 0x08
+	db 0x1b
+	db 0x20
+	db 0x20
+	db 0x20
+	db 0x20
+	db 0x20
+	db 0x20
+	db 0x20
+	db 0x18
+	db 0xb
+	db 0x9
+	db 0xd
+	db 0xa
+	db 0x8
+	
+  ENDIF

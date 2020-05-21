@@ -9,17 +9,23 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
-
+ 
 _putlcccx:				; R12 = character to output 
   IFDEF  PECOM 
 	ldireg R13, 0xB102	; value required by 0xaab8 Pecom print routine
  	sex R2
     glo r12
 	lbr 0xaab8
-  ELSE
+  ENDIF
+  IFDEF  COMX 
 	ldireg R13, 0x3302	; value required by 0x2cd3 COMX print routine
     glo r12
     lbr 0x2cd3
+  ENDIF
+  IFDEF TMC600 
+	ldireg R13, 0x2703	; value required by 0x1fd4 TMC600 print routine
+    glo r12
+    lbr 0x1fd4
   ENDIF
 	cretn
 
@@ -37,11 +43,27 @@ _gotoxy:				; R12 = x, R13 = y
 	ldi 0x20
 	b1 $
 	str R15				; Put a space on current cursor position
-  ELSE
+  ENDIF
+  IFDEF  COMX 
 	ldireg R8, 0x419A	; R8 = pointer to column position
 	sex R8 
 	glo R13 
 	stxd				; Store new column position
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R8, 0x6001	; R8 = pointer to column position
+	sex R8 
+	glo R13 
+	sdi 0x28
+	str 8				; Store new column position
+	inc R8
+	lda R8			
+	phi R15
+	ldn 8
+	plo R15				; R15 = current cursor position
+	ldi 0x20
+	b1 $
+	str R15				; Put a space on current cursor position
   ENDIF
 	ldi 5				 
 $$loop40: 
