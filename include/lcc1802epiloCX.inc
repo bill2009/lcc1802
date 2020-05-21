@@ -133,12 +133,14 @@ _call:	sex	SP ;make sure X=SP
 	br	_call-1
 
 ;Standard subroutine return 
-;	align 16
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
+	align 16
+  ENDIF
 	sep	RPC	;return to the original program
 _return: 
   IFDEF LCCCX			;wjr 20-04-28 setup for COMX
 	phi	r15	;save D #wjr 20-05-01
-    sex r2
+        sex r2		;fix x register per marcel
   ENDIF
 	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
