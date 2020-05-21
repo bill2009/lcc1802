@@ -46,6 +46,7 @@
 ;20-05-07 imlementing Ccall macro for calls to a function pointer
 ;20-05-08 goobered pushf/m/l to just pushr - should never have changed names.
 ;20-05-10 changed indirect call to detect * as the signal i.e. ccall *R11  means call the address in R11
+;20-05-12 added JNEU1 as single byte unsigned compare
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -239,6 +240,11 @@ jcU4:	macro	reg1,reg2,brop,label	;21 bytes, lbr@18
 	inc	sp
 	brop	label
 	endm
+jcI1I:	macro	reg1,ival,brop,label	;signed comparison - one byte immediate -for nopromo
+	glo	reg1
+	smi	(ival)#256
+	brop	label  ;execute 
+	endm
 jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate -17 bytes, ls@10, lbr@14
 	glo	reg1
 	smi	(ival)#256
@@ -293,6 +299,15 @@ jneU2:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	ghi	reg1
 	smb
 	inc	sp
+	lbnz	label
+	endm
+jneU1:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
+	dec	sp
+	glo	reg2
+	str	sp
+	glo	reg1
+	sm
+	inc 	sp
 	lbnz	label
 	endm
 
@@ -747,6 +762,9 @@ nop1806: macro	;used to inject no-ops to balance timing with an 1802
  endif
 	endm
 CcallD:	macro	target ;direct call
+   IFDEF LCCCX
+ 	ghi	r15	;#20-05-01 for COMX
+   ENDIF
  if MOMCPU=$1805
  	IF VERSION<0x142F ;syntax for SCAL changed with version 4.1.2
  		SCAL	6
