@@ -40,6 +40,9 @@
 ;18-02-14 replaced $$nobr temporary label with + in jequ2i, jeqi2
 ;18-01-11 changed MACEXP OFF to MACEXP_DFT for version 1.42 of the assembler
 ;18-01-25 changed syntax for SCAL
+;20-05-01 fixed the names of pushf, pushm, pushl - not sure if this is ok.
+;20-05-22 goobered pushf/m/l to just pushr - should never have changed names. Probably never used
+
   IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
 	org	CODELOC		;wjr 17-02-18 allow code relocation
   ENDIF				;wjr 17-02-18
@@ -773,28 +776,14 @@ pushr:	macro	reg
 	stxd
  endif
 	endm
-xushf:	macro	reg	;push 1st in a sequence of registers
-	dec	sp
-	glo	reg
-	stxd
-	ghi	reg
-	stxd
+pushf:	macro	reg	;push 1st in a sequence of registers
+	pushr	reg
 	endm
-xushm:	macro	reg	;push middle in a sequence of registers
- if MOMCPU=$1805
- 	RSXD	reg
- else
-	glo	reg
-	stxd
-	ghi	reg
-	stxd
- endif
+pushm:	macro	reg	;push middle in a sequence of registers
+	pushr	reg
 	endm
-xushl:	macro	reg	;push last in a sequence of registers
-	glo	reg
-	stxd
-	ghi	reg
-	str	sp
+pushl:	macro	reg	;push last in a sequence of registers
+	pushr	reg
 	endm
 popr:	macro	reg	;routine standalone pop - inc's sp before load
  	inc	sp
