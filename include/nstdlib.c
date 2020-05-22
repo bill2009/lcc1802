@@ -13,6 +13,7 @@
 //jan 29 - changing out(5,x) to putc(x)
 //Mar 14 2017 inserting conditional NOP's into printstr, printf to slow down on 1806
 //17-10-19 register variable declaration in printf
+//20-05-22 rearranged dec/inc in memset
  int strncmp(const char *s1, const char *s2, unsigned int n)
 /* ANSI sez:
  *   The `strncmp' function compares not more than `n' characters (characters
@@ -282,8 +283,11 @@ void* memcpy(void* dest, const void* src, unsigned int count) {
 void *memset(void *s, int c, unsigned int n) //sets memory at s to c for n bytes
 {
     unsigned char* p=s;
-    while(n--)
-        *p++ = (unsigned char)c;
+    while(n){
+        *p = (unsigned char)c;
+        p++;
+        n--;
+	}
     return s;
 }
 void nstdlibincluder(){
