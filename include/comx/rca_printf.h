@@ -5,7 +5,7 @@
 void putlcccx(unsigned char c);
 void gotoxy(unsigned char x, unsigned char y);
 void rca_printf_includer(){
-asm(" include rca_printf.inc\n");
+asm(" include comx/rca_printf.inc\n");
 }
 
 #define putc(c) putlcccx(c)

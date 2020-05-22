@@ -5,7 +5,7 @@
 void disableinterrupt();
 void enableinterrupt();
 void rca_system_includer(){
-asm(" include rca_system.inc\n");
+asm(" include comx/rca_system.inc\n");
 }
 
 #endif // _RCA_SYSTEM_H

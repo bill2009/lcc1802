@@ -11,7 +11,7 @@ unsigned char cgetc_game();
 int kbhit_game();  
 
 void rca_keyboard_encoder_includer(){
-asm(" include rca_keyboard_encoder.inc\n");
+asm(" include comx/rca_keyboard_encoder.inc\n");
 }
 
 #endif // _RCA_KEYBOARD_ENCODER_H
