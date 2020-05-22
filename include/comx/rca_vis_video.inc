@@ -272,6 +272,35 @@ _textcolor:			; set text to 'color' in R12.0
 	out 5			; set new color value
 	dec R2
 	cretn
+	
+	align 16
+_setcolor:			; color RAM address in R12
+					; set text to 'color' in R13.0
+					; 0: black
+					; 1: green
+					; 2: blue
+					; 3: cyan
+					; 4: red
+					; 5: yellow
+					; 6: magenta
+					; 7: white
+					; bit 3 = 1: blink, 0: no blink
+    sex R3
+    out 7
+    db 0x20			; select VIS register 2
+    sex R2
+   	glo R13			; get color
+	ani 0xf			
+	str R2
+	out 5			; set new color value
+	dec R2
+	ghi R12
+	adi 0xf8
+	phi R12
+	b1 $
+	ldn R12
+	str R12
+	cretn
   ENDIF
   
   IFNDEF TMC600

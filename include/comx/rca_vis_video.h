@@ -9,6 +9,7 @@ void vidstrcpy(unsigned short int vidmem, char * text);
 unsigned char bgcolor(unsigned char color);
 #ifdef __TMC600__
 void textcolor(unsigned char color);
+void setcolor(unsigned int colormem, unsigned char color);
 #else
 void shapechar(const unsigned char * shapelocation, int number);
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
