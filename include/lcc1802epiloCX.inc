@@ -31,6 +31,7 @@ rwork:	equ	memAddr	;work register
 ;20-04-30 changing init for COMX - saving R4&5, using my own SCRT routines.
 ;20-05-01 saving D around Call/return
 ;20-05-18 added sex r2 in SCRT return routine
+;20-05-23 align for dubdabx - really should move to nstdlib.inc
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
@@ -409,6 +410,9 @@ $$done:
     Cretn ;and we're done - I hope!
  ENDIF
  IFNDEF  LCCNOMATH		;wjr 17-04-09 disable 16 bit math
+ IFDEF LCCNOLONG		;wjr 20-05-23 align needed if longs not included
+   align 256			;wjr 20-05-23
+ ENDIF				;wjr-20-05-23
 _dubdabx:	
 ;experimental binay-ascii conversion using the double-dabble algorithm
 ;thanks to Charles Richmond for the suggestion and code
