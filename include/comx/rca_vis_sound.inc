@@ -9,16 +9,15 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
-	align 64
 _generatetone:			; generate 'tone' in R12, with 'range' in R13 and 'volume' on R2
 	ld2 R15,'O',sp,(7)
 	ani 0xf				
-	bnz $$toneon		; if volume = 0 turn off tone
+	lbnz $$toneon		; if volume = 0 turn off tone
 	ldi 0
 	phi R15
 	ldi 0x80
 	plo R15				; R15 = 0x0080 = turn off tone
-	br  $$tone	
+	lbr  $$tone	
 $$toneon:
 	str R2				; Stack = volume value
 	glo R13		
@@ -46,7 +45,6 @@ $$tone:
 	sex R2
 	cretn
 
-	align 32
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
   IFDEF  PECOM 
 	ldireg R8,0x7CC3	; load current OUT 5 (low byte) video setting from 0x7cc3
@@ -59,12 +57,12 @@ _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
   ENDIF  
     glo R13 
 	ani 0xf
-	bnz $$noiseon		; if volume = 0 turn off noise
+	lbnz $$noiseon		; if volume = 0 turn off noise
 	ldi 0x80
 	phi R15
 	ldn R8				; get low byte video value	
 	plo R15				; R15 = 0x80xx = turn off tone
-	br  $$noise	
+	lbr  $$noise	
 $$noiseon:
 	str R2				; Stack = volume value
 	glo R12

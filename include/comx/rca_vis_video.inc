@@ -13,13 +13,20 @@
 _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   IFDEF  PECOM 
 	ldireg R8, 0x7cc8
+	ldi 0
+	plo r14
+	phi r14	
   ENDIF
   IFDEF  COMX 
 	ldireg R8, 0x4195
+	ldireg R14, 0x4000
   ENDIF
   IFDEF  TMC600 
 	ldireg R8, 0x6002
+	ldireg R14, 0x6100
   ENDIF
+	ldi 0
+	str R14
 	ghi R12
 	str R8
 	inc R8
@@ -38,27 +45,81 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
     sex R2
 	cretn
 
-	align	16
+	align	32
 _vidchar:			; write 'character' to 'vidmem' location in video memory
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
-    sex R2
+	ldi 0
+	plo r14
+	phi r14	
   ENDIF
+  IFDEF  COMX 
+	ldireg R14, 0x4000
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R14, 0x6100
+  ENDIF
+    ldn R14
+	bnz $$flushbuffer
 	glo r13
-	b1  $			; wait til video is quiet
+	b1  $$pushtobuffer	; Display period so buffer data
+	str R12				; move the byte
+	cretn
+$$pushtobuffer:
+	ghi r12
+	str r14
+	inc r14
+	glo r12
+	str r14
+	inc r14
+	glo r13
+	str r14
+	cretn
+$$flushbuffer:
+	phi r15
+	ldi 0
+	str r14
+	inc r14
+	lda r14
+	plo r15
+	ldn r14
+	b1 $
+	str r15
+	glo r13
+	b1  $	
 	str R12			; move the byte
 	cretn
 
-	align	16
+
+	align	32
 _vidstrcpy:			; write 'text' to 'vidmem'
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
-    sex R2
+	ldi 0
+	plo r14
+	phi r14	
   ENDIF
+  IFDEF  COMX 
+	ldireg R14, 0x4000
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R14, 0x6100
+  ENDIF
+    ldn R14
+	bz $$cpy
+	phi r15
+	ldi 0
+	str r14
+	inc r14
+	lda r14
+	plo r15
+	ldn r14
+	b1 $
+	str r15
 $$cpy:
 	lda R13			; pick up input pointer
 	bz $$end
@@ -69,14 +130,34 @@ $$cpy:
 $$end:
 	cretn
 
-	align	16
+	align	32
 _vidclr:			; clear screen by writing 0's to video memory
 					; vidmem pointer is R12, vidlen is R13
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
+	ldi 0
+	plo r14
+	phi r14	
   ENDIF
+  IFDEF  COMX 
+	ldireg R14, 0x4000
+  ENDIF
+  IFDEF  TMC600 
+	ldireg R14, 0x6100
+  ENDIF
+    ldn R14
+	bz $$cpy
+	phi r15
+	ldi 0
+	str r14
+	inc r14
+	lda r14
+	plo r15
+	ldn r14
+	b1 $
+	str r15
 $$cpy:
   IFDEF TMC600
 	ldi 0x20		; source a 0 for clearing the screen
@@ -91,9 +172,6 @@ $$cpy:
 	bnz $$cpy
 	ghi R13			; top byte
 	bnz $$cpy
- IFDEF  PECOM 
-    sex R2
-  ENDIF
 	cretn
 
   IFNDEF TMC600
@@ -104,7 +182,6 @@ _shapechar:			; shape 'number' of charcters from 'shapelocation'
 	sex R3
 	out 1
 	db  2
-    sex R2
   ENDIF
 	ldi 0xf7
 	phi R8
