@@ -42,7 +42,6 @@ $$tone:
 	sex R15				; tone generation value
 	out 4
   ENDIF
-	sex R2
 	cretn
 
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
@@ -83,6 +82,5 @@ $$noise:
   ENDIF	
 	sex R15				; Noise  generation value
 	out 5
-	sex R2
 	cretn
 

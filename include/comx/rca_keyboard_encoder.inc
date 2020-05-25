@@ -77,7 +77,6 @@ $$exit:
 	plo R15
 	ldi 0
 	phi R15
-    sex R2
 	cretn
 
 	align	32	
@@ -103,7 +102,6 @@ $$keypressed:
 	plo R15
 	ldi 0
 	phi R15
-    sex R2
 	cretn
 
 	align	32
@@ -125,7 +123,6 @@ $$keypressed:
 	plo R15
 	ldi 0
 	phi R15
-    sex R2
 	cretn
 	
   ENDIF
@@ -217,7 +214,6 @@ $$exit:
 	plo R15
 	ldi 0
 	phi R15
-    sex R2
 	cretn
 		
 	align	64

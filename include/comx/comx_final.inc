@@ -83,7 +83,7 @@ $$eop:
 	dw $$defus+0x26
 	dw $$defus+0x26
 
-	org 0x6199
+	org 0x99
   ENDIF
 	dw $$defus+0x26
   ENDIF
