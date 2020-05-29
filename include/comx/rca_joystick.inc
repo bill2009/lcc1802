@@ -9,6 +9,45 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
+  IFDEF CIDELSA
+_get_stick:			; get joystick values, 1 = pressed
+					; bit	7		6		5		4		3		2		1		0
+					;		Left 1	Right 1	Down 1	Up 1	Right 2	Left 2	Up 2	Down 2	
+	ldi 0
+	phi R15
+	inp 4
+	xri 0xff
+	plo R15
+	cretn
+
+_get_trigger:		; get trigger/fire values, 1 = pressed
+					; bit	7		6		5		4		3		2		1		0
+					;						Fire					Tilt	Button2 Button1	
+	ldi 0
+	phi R15
+	inp 1
+	xri 0xff
+	plo R15
+	cretn
+	
+_kbhit:				; return 1 if a game key is pressed, 0 if not
+	ldi 0
+	phi R15
+	inp 1
+	xri 0xff
+	bnz $$pressed
+	inp 4	
+	xri 0xff
+	bnz $$pressed
+	ldi 0
+	lskp
+$$pressed
+	ldi 1
+	plo R15
+	cretn
+
+  ENDIF
+  
   IFDEF  PECOM 	
 	align	32
 _getkey:			; get game key (space, up, down, left, right, A, Z, DEL) value if pressed, otherwise return 0

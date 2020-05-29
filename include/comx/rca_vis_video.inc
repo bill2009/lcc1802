@@ -11,28 +11,26 @@
 ; 
 
 _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
-  IFDEF  PECOM 
+	ldireg r14, _vis_buffer
+  IFDEF PECOM 
 	ldireg R8, 0x7cc8
-	ldi 0
-	plo r14
-	phi r14	
   ENDIF
-  IFDEF  COMX 
+  IFDEF COMX 
 	ldireg R8, 0x4195
-	ldireg R14, 0x4000
   ENDIF
-  IFDEF  TMC600 
+  IFDEF TMC600 
 	ldireg R8, 0x6002
-	ldireg R14, 0x6100
-  ENDIF
+  ENDIF  
 	ldi 0
 	str R14
+  IFNDEF CIDELSA 
 	ghi R12
 	str R8
 	inc R8
 	glo R12
 	str R8
-  IFDEF  TMC600 
+  ENDIF  
+  IFDEF TMC600 
     sex R3
     out 7
     db 0x70					; select VIS register 7
@@ -42,24 +40,25 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
 	sex R12
     out 7					; set new baseaddress
   ENDIF
+  IFDEF CIDELSA 
+    ldireg R12, vis_out3_value
+    ldi 0x80
+    str R12
+    out 3
+    sex r3
+    out 5
+    db  0xc8
     sex R2
+  ENDIF
 	cretn
 
 	align	32
 _vidchar:			; write 'character' to 'vidmem' location in video memory
+	ldireg r14, _vis_buffer
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
-	ldi 0
-	plo r14
-	phi r14	
-  ENDIF
-  IFDEF  COMX 
-	ldireg R14, 0x4000
-  ENDIF
-  IFDEF  TMC600 
-	ldireg R14, 0x6100
   ENDIF
     ldn R14
 	bnz $$flushbuffer
@@ -93,21 +92,17 @@ $$flushbuffer:
 	cretn
 
 
+  IFDEF  PECOM 
+	align	64
+  ELSE
 	align	32
+  ENDIF
 _vidstrcpy:			; write 'text' to 'vidmem'
+	ldireg r14, _vis_buffer
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
-	ldi 0
-	plo r14
-	phi r14	
-  ENDIF
-  IFDEF  COMX 
-	ldireg R14, 0x4000
-  ENDIF
-  IFDEF  TMC600 
-	ldireg R14, 0x6100
   ENDIF
     ldn R14
 	bz $$cpy
@@ -130,22 +125,14 @@ $$cpy:
 $$end:
 	cretn
 
-	align	32
+	align	64
 _vidclr:			; clear screen by writing 0's to video memory
 					; vidmem pointer is R12, vidlen is R13
+	ldireg r14, _vis_buffer
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
-	ldi 0
-	plo r14
-	phi r14	
-  ENDIF
-  IFDEF  COMX 
-	ldireg R14, 0x4000
-  ENDIF
-  IFDEF  TMC600 
-	ldireg R14, 0x6100
   ENDIF
     ldn R14
 	bz $$cpy
@@ -191,9 +178,7 @@ $$nextshape:
 	ldi 0xC0 
 	plo R8			; R8 = charmem pointer
 	plo r9			; R9 = vidmem pointer
-	ldi 9 
-	plo R10			; R10.0 = number of lines
-	lda 12			; shapechar routine load next charcater
+	lda R12			; shapechar routine load next charcater
 	phi R10			; R10.1 = character
 $$nextline:
 	ghi R10
@@ -203,8 +188,8 @@ $$nextline:
 	lda R12
 	str R8			; store first shape line in charmem
 	inc R8
-	dec R10
-	glo R10
+	glo R8
+	xri 0xc9
 	bnz $$nextline	; number of lines - 1 if not zero do next line
 	dec r13
 	glo r13
@@ -213,7 +198,7 @@ $$nextline:
   ENDIF
   
   IFNDEF TMC600
-	align 64
+	align 8
 _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 'color' on R2/R15
 						; This routine will recolor characters starting from the character number given in 
 						; characters and following numbers for the number of characters as specified in 'number'.
@@ -240,13 +225,19 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	sex  R8
   IFDEF  PECOM 
 	ldireg R8,0x7CC3; load current out 5 (low byte) video setting from 0x7cc3
-  ELSE
+  ENDIF    
+  IFDEF  COMX 
 	ldireg R8,0x41C3; load current out 5 (low byte) video setting from 0x41C3
   ENDIF    
+  IFDEF  CIDELSA
+    ldi  0xc8
+  ELSE 
 	ldn  R8                      
-	phi  R8                        
-	ldi  0x81                    
+  ENDIF    
+	ori  1
 	plo  R8                        
+	ldi  0                    
+	phi  R8                        
 	out  5                        
 	ldi  0xff           
 	phi  R9                  
@@ -275,14 +266,16 @@ $$nextline:
 	lbnz  $$nextline           
 	glo  R13            ; check on last character           
 	dec  R13                     
-	lbnz  $$nextchar              
-	ldi  0x80                   
+	lbnz  $$nextchar  
+	glo  R8
+	ani  0xfe            
 	plo  R8
 	sex  R8                     
 	out  5                   
-	sex  R2     
-$$exit:
 	cretn
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
   ENDIF
 
 _bgcolor:			; set background to 'color' in R12.0
@@ -302,6 +295,9 @@ _bgcolor:			; set background to 'color' in R12.0
   ENDIF
   IFDEF  TMC600 
 	ldireg R8, 0x600b
+  ENDIF
+  IFDEF  CIDELSA 
+	ldireg R8, _vis_out3_value
   ENDIF
 	ldn R8			; get latest out 3 value
 	ani 7			; get old background color
@@ -325,7 +321,9 @@ _bgcolor:			; set background to 'color' in R12.0
 	sex R8
 	out 3			; set new color value
   ENDIF
-	sex R2
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
 
   IFDEF TMC600
@@ -388,8 +386,12 @@ _textcolordefinition:	; set text color to definition in R12.0
 					;   1  0/1 PCB	 CCB0	CCb1
   IFDEF  PECOM 
 	ldireg R8, 0x7cc4
-  ELSE
+  ENDIF
+  IFDEF  COMX 
 	ldireg R8, 0x41C0
+  ENDIF
+  IFDEF  CIDELSA 
+	ldireg R8, _vis_out3_value
   ENDIF
 	ldn R8			; get latest out 3 value
 	ani 0x9f		; clear text color definition
@@ -404,7 +406,9 @@ _textcolordefinition:	; set text color to definition in R12.0
 	str R8			; store new value 
 	sex R8
 	out 3			; set new color definition value
-	sex R2
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
   ENDIF
   
@@ -412,8 +416,12 @@ _textcolordefinition:	; set text color to definition in R12.0
 _monochrome:		; set video to mono if mono=1, set to color if 0
   IFDEF  PECOM 
 	ldireg R8, 0x7cc4
-  ELSE
+  ENDIF
+  IFDEF  COMX 
 	ldireg R8, 0x41C0
+  ENDIF
+  IFDEF  CIDELSA 
+	ldireg R8, _vis_out3_value
   ENDIF
 	ldn R8			; get latest out 3 value
 	ani 0xf7		; clear cfc
@@ -427,6 +435,8 @@ _monochrome:		; set video to mono if mono=1, set to color if 0
 	str R8			; store new value 
 	sex R8
 	out 3			; set new cfc value
-	sex R2
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
   ENDIF

@@ -2,6 +2,12 @@
 #define _RCA_VIS_VIDEO_H
 
 //rca_vis_video header
+
+unsigned long vis_buffer;
+#ifdef __CIDELSA__
+unsigned char vis_out3_value;
+#endif
+
 void setvideobase(unsigned short int vidmem);
 void vidclr(unsigned int vidmem, int vidlen);
 void vidchar(unsigned short int vidmem, unsigned char character);

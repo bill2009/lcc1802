@@ -59,7 +59,11 @@ _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
 	lbnz $$noiseon		; if volume = 0 turn off noise
 	ldi 0x80
 	phi R15
+  IFDEF  CIDELSA 
+	ldi 0xc8
+  ELSE
 	ldn R8				; get low byte video value	
+  ENDIF  
 	plo R15				; R15 = 0x80xx = turn off tone
 	lbr  $$noise	
 $$noiseon:
@@ -72,7 +76,11 @@ $$noiseon:
 	shl					; shift range 4 bits to the left
 	or					; D = range<<4 | volume
 	phi R15				; R15.1 = range<<4 | volume
+  IFDEF  CIDELSA 
+	ldi 0xc8
+  ELSE
 	ldn R8				; get low byte video value	
+  ENDIF	
 	plo R15				; store in R15.0
 $$noise:					  
   IFDEF  TMC600 
