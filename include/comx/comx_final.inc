@@ -28,7 +28,7 @@ $$sop
 
   IFDEF COMX
 	dw 0x3434
-	dw 0x3030
+	dw 0x3031
 	dw 0xc40d
 	dw 0xffff
 	dw 0x0384
@@ -42,6 +42,9 @@ $$eop:
 	org 0x4292
 	dw $$defus+0x26
 	dw $$defus+0x26
+
+	org 0x4400
+	db ($$defus >> 8) - 0x44
 
 	org 0x4299	
   ENDIF
@@ -68,7 +71,7 @@ $$eop:
   
   IFDEF PECOM
 	dw 0x3032
-	dw 0x3030
+	dw 0x3031
 	dw 0xc40d
 	dw 0xffff
 	dw 0x0384
@@ -82,7 +85,10 @@ $$eop:
 	org 0x92
 	dw $$defus+0x26
 	dw $$defus+0x26
-
+	
+	org 0x200
+	db ($$defus >> 8) - 2
+	
 	org 0x99
   ENDIF
 	dw $$defus+0x26
