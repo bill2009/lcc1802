@@ -41,7 +41,7 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
     out 7					; set new baseaddress
   ENDIF
   IFDEF CIDELSA 
-    ldireg R12, vis_out3_value
+    ldireg R12, _vis_out3_value
     ldi 0x80
     str R12
     out 3
