@@ -14,10 +14,16 @@ _disableinterrupt:
     sex 3
     dis
     db 0x23
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
 
 _enableinterrupt:
     sex 3
     ret
     db 0x23
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn

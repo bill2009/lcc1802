@@ -10,6 +10,12 @@
 ; *******************************************************************
 ; 
 _generatetone:			; generate 'tone' in R12, with 'range' in R13 and 'volume' on R2
+  IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+	sex R2
+  ENDIF
 	ld2 R15,'O',sp,(7)
 	ani 0xf				
 	lbnz $$toneon		; if volume = 0 turn off tone
@@ -42,10 +48,17 @@ $$tone:
 	sex R15				; tone generation value
 	out 4
   ENDIF
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
 
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
   IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+	sex R2
 	ldireg R8,0x7CC3	; load current OUT 5 (low byte) video setting from 0x7cc3
   ENDIF  
   IFDEF  COMX 
@@ -60,7 +73,7 @@ _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
 	ldi 0x80
 	phi R15
   IFDEF  CIDELSA 
-	ldi 0xc8
+	ldi 0x88
   ELSE
 	ldn R8				; get low byte video value	
   ENDIF  
@@ -77,7 +90,7 @@ $$noiseon:
 	or					; D = range<<4 | volume
 	phi R15				; R15.1 = range<<4 | volume
   IFDEF  CIDELSA 
-	ldi 0xc8
+	ldi 0x88
   ELSE
 	ldn R8				; get low byte video value	
   ENDIF	
@@ -90,5 +103,8 @@ $$noise:
   ENDIF	
 	sex R15				; Noise  generation value
 	out 5
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
 	cretn
 

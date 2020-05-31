@@ -51,6 +51,9 @@ $$pressed
   IFDEF  PECOM 	
 	align	32
 _getkey:			; get game key (space, up, down, left, right, A, Z, DEL) value if pressed, otherwise return 0
+	sex R3
+	out 1
+	db  0
 	ldi 0
 	phi R15
 	ldireg r14,keytable
@@ -75,6 +78,9 @@ $$exit:
 
 	align	32	
 _cgetc:				; wait for game key (space, up, down, left, right, A, Z, DEL) press
+	sex R3
+	out 1
+	db  0
 	ldi 0
 	phi R15
 	sex R8			; Set stack to R8 which counts up from 0x7CCA to 0x7CE3 to check all keys
@@ -99,6 +105,9 @@ $$checknext:
 
 	align	32
 _kbhit:				; return 1 if a game key (space, up, down, left, right, A, Z, DEL) is pressed, 0 if not
+	sex R3
+	out 1
+	db  0
 	ldi 0x7C
 	phi R8
 	ldi 0

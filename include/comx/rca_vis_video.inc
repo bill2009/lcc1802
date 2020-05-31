@@ -13,6 +13,9 @@
 _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
 	ldireg r14, _vis_buffer
   IFDEF PECOM 
+	sex R3
+	out 1
+	db  2
 	ldireg R8, 0x7cc8
   ENDIF
   IFDEF COMX 
@@ -41,13 +44,13 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
     out 7					; set new baseaddress
   ENDIF
   IFDEF CIDELSA 
+    out 6					; set new baseaddress
     ldireg R12, _vis_out3_value
     ldi 0x80
     str R12
     out 3
-    sex r3
+    ldireg R12, 0x88
     out 5
-    db  0xc8
     sex R2
   ENDIF
 	cretn
@@ -189,7 +192,11 @@ $$nextline:
 	str R8			; store first shape line in charmem
 	inc R8
 	glo R8
-	xri 0xc9
+  IFDEF  CIDELSA 
+	xri 0xc8
+  ELSE
+  	xri 0xc9
+  ENDIF
 	bnz $$nextline	; number of lines - 1 if not zero do next line
 	dec r13
 	glo r13
@@ -230,7 +237,7 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	ldireg R8,0x41C3; load current out 5 (low byte) video setting from 0x41C3
   ENDIF    
   IFDEF  CIDELSA
-    ldi  0xc8
+    ldi  0x88
   ELSE 
 	ldn  R8                      
   ENDIF    
@@ -288,6 +295,10 @@ _bgcolor:			; set background to 'color' in R12.0
 					; 6: magenta
 					; 7: white
   IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+	sex R2
 	ldireg R8, 0x7cc4
   ENDIF
   IFDEF  COMX 
@@ -385,6 +396,10 @@ _textcolordefinition:	; set text color to definition in R12.0
 					;   0	 1  CCB0 PCB	CCb1
 					;   1  0/1 PCB	 CCB0	CCb1
   IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+	sex R2
 	ldireg R8, 0x7cc4
   ENDIF
   IFDEF  COMX 
@@ -415,6 +430,10 @@ _textcolordefinition:	; set text color to definition in R12.0
   IFNDEF TMC600
 _monochrome:		; set video to mono if mono=1, set to color if 0
   IFDEF  PECOM 
+	sex R3
+	out 1
+	db  2
+	sex R2
 	ldireg R8, 0x7cc4
   ENDIF
   IFDEF  COMX 
