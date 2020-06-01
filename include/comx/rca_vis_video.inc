@@ -49,7 +49,7 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
     ldi 0x80
     str R12
     out 3
-    ldireg R12, 0x88
+    ldireg R12, 0xc8
     out 5
     sex R2
   ENDIF
@@ -123,7 +123,25 @@ $$cpy:
 	bz $$end
 	b1  $			; wait til video is quiet
 	str R12			; move the byte
+  IFDEF CIDELSA
+    glo R12
+    smi 0x28
+    plo R12
+    ghi R12
+    smbi 0
+    phi R12
+    smi 0xf7
+    bnz $$pos_ok
+    glo R12
+    adi 0x29
+    plo R12
+    ghi R12
+    adci 5
+    phi R12    
+$$pos_ok:
+  ELSE
 	inc R12			; ++
+  ENDIF
 	br $$cpy
 $$end:
 	cretn
@@ -164,15 +182,10 @@ $$cpy:
 	bnz $$cpy
 	cretn
 
-  IFNDEF TMC600
+  IFDEF COMX
 	align	32
 _shapechar:			; shape 'number' of charcters from 'shapelocation'
 					; shapelocation pointer is R12, number of shapes is R13
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-  ENDIF
 	ldi 0xf7
 	phi R8
 	ldi 0xfb
@@ -192,15 +205,102 @@ $$nextline:
 	str R8			; store first shape line in charmem
 	inc R8
 	glo R8
-  IFDEF  CIDELSA 
-	xri 0xc8
-  ELSE
   	xri 0xc9
-  ENDIF
 	bnz $$nextline	; number of lines - 1 if not zero do next line
 	dec r13
 	glo r13
 	bnz $$nextshape
+	cretn
+  ENDIF
+  
+  IFDEF PECOM
+	align	32
+_shapechar:			; shape 'number' of charcters from 'shapelocation'
+					; shapelocation pointer is R12, number of shapes is R13
+	sex R3
+	out 1
+	db  2
+	ldi 0xf7
+	phi R8
+	ldi 0xfb
+	phi R9
+$$nextshape:
+	ldi 0xC0 
+	plo R8			; R8 = charmem pointer
+	plo r9			; R9 = vidmem pointer
+	lda R12			; shapechar routine load next charcater
+	phi R10			; R10.1 = character
+$$nextline:
+	ghi R10
+	b1  $			; wait til video is quiet
+	str R9			; store character in vidmem
+	inc R9
+	lda R12
+	str R8			; store first shape line in charmem
+	inc R8
+	glo R8
+  	xri 0xc9
+	bnz $$nextline	; number of lines - 1 if not zero do next line
+	dec r13
+	glo r13
+	bnz $$nextshape
+	cretn
+  ENDIF
+  
+  IFDEF CIDELSA
+_shapechar:			; shape 'number' of charcters from 'shapelocation'
+					; shapelocation pointer is R12, start number R13.1, number of shapes is R13.0, color is on R2 (b7, b6 & b5)
+					
+	ld2 R15,'O',sp,(7)
+	ldireg R8, 0xf400 ; R8 = charmem pointer
+	ldireg R9, 0xffff ; R9 = vidmem pointer
+	ldireg R10, 0x00c9
+	sex R10
+	out 5			; set cmem acccess
+	sex R9
+	out 6			; VIS R6 = 0xFFFF
+	dec r9
+	sex R2
+$$nextshape:
+	ghi R13
+	str R9
+	adi 1
+	phi R13
+	lda R12
+	str R2
+$$nextline:
+	glo R15
+	lbnz $$usecolor1
+	ldn R2
+$$usecolor1:
+	shl
+	str R2
+	lsdf
+	req
+	skp
+	seq
+	glo R15
+	lbnz $$usecolor2
+	lda R12
+	lbr $$shape
+$$usecolor2:
+	lda R12
+	ani 0x3f
+	or
+$$shape:
+	str R8
+	inc R8
+	glo R8
+  	ani 7 
+	lbnz $$nextline	; number of lines - 1 if not zero do next line
+	dec r13
+	glo r13
+	lbnz $$nextshape
+	ldi 0xc8
+	plo R10
+	sex R10
+	out 5
+	sex R2
 	cretn
   ENDIF
   
@@ -237,7 +337,7 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	ldireg R8,0x41C3; load current out 5 (low byte) video setting from 0x41C3
   ENDIF    
   IFDEF  CIDELSA
-    ldi  0x88
+    ldi  0xc8
   ELSE 
 	ldn  R8                      
   ENDIF    

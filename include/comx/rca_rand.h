@@ -3,8 +3,6 @@
 
 //rca_rand header
 
-unsigned short int seedvalue;
-
 unsigned short int rand();
 void rca_rand_includer(){
 asm(" include comx/rca_rand.inc\n");

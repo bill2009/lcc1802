@@ -3,11 +3,6 @@
 
 //rca_vis_video header
 
-unsigned long vis_buffer;
-#ifdef __CIDELSA__
-unsigned char vis_out3_value;
-#endif
-
 void setvideobase(unsigned short int vidmem);
 void vidclr(unsigned int vidmem, int vidlen);
 void vidchar(unsigned short int vidmem, unsigned char character);
@@ -17,7 +12,11 @@ unsigned char bgcolor(unsigned char color);
 void textcolor(unsigned char color);
 void setcolor(unsigned int colormem, unsigned char color);
 #else
+#ifdef __CIDELSA__
+void shapechar(const unsigned char * shapelocation, short int number, unsigned char color);
+#else
 void shapechar(const unsigned char * shapelocation, int number);
+#endif
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
 void textcolordefinition(unsigned char definition);
 void monochrome(unsigned char mono);
