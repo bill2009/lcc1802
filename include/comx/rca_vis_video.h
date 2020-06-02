@@ -1,7 +1,11 @@
 #ifndef _RCA_VIS_VIDEO_H
 #define _RCA_VIS_VIDEO_H
 
-#include <comx/rca_global.h>
+unsigned char vis_text_color;
+unsigned long vis_buffer;
+#ifdef __CIDELSA__
+unsigned char vis_out3_value;
+#endif
 
 //rca_vis_video header
 
@@ -10,8 +14,8 @@ void vidclr(unsigned int vidmem, int vidlen);
 void vidchar(unsigned short int vidmem, unsigned char character);
 void vidstrcpy(unsigned short int vidmem, char * text);
 unsigned char bgcolor(unsigned char color);
-#ifdef __TMC600__
 void textcolor(unsigned char color);
+#ifdef __TMC600__
 void setcolor(unsigned int colormem, unsigned char color);
 #else
 #ifdef __CIDELSA__

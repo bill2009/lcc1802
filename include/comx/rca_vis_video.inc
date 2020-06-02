@@ -23,6 +23,10 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   ENDIF
   IFDEF TMC600 
 	ldireg R8, 0x6002
+  ELSE
+	ldireg R9, _vis_text_color
+	ldi 0
+	str R9
   ENDIF  
 	ldi 0
 	str R14
@@ -106,6 +110,7 @@ _vidstrcpy:			; write 'text' to 'vidmem'
 	sex R3
 	out 1
 	db  2
+	sex R2
   ENDIF
     ldn R14
 	bz $$cpy
@@ -119,8 +124,12 @@ _vidstrcpy:			; write 'text' to 'vidmem'
 	b1 $
 	str r15
 $$cpy:
+	ldireg R9, _vis_text_color
+	ldn R9
+	str 2
 	lda R13			; pick up input pointer
 	bz $$end
+	or
 	b1  $			; wait til video is quiet
 	str R12			; move the byte
   IFDEF CIDELSA
@@ -458,7 +467,21 @@ _textcolor:			; set text to 'color' in R12.0
 	out 5			; set new color value
 	dec R2
 	cretn
+  ELSE
+_textcolor:			; set text to 'color' in R12.0
+					; 0: 'low' character color
+					; 1: 'high' chatacter color
+
+	ldireg R9, _vis_text_color
+	glo R12
+    shrc
+    shrc
+    ani 0x80
+    str R9
+    cretn
+  ENDIF
 	
+  IFDEF TMC600
 	align 16
 _setcolor:			; color RAM address in R12
 					; set text to 'color' in R13.0
