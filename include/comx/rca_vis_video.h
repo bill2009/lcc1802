@@ -1,6 +1,8 @@
 #ifndef _RCA_VIS_VIDEO_H
 #define _RCA_VIS_VIDEO_H
 
+#include <comx/rca_global.h>
+
 //rca_vis_video header
 
 void setvideobase(unsigned short int vidmem);

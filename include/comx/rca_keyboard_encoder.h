@@ -1,6 +1,8 @@
 #ifndef _RCA_KEYBOARD_ENCODER_H
 #define _RCA_KEYBOARD_ENCODER_H
 
+#include <comx/rca_global.h>
+
 //rca_keyboard_encoder header
 unsigned char getkey();
 unsigned char cgetc();

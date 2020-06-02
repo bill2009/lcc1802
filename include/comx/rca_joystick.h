@@ -1,6 +1,8 @@
 #ifndef _RCA_JOYSTICK_H
 #define _RCA_JOYSTICK_H
 
+#include <comx/rca_global.h>
+
 //rca_keyboard_encoder header
 
 #ifdef __CIDELSA__

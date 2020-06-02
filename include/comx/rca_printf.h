@@ -1,6 +1,8 @@
 #ifndef _RCA_PRINTF_H
 #define _RCA_PRINTF_H
 
+#include <comx/rca_global.h>
+
 //rca_printf header
 void putlcccx(unsigned char c);
 void gotoxy(unsigned char x, unsigned char y);

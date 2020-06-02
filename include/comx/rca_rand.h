@@ -1,6 +1,8 @@
 #ifndef _RCA_RAND_H
 #define _RCA_RAND_H
 
+#include <comx/rca_global.h>
+
 //rca_rand header
 
 unsigned short int rand();
