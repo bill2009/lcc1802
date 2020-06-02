@@ -58,7 +58,8 @@
  * 20-05-13 trying to avoid promotion of unsigned char comparisons
  * 20-05-23 adding include lcc1802finale.inc to the end of the module - mostly to accommodate wrapup comx code in include/comx
  * 20-05-23 removed GHI 15 before cretn.  now included in cretn
- *
+ * 20-06-02 updated segment() to support data relocation in combination with prolog changes.
+            note uninitialized globals are now defined with the globss macro and zeroing is done by the macro when needed
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -1171,20 +1172,28 @@ static void global(Symbol p) {
         print("%s:\n", p->x.name);
         if (p->u.seg == BSS){
         	if ((p->type->size)<1000) { //do small declares as one piece
-                	printf("\tdb %d dup (0); zerofill global\n", p->type->size);
+                	printf("\tglobss %d; define global BSS\n", p->type->size);
                 } 
                 else{
                 	for(dbsize=p->type->size;dbsize>1000;dbsize-=1000){//do it in 1000 byte chunks
-                		printf("\tdb %d dup (0); zerofill global\n", 1000);
+                		printf("\tglobss %d; define global BSS\n", 1000);
                 	}
                 	if (dbsize>0) {	//emit remainder
-                		printf("\tdb %d dup (0); zerofill global\n", dbsize);
+                		printf("\tglobss %d; define global BSS\n", dbsize);
                 	}
                 }
 	}
                 	
 }
 static void segment(int n) {
+	char * segnames[]={"N/A ","CODE","BSS ","DATA","CODE"}; //code, bss, initialized data, literals
+	if (1==n || 4==n){ //compiler generated code or literals
+	    print("\torgc\n"); //   reset the location counter to just after the jump
+	} else{
+	    if (2==n || 3==n){ //if this is compiler generated global data
+	        print ("\torgd\n");
+	    }
+	}
         cseg = n;
 }
 static void space(int n) {
