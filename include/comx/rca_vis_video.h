@@ -19,7 +19,7 @@ void textcolor(unsigned char color);
 void setcolor(unsigned int colormem, unsigned char color);
 #else
 #ifdef __CIDELSA__
-void shapechar(const unsigned char * shapelocation, short int number, unsigned char color);
+void shapechar(const unsigned char * shapelocation, unsigned short int number, unsigned char color);
 #else
 void shapechar(const unsigned char * shapelocation, int number);
 #endif
