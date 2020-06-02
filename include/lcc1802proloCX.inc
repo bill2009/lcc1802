@@ -47,10 +47,13 @@
 ;20-05-08 goobered pushf/m/l to just pushr - should never have changed names.
 ;20-05-10 changed indirect call to detect * as the signal i.e. ccall *R11  means call the address in R11
 ;20-05-12 added JNEU1 as single byte unsigned compare
-  IFDEF  CODELOC		;wjr 17-02-18 allow code relocation
-	org	CODELOC		;wjr 17-02-18 allow code relocation
-  ENDIF				;wjr 17-02-18
-
+;20-06-02 updated to support DATALOC in combination with a change to the compiler.  macros orgd,orgc, tracking variable CSEG for current segment
+  IFNDEF CODELOC		;wjr 20-05-29 allow code relocation
+      CODELOC SET 0		;wjr 20-05-29 allow code relocation
+  ENDIF				;wjr 20-05-29 allow code relocation
+      org CODELOC		;wjr 20-05-29 allow code relocation
+  set CSEG,1			;wjr-20-06-2 set current segment to code
+  
 R0:	equ	0
 R1:	equ	1
 R2:	equ	2
@@ -90,6 +93,36 @@ RPC:	equ 	3 ; standard program counter
 		MACEXP_DFT OFF
 	ENDIF
 ;macro definitions
+globss: macro	size	;global blank storage definition
+;printf(";\tdb %d dup (0); zerofill global\n", p->type->size);
+;printf("\tglobss %d; define global BSS\n", p->type->size);
+	IFDEF	NOFILLBSS
+	    ds  size	;this reserves storage but doesn't fill
+	ELSE
+	    db 	size dup (0); zerofill global
+	ENDIF
+	endm
+
+orgc:	macro		;switching from code to data - rom to ram
+     IFDEF  DATALOC
+     	IF  CSEG=2	;if we're in a data segment
+            set DATALOC,$ ;remember the location counter
+	    org CODELOC	;return to the code location counter
+	    set CSEG,1	;remember we're doing code
+	ENDIF
+     ENDIF
+	endm
+	
+orgd:	macro		;switching from data to code - ram to rom
+     IFDEF  DATALOC
+     	IF CSEG=1	;if we're in a code segment
+            set CODELOC,$ ;remember the code location counter
+	    org DATALOC
+	    set CSEG,2	;remember we're doing data
+	ENDIF
+     ENDIF
+	endm
+
 jumpv:	macro	addrReg	;jump to an address in a register
 	pushr	r6	;save the real return address
 	cpy2	r6,addrReg	;put the jump address into R6
