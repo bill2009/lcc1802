@@ -654,7 +654,7 @@ static void progbeg(int argc, char *argv[]) {
         for (i = 0; i < argc; i++){
         	//fprintf(stderr,"arg %d is %s\n",i,argv[i]);
                 if (strstr(argv[i], "-volatile") != 0){ //accept combined args
-                	fprintf(stderr,"going volatile\n");
+                	//fprintf(stderr,"going volatile\n");
                         wjrvolatile = 1;
                 }
                 if (strstr(argv[i], "-cpu1805") != 0){ //accept combined args
@@ -701,7 +701,7 @@ static void progbeg(int argc, char *argv[]) {
         tmask[IREG] = INTTMP; tmask[FREG] = INTTMP;	//tmask & vmask show what regs can be used for vars and temps
         vmask[IREG] = vmask[FREG] = INTVAR; //1802 register variables
         if (wjrvolatile){
-        	fprintf(stderr,"reduced register variables\n");
+        	//fprintf(stderr,"reduced register variables\n");
         	vmask[IREG] = vmask[FREG] =INTVAR & ~REGSVOLATILE; //eliminate 0&1
         }
         if (wjrcpu1805){
