@@ -104,7 +104,14 @@ $$flushbuffer:
 
   IFDEF  PECOM 
 	align	64
-  ELSE
+  ENDIF
+  IFDEF  CIDELSA 
+	align	64
+  ENDIF
+  IFDEF  COMX 
+	align	32
+  ENDIF
+  IFDEF  TMC600 
 	align	32
   ENDIF
 _vidstrcpy:			; write 'text' to 'vidmem'
