@@ -2,6 +2,7 @@
 #define _RCA_VIS_VIDEO_H
 
 unsigned char vis_text_color;
+unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
 #ifdef __CIDELSA__
 unsigned char vis_out3_value;

@@ -24,9 +24,12 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   IFDEF TMC600 
 	ldireg R8, 0x6002
   ELSE
+	ldireg R8, _vis_text_color_mask
 	ldireg R9, _vis_text_color
 	ldi 0
 	str R9
+	ldi 0x80
+	str R8
   ENDIF  
 	ldi 0
 	str R14
@@ -129,7 +132,7 @@ $$cpy:
 	str 2
 	lda R13			; pick up input pointer
 	bz $$end
-	or
+	add
 	b1  $			; wait til video is quiet
 	str R12			; move the byte
   IFDEF CIDELSA
@@ -471,14 +474,29 @@ _textcolor:			; set text to 'color' in R12.0
 _textcolor:			; set text to 'color' in R12.0
 					; 0: 'low' character color
 					; 1: 'high' chatacter color
-
+					; For CIDELSA, if character_set is defined as 4, 4 colors will be available
+	ldireg R8, _vis_text_color_mask
 	ldireg R9, _vis_text_color
+	ldn R8
+	str R2
+  IFDEF CIDELSA
+	smi 0xc0
+	lbz $$fourcolors
+  ENDIF
 	glo R12
     shrc
     shrc
-    ani 0x80
+    and
     str R9
     cretn
+$$fourcolors:
+	glo R12
+	shrc
+	shrc
+	shrc
+	and
+	str R9
+	cretn
   ENDIF
 	
   IFDEF TMC600
