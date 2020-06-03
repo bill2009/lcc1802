@@ -3,6 +3,21 @@
 #17-01-24 trying to warn on assignment/comparison errors
 #17-03-06 disabling optimization for pushr
 #17-03-07 adding optimization for popr
+#20-05-31 eliminating redundant reload
+#20-06-01 redundant copies reduction
+	cpy2 %1,R15 ;LOADU2*(reg)
+	cpy1 %2,%1;LOADU1(reg)
+;%9
+=
+	cpy1 %2,R15 ;LOADU1(LOADU2*(reg)) opt2020-2
+;%9
+
+	st2 %1,%2,%3,%4; ASGNI2(addr,reg)
+	ld2 %1,%2,%3,%4 ;reg:INDIRI2(addr)
+=
+	st2 %1,%2,%3,%4; ASGNI2(addr,reg) -removing reg:INDIRI2(addr) opt2020-1 
+
+
 	popr %1
 	popr %2
 =
@@ -38,7 +53,7 @@
 
 _main:		;framesize=%1
 =
-_main: ;copt is peeping your size %1 frame with oct 23 rules
+_main: ;copt is peeping your size %1 frame with 2020 vision
 
 	cpy2 %1,%2 ;LOAD%3(reg)
 	cpy2 %2,%1
