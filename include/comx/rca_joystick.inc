@@ -15,8 +15,37 @@ _get_stick:			; get joystick values, 1 = pressed
 					;		Left 1	Right 1	Down 1	Up 1	Right 2	Left 2	Up 2	Down 2	
 	ldi 0
 	phi R15
+  IFDEF ALTAIR
+	inp 1
+	xri 0xff
+	ani 0x18
+	shl
+	shl
+	shl
+	plo R8
 	inp 4
 	xri 0xff
+	ani 0x03
+	shl
+	shl
+	shl
+	shl
+	str R2
+	glo R8
+	or
+  ENDIF
+  IFDEF DESTROYER
+	inp 1
+	xri 0xff
+	ani 0x18
+	shl
+	shl
+	shl
+  ENDIF
+  IFDEF DRACO
+	inp 4
+	xri 0xff
+  ENDIF
 	plo R15
 	cretn
 
@@ -27,6 +56,7 @@ _get_trigger:		; get trigger/fire values, 1 = pressed
 	phi R15
 	inp 1
 	xri 0xff
+	ani 0x20
 	plo R15
 	cretn
 	
@@ -35,10 +65,25 @@ _kbhit:				; return 1 if a game key is pressed, 0 if not
 	phi R15
 	inp 1
 	xri 0xff
+  IFDEF ALTAIR
+	ani 0x38
+  ENDIF
+  IFDEF DESTROYER
+	ani 0x38
+  ENDIF
+  IFDEF DRACO
+	ani 0x20
+  ENDIF
 	bnz $$pressed
+  IFNDEF DESTROYER
 	inp 4	
 	xri 0xff
+  IFDEF ALTAIR
+	ani 0x03
+  ENDIF
+	ani 0
 	bnz $$pressed
+  ENDIF
 	ldi 0
 	lskp
 $$pressed

@@ -73,7 +73,19 @@ _vidchar:			; write 'character' to 'vidmem' location in video memory
     ldn R14
 	bnz $$flushbuffer
 	glo r13
+  IFDEF CIDELSA
+  IFDEF DRACO
 	b1  $$pushtobuffer	; Display period so buffer data
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $$pushtobuffer	; Display period so buffer data
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $$pushtobuffer	; Display period so buffer data
+  ENDIF
+  ELSE
+	b1  $$pushtobuffer	; Display period so buffer data
+  ENDIF
 	str R12				; move the byte
 	cretn
 $$pushtobuffer:
@@ -94,10 +106,34 @@ $$flushbuffer:
 	lda r14
 	plo r15
 	ldn r14
+  IFDEF CIDELSA
+  IFDEF DRACO
 	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str r15
 	glo r13
-	b1  $	
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str R12			; move the byte
 	cretn
 
@@ -131,7 +167,19 @@ _vidstrcpy:			; write 'text' to 'vidmem'
 	lda r14
 	plo r15
 	ldn r14
+  IFDEF CIDELSA
+  IFDEF DRACO
 	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $
+  ENDIF
 	str r15
 $$cpy:
 	ldireg R9, _vis_text_color
@@ -140,7 +188,19 @@ $$cpy:
 	lda R13			; pick up input pointer
 	bz $$end
 	add
-	b1  $			; wait til video is quiet
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str R12			; move the byte
   IFDEF CIDELSA
     glo R12
@@ -183,7 +243,19 @@ _vidclr:			; clear screen by writing 0's to video memory
 	lda r14
 	plo r15
 	ldn r14
+  IFDEF CIDELSA
+  IFDEF DRACO
 	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str r15
 $$cpy:
   IFDEF TMC600
@@ -191,7 +263,19 @@ $$cpy:
   ELSE
 	ldi 0			; source a 0 for clearing the screen
   ENDIF
-	b1  $			; wait til video is quiet
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str R12			; move the byte
 	inc R12			; ++
 	dec R13			; decrement count
@@ -217,7 +301,19 @@ $$nextshape:
 	phi R10			; R10.1 = character
 $$nextline:
 	ghi R10
-	b1  $			; wait til video is quiet
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str R9			; store character in vidmem
 	inc R9
 	lda R12
@@ -251,7 +347,19 @@ $$nextshape:
 	phi R10			; R10.1 = character
 $$nextline:
 	ghi R10
-	b1  $			; wait til video is quiet
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	str R9			; store character in vidmem
 	inc R9
 	lda R12
@@ -272,7 +380,15 @@ _shapechar:			; shape 'number' of charcters from 'shapelocation'
 					
 	ld2 R15,'O',sp,(7)
 	ldireg R8, 0xf400 ; R8 = charmem pointer
+  IFDEF DRACO
 	ldireg R9, 0xffff ; R9 = vidmem pointer
+  ENDIF
+  IFDEF ALTAIR
+	ldireg R9, 0xfbff ; R9 = vidmem pointer
+  ENDIF
+  IFDEF DESTROYER
+	ldireg R9, 0xfbff ; R9 = vidmem pointer
+  ENDIF
 	ldireg R10, 0x00c9
 	sex R10
 	out 5			; set cmem acccess
@@ -372,14 +488,38 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	out  6                       
 $$nextchar:
 	ldireg R9,0xf800	; R9 is page mem pointer               
-	b1   $           
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	glo  R12			; load character         
 	str  R9             ; store on screen         
 	inc  R12                 
 	ldi  0xf4           ; R9 is cmem pointer
 	phi  R9                      
 $$nextline:
-	b1   $
+  IFDEF CIDELSA
+  IFDEF DRACO
+	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	ldi  0x3f                  
 	and                 ; clear color bit         
 	str  R9                      
@@ -531,7 +671,19 @@ _setcolor:			; color RAM address in R12
 	ghi R12
 	adi 0xf8
 	phi R12
+  IFDEF CIDELSA
+  IFDEF DRACO
 	b1 $
+  ENDIF
+  IFDEF ALTAIR
+	bn1 $
+  ENDIF
+  IFDEF DESTROYER
+	bn1 $
+  ENDIF
+  ELSE
+	b1 $			; wait til video is quiet
+  ENDIF
 	ldn R12
 	str R12
 	cretn
