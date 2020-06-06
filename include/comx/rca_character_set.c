@@ -21,43 +21,43 @@ void character_set(unsigned char number)
 	{
 		case 0:
 			vis_text_color_mask = 0;
-			shapechar(shape_space, 0x0001, 0x0);
-			shapechar(shape_space, 0x2001, 0x0);
-			shapechar(shape_numbers, 0x300A, RCA_NUMBER_COLOR1);
-			shapechar(shape_alpha, 0x411A, RCA_ALPHA_COLOR1);
+			shapechar(shape_space, 0x00, 1);
+			shapechar(shape_space, 0x20, 1);
+			shapechar(shape_numbers, 0x30, RCA_NUMBER_COLOR1+0xa);
+			shapechar(shape_alpha, 0x41, RCA_ALPHA_COLOR1+0x1a);
 		break;
 
 		case 1:
 			vis_text_color_mask = 0x80;
-			shapechar(shape_space, 0x0001, 0x0);
-			shapechar(shape_space, 0x2001, 0x0);
-			shapechar(shape_numbers, 0x300A, RCA_NUMBER_COLOR1);
-			shapechar(shape_alpha, 0x411A, RCA_ALPHA_COLOR1);
-			shapechar(shape_space, 0x8001, 0x0);
-			shapechar(shape_space, 0xA001, 0x0);
-			shapechar(shape_numbers, 0xB00A, RCA_NUMBER_COLOR2);
-			shapechar(shape_alpha, 0xC11A, RCA_ALPHA_COLOR2);
+			shapechar(shape_space, 0x00, 1);
+			shapechar(shape_space, 0x20, 1);
+			shapechar(shape_numbers, 0x30, RCA_NUMBER_COLOR1+0xa);
+			shapechar(shape_alpha, 0x41, RCA_ALPHA_COLOR1+0x1a);
+			shapechar(shape_space, 0x80, 1);
+			shapechar(shape_space, 0xA0, 1);
+			shapechar(shape_numbers, 0xB0, RCA_NUMBER_COLOR2+0xa);
+			shapechar(shape_alpha, 0xC1, RCA_ALPHA_COLOR2+0x1a);
 		break;
 
 		case 2:
 		case 3:
 			vis_text_color_mask = 0xC0;
-			shapechar(shape_space, 0x0001, 0x0);
-			shapechar(shape_space, 0x2001, 0x0);
-			shapechar(shape_numbers, 0x300A, RCA_NUMBER_COLOR1);
-			shapechar(shape_alpha, 0x411A, RCA_ALPHA_COLOR1);
-			shapechar(shape_space, 0x4001, 0x0);
-			shapechar(shape_space, 0x6001, 0x0);
-			shapechar(shape_numbers, 0x700A, RCA_NUMBER_COLOR2);
-			shapechar(shape_alpha, 0x811A, RCA_ALPHA_COLOR2);
-			shapechar(shape_space, 0x8001, 0x0);
-			shapechar(shape_space, 0xA001, 0x0);
-			shapechar(shape_numbers, 0xB00A, RCA_NUMBER_COLOR3);
-			shapechar(shape_alpha, 0xC11A, RCA_ALPHA_COLOR3);
-			shapechar(shape_space, 0xC001, 0x0);
-			shapechar(shape_space, 0xE001, 0x0);
-			shapechar(shape_numbers, 0xF00A, RCA_NUMBER_COLOR4);
-			shapechar(shape_alpha, 0x011A, RCA_ALPHA_COLOR4);
+			shapechar(shape_space, 0x00, 1);
+			shapechar(shape_space, 0x20, 1);
+			shapechar(shape_numbers, 0x30, RCA_NUMBER_COLOR1+0xa);
+			shapechar(shape_alpha, 0x41, RCA_ALPHA_COLOR1+0x1a);
+			shapechar(shape_space, 0x40, 1);
+			shapechar(shape_space, 0x60, 1);
+			shapechar(shape_numbers, 0x70, RCA_NUMBER_COLOR2+0xa);
+			shapechar(shape_alpha, 0x81, RCA_ALPHA_COLOR2+0x1a);
+			shapechar(shape_space, 0x80, 1);
+			shapechar(shape_space, 0xA0, 1);
+			shapechar(shape_numbers, 0xB0, RCA_NUMBER_COLOR3+0xa);
+			shapechar(shape_alpha, 0xC1, RCA_ALPHA_COLOR3+0x1a);
+			shapechar(shape_space, 0xC0, 1);
+			shapechar(shape_space, 0xE0, 1);
+			shapechar(shape_numbers, 0xF0, RCA_NUMBER_COLOR4+0xa);
+			shapechar(shape_alpha, 0x01, RCA_ALPHA_COLOR4+0x1a);
 		break;
 	}
 }

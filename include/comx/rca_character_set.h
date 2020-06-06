@@ -1,24 +1,24 @@
 #ifndef _RCA_CHARACTER_SET_H
 #define _RCA_CHARACTER_SET_H
 
-#define RCA_ALPHA_COLOR1 0xE0 
-#define RCA_ALPHA_COLOR2 0x60 
-#define RCA_ALPHA_COLOR3 0x40 
-#define RCA_ALPHA_COLOR4 0xC0 
-#define RCA_NUMBER_COLOR1 0xE0 
-#define RCA_NUMBER_COLOR2 0x20 
-#define RCA_NUMBER_COLOR3 0x80 
-#define RCA_NUMBER_COLOR4 0xA0 
+#define RCA_ALPHA_COLOR1 0xE000 
+#define RCA_ALPHA_COLOR2 0x6000 
+#define RCA_ALPHA_COLOR3 0x4000 
+#define RCA_ALPHA_COLOR4 0xC000 
+#define RCA_NUMBER_COLOR1 0xE000 
+#define RCA_NUMBER_COLOR2 0x2000 
+#define RCA_NUMBER_COLOR3 0x8000 
+#define RCA_NUMBER_COLOR4 0xA000 
 
 // Color definition with textcolordefinition(3)
-// BLACK 0x00
-// BLUE 0x20
-// GREEN 0x40
-// CYAN 0x60
-// RED 0x80
-// MAGENTA 0xA0
-// YELLOW 0xC0
-// WHITE 0xE0
+// BLACK 0x0000
+// BLUE 0x2000
+// GREEN 0x4000
+// CYAN 0x6000
+// RED 0x8000
+// MAGENTA 0xA000
+// YELLOW 0xC000
+// WHITE 0xE000
 
 //rca_character_set header
 #ifdef __CIDELSA__

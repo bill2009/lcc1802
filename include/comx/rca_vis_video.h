@@ -19,11 +19,7 @@ void textcolor(unsigned char color);
 #ifdef __TMC600__
 void setcolor(unsigned int colormem, unsigned char color);
 #else
-#ifdef __CIDELSA__
-void shapechar(const unsigned char * shapelocation, unsigned short int number, unsigned char color);
-#else
-void shapechar(const unsigned char * shapelocation, int number);
-#endif
+void shapechar(const unsigned char * shapelocation, unsigned char character, unsigned short int color_number);
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
 void textcolordefinition(unsigned char definition);
 void monochrome(unsigned char mono);
