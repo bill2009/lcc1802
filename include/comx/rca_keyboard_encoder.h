@@ -2,8 +2,10 @@
 #define _RCA_KEYBOARD_ENCODER_H
 
 //rca_keyboard_encoder header
+#ifndef __CIDELSA__
 unsigned char getkey();
 unsigned char cgetc();
+#endif
 int kbhit();  
 
 void rca_keyboard_encoder_includer(){

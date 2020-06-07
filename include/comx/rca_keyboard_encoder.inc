@@ -293,3 +293,36 @@ keytable:
 	db 0x8
 	
   ENDIF
+  
+  IFDEF CIDELSA	
+_kbhit:				; return 1 if a joystick is pressed, 0 if not
+	ldi 0
+	phi R15
+	inp 1
+	xri 0xff
+  IFDEF ALTAIR
+	ani 0x38
+  ENDIF
+  IFDEF DESTROYER
+	ani 0x38
+  ENDIF
+  IFDEF DRACO
+	ani 0x20
+  ENDIF
+	bnz $$pressed
+  IFNDEF DESTROYER
+	inp 4	
+	xri 0xff
+  IFDEF ALTAIR
+	ani 0x03
+  ENDIF
+	ani 0
+	bnz $$pressed
+  ENDIF
+	ldi 0
+	lskp
+$$pressed
+	ldi 1
+	plo R15
+	cretn
+  ENDIF
