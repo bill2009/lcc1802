@@ -374,7 +374,7 @@ $$shape:
 	glo r15
 	lbnz $$nextshape
 	glo R10
-	ani 0x7f
+	ani 0xfe
 	plo R10
 	sex R10
 	out 5
