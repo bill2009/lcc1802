@@ -258,10 +258,10 @@ _vidclr:			; clear screen by writing 0's to video memory
   ENDIF
 	str r15
 $$cpy:
-  IFDEF TMC600
-	ldi 0x20		; source a 0 for clearing the screen
-  ELSE
+  IFDEF COMX
 	ldi 0			; source a 0 for clearing the screen
+  ELSE
+	ldi 0x20		; source a 0 for clearing the screen
   ENDIF
   IFDEF CIDELSA
   IFDEF DRACO

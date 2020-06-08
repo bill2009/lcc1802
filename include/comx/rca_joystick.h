@@ -28,10 +28,10 @@
 #endif
 
 #ifdef __CIDELSA__
-#define MOVE_UP 0x8
-#define MOVE_RIGHT 0x4
-#define MOVE_LEFT 0x2	
-#define MOVE_DOWN 0x10
+#define MOVE_UP 0x2
+#define MOVE_RIGHT 0x8
+#define MOVE_LEFT 0x10	
+#define MOVE_DOWN 0x4
 #define MOVE_FIRE 0x20
 #endif
 
