@@ -8,21 +8,8 @@
 ; *** This software may not be used in commercial applications    ***
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
-; 
+;  
   IFDEF  COMX 
-	align	16
-_getkey:			; get key value if pressed, otherwise return 0
-	b3 $$keypressed	; Check if a key is pressed for the 'first time'
-	bn2 $$nokey		; Branch to nokey if no key was pressed previously
-$$keypressed:
-	inp 3
-	lskp
-$$nokey:
-	ldi 0
-	plo R15
-	ldi 0
-	phi R15
-	cretn
 	
 	align	16
 _cgetc:				; wait for key press
@@ -53,38 +40,9 @@ $$nokey:
   ENDIF
   
   IFDEF  PECOM 
-	align	32
-_getkey:			; get key value if pressed, otherwise return 0
-	sex R3
-	out 1
-	db  0
-	ldireg R8, 0x7CCA
-	sex R8			; Set stack to R8 which counts up from 0x7CCA to 0x7CE3 to check all keys
-$$checknext:
-	inp 3			; bit 0 and 1 indicate key press
-	ani 3
-	bnz $$keypressed; bit 0 or 1 are 1 so a key is pressed
-	glo R8
-	inc R8
-	xri 0xe3
-	bnz $$checknext	; R8++ if not 0xE3 check next key
-	ldi 0
-	br  $$exit		; all keys checked - return 0
-$$keypressed:
-	shr	
-	shr				; move bit 1 into DF
-	glo R8			; get value 'keyset'
-	shlc			; shift left and move DF to b0 so key value is unique
-	adi 0x98		; convert to ASCII
-$$exit:
-	plo R15
-	ldi 0
-	phi R15
-	cretn
-
+  
 	align	32	
 _cgetc:				; wait for key press
-$$cgetc:
 	sex R3
 	out 1
 	db  0
@@ -98,7 +56,7 @@ $$checknext:
 	inc R8
 	xri 0xe3
 	bnz $$checknext	; R8++ if not 0xE3 check next key
-	br  $$cgetc		; all keys checked - check again
+	br  _cgetc		; all keys checked - check again
 $$keypressed:
 	shr	
 	shr				; move bit 1 into DF
@@ -137,37 +95,6 @@ $$keypressed:
   ENDIF
 
   IFDEF  TMC600 
-	align	32
-_getkey:			; get key value if pressed, otherwise return 0
-	ldi 0x40		; keyboard check start value we should check on bit 0 to 5 (i.e 0x3f down to 0)
-$$checknext:
-	smi 1	
-	str R2			; store keyboard latch on stack
-	out 3			; test for key press
-	dec r2
-	b3  $$keypressed
-	bnz $$checknext ; check next key
-	ldi 0
-	plo R15
-	phi R15
-	cretn			; all keys checked - return 0
-$$keypressed:
-	ldi 4
-	phi R8
-$$keydelay:
-	dec R8
-	ghi R8
-	bnz $$keydelay	; delay loop before we check if the key was really pressed
-	bn3 _getkey		; if key not pressed continue checking
-	ldireg R8,keytable	
-	glo R8
-	add
-	plo R8
-	ldn R8
-	plo R15
-	ldi 0
-	phi R15
-	cretn
 	
 	align	32
 _cgetc:				; wait for key press 
@@ -294,35 +221,3 @@ keytable:
 	
   ENDIF
   
-  IFDEF CIDELSA	
-_kbhit:				; return 1 if a joystick is pressed, 0 if not
-	ldi 0
-	phi R15
-	inp 1
-	xri 0xff
-  IFDEF ALTAIR
-	ani 0x38
-  ENDIF
-  IFDEF DESTROYER
-	ani 0x38
-  ENDIF
-  IFDEF DRACO
-	ani 0x20
-  ENDIF
-	bnz $$pressed
-  IFNDEF DESTROYER
-	inp 4	
-	xri 0xff
-  IFDEF ALTAIR
-	ani 0x03
-  ENDIF
-	ani 0
-	bnz $$pressed
-  ENDIF
-	ldi 0
-	lskp
-$$pressed
-	ldi 1
-	plo R15
-	cretn
-  ENDIF
