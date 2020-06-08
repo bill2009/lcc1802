@@ -8,11 +8,13 @@
 ; *** This software may not be used in commercial applications    ***
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
-; 
+;  
   IFDEF CIDELSA
-_get_stick:			; get joystick values, 1 = pressed
+_get_stick:			; get joystick values, specified bit = 1: pressed
 					; bit	7		6		5		4		3		2		1		0
 					;						fire	Left 	Right 	Down 	Up 		
+					;
+					; Note: Destroyer doesn't have up/down keys.
 	ldi 0
 	phi R15
   IFDEF ALTAIR
@@ -50,19 +52,6 @@ _get_stick:			; get joystick values, 1 = pressed
 	plo R15
 	cretn
 
-_get_trigger:		; get fire, 0 = not pressed, 1 = pressed
-					; bit	7		6		5		4		3		2		1		0
-					;						Fire					(Tilt	Button2 Button1)	
-	ldi 0
-	phi R15
-	inp 1
-	xri 0xff
-	ani 0x20
-	lsz
-	ldi 01
-	plo R15
-	cretn
-	
   ENDIF
   
   IFDEF  PECOM 	
@@ -90,19 +79,6 @@ $$checknext:
 	shlc			; shift left and move DF to b0 so key value is unique
 	adi 0x98		; convert to ASCII
 $$exit:
-	plo R15
-	cretn
-
-_get_trigger:		; get joystick space value if pressed return 1, otherwise return 0
-	sex R3
-	out 1
-	db  0
-	ldireg r8,0x7cd4
-	sex R8			; Set stack to R8 / 0x7CD4 to check space keys
-	inp 3			; bit 0 and 1 indicate key press
-	ani 1
-	lsz
-	ldi 1
 	plo R15
 	cretn
 
@@ -160,29 +136,6 @@ $$keydelay:
 	phi R15
 	cretn
 	
-	align	32
-_get_trigger:		; get joystick space value if pressed return 1, otherwise return 0
-	ldi 0x30		; space check is value 0x30
-	str R2			; store keyboard latch on stack
-	out 3			; test for space key press
-	dec r2
-	bn3 $$nokeypressed
-	ldi 4
-	phi R8
-$$keydelay:
-	dec R8
-	ghi R8
-	bnz $$keydelay		; delay loop before we check if the key was really pressed
-	bn3 $$nokeypressed	; if key not pressed return 0
-	ldi 1
-	lskp
-$$nokeypressed:
-	ldi 0
-	plo R15
-	ldi 0
-	phi R15
-	cretn
-		
 	align	16
 keytable:
 	db 0x20
@@ -217,23 +170,6 @@ $$nokey:
 	plo R15
 	ldi 0
 	phi R15
-	cretn
-	
-	align	16
-_get_trigger:		; get trigger value if pressed return 1, otherwise return 0
-	ldi 0
-	phi R15
-	b3 $$keypressed	; Check if a key is pressed for the 'first time'
-	bn2 $$nokey		; Branch to nokey if no key was pressed previously
-$$keypressed:
-	inp 3
-	xri 0x5f
-	bnz $$nokey
-	ldi 1
-	lskp
-$$nokey:
-	ldi 0
-	plo R15
 	cretn
 	
   ENDIF
