@@ -24,12 +24,12 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   IFDEF TMC600 
 	ldireg R8, 0x6002
   ELSE
-	ldireg R8, _vis_text_color_mask
+	ldireg R10, _vis_text_color_mask
 	ldireg R9, _vis_text_color
 	ldi 0
 	str R9
 	ldi 0x80
-	str R8
+	str R10
   ENDIF  
 	ldi 0
 	str R14
@@ -184,7 +184,7 @@ _vidstrcpy:			; write 'text' to 'vidmem'
 $$cpy:
 	ldireg R9, _vis_text_color
 	ldn R9
-	str 2
+	str R2
 	lda R13			; pick up input pointer
 	bz $$end
 	add
@@ -336,9 +336,9 @@ $$nextshape:
   IFDEF CIDELSA
 	lda R12
 	str R2
-  ENDIF
+;  ENDIF
 $$nextline:
-  IFDEF CIDELSA
+;  IFDEF CIDELSA
 	ghi R15
 	lbnz $$usecolor1
 	ldn R2
@@ -351,16 +351,25 @@ $$usecolor1:
 	seq
 	ghi R15
 	lbnz $$usecolor2
-  ENDIF
-	lda R12
-  IFDEF CIDELSA
 	lbr $$shape
 $$usecolor2:
 	lda R12
 	ani 0x3f
 	or
-$$shape:
+  ELSE
+$$nextline:
+	ghi R15
+	lbz $$dontusecolor
+	ani 0xc0
+	str 2	
+	lda R12
+	ani 0x3f
+    or
+    skp
+$$dontusecolor:
+	lda R12
   ENDIF
+$$shape:
 	str R8
 	inc R8
 	glo R8
@@ -560,17 +569,15 @@ _textcolor:			; set text to 'color' in R12.0
 	cretn
   ELSE
 _textcolor:			; set text to 'color' in R12.0
-					; 0: 'low' character color
-					; 1: 'high' chatacter color
-					; For CIDELSA, if character_set is defined as 4, 4 colors will be available
+					; 0: 'low' character color (character 0-127)
+					; 1: 'high' chatacter color (character 128-255)
+					; If character_set is defined as 4, 4 colors will be available (0-0x3f, 0x40-0x7f etc.) Only numbers and capitals
 	ldireg R8, _vis_text_color_mask
 	ldireg R9, _vis_text_color
 	ldn R8
 	str R2
-  IFDEF CIDELSA
 	smi 0xc0
 	lbz $$fourcolors
-  ENDIF
 	glo R12
     shrc
     shrc
