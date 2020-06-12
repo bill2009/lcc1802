@@ -1,15 +1,18 @@
 #ifndef _VIS_VIDEO_H
 #define _VIS_VIDEO_H
 
+//vis_video header
+
+#include "devkit/video/vis.h"
+
 unsigned char vis_text_color;
 unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
 #ifdef __CIDELSA__
-unsigned char vis_out3_value;
+unsigned char vis_out3;
 #endif
 
-//vis_video header
-
+void initvideo();
 void setvideobase(unsigned short int vidmem);
 void vidclr(unsigned int vidmem, int vidlen);
 void vidchar(unsigned short int vidmem, unsigned char character);

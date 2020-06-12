@@ -10,30 +10,34 @@
 ; *******************************************************************
 ; 
 
-_setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
-	ldireg r14, _vis_buffer
-  IFDEF PECOM 
-	sex R3
-	out 1
-	db  2
-	ldireg R8, 0x7cc8
-  ENDIF
-  IFDEF COMX 
-	ldireg R8, 0x4195
-  ENDIF
-  IFDEF TMC600 
-	ldireg R8, 0x6002
-  ELSE
-	ldireg R10, _vis_text_color_mask
-	ldireg R9, _vis_text_color
+_initvideo:				; initialize vis video output and system settings
+	ldireg R8, _vis_buffer
 	ldi 0
-	str R9
+	str R8
+  IFNDEF TMC600 
+	ldireg R8, _vis_text_color_mask
 	ldi 0x80
-	str R10
-  ENDIF  
+	str R8
+	ldireg R8, _vis_text_color
 	ldi 0
-	str R14
+	str R8
+  ENDIF  
+  IFDEF CIDELSA 
+    ldireg R8, _vis_out3
+    ldi 0x80
+    str R8
+    sex R8
+    out 3
+    ldireg R8, 0xc8
+    out 5
+    sex R2
+  ENDIF
+	cretn
+
+_setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
+  SELECT_VIS  
   IFNDEF CIDELSA 
+	ldireg R8, _vis_video_base
 	ghi R12
 	str R8
 	inc R8
@@ -52,24 +56,13 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
   ENDIF
   IFDEF CIDELSA 
     out 6					; set new baseaddress
-    ldireg R12, _vis_out3_value
-    ldi 0x80
-    str R12
-    out 3
-    ldireg R12, 0xc8
-    out 5
-    sex R2
   ENDIF
 	cretn
 
 	align	32
 _vidchar:			; write 'character' to 'vidmem' location in video memory
 	ldireg r14, _vis_buffer
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-  ENDIF
+  SELECT_VIS
     ldn R14
 	bnz $$flushbuffer
 	glo r13
@@ -106,34 +99,10 @@ $$flushbuffer:
 	lda r14
 	plo r15
 	ldn r14
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	str r15
 	glo r13
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	str R12			; move the byte
 	cretn
 
@@ -152,12 +121,7 @@ $$flushbuffer:
   ENDIF
 _vidstrcpy:			; write 'text' to 'vidmem'
 	ldireg r14, _vis_buffer
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-  ENDIF
+  SELECT_VIS_SEX2
     ldn R14
 	bz $$cpy
 	phi r15
@@ -167,19 +131,7 @@ _vidstrcpy:			; write 'text' to 'vidmem'
 	lda r14
 	plo r15
 	ldn r14
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $
-  ENDIF
+  WAIT_DISPLAY
 	str r15
 $$cpy:
 	ldireg R9, _vis_text_color
@@ -188,19 +140,7 @@ $$cpy:
 	lda R13			; pick up input pointer
 	bz $$end
 	add
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	str R12			; move the byte
   IFDEF CIDELSA
     glo R12
@@ -229,11 +169,7 @@ $$end:
 _vidclr:			; clear screen by writing 0's to video memory
 					; vidmem pointer is R12, vidlen is R13
 	ldireg r14, _vis_buffer
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-  ENDIF
+  SELECT_VIS
     ldn R14
 	bz $$cpy
 	phi r15
@@ -243,39 +179,11 @@ _vidclr:			; clear screen by writing 0's to video memory
 	lda r14
 	plo r15
 	ldn r14
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	str r15
 $$cpy:
-  IFDEF COMX
-	ldi 0			; source a 0 for clearing the screen
-  ELSE
-	ldi 0x20		; source a 0 for clearing the screen
-  ENDIF
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+	ldi _vis_space	; source a 0 or 0x20 for clearing the screen
+  WAIT_DISPLAY
 	str R12			; move the byte
 	inc R12			; ++
 	dec R13			; decrement count
@@ -293,28 +201,10 @@ _shapechar:				; shape 'number' of charcters from 'shapelocation'
 	ld2 R15,'O',sp,(7)
 	ldi 0xf4
 	phi R8				; R8 = charmem pointer
-  IFDEF CIDELSA
-  IFDEF DRACO
-	ldireg R9, 0xffff	; R9 = vidmem pointer
-  ENDIF
-  IFDEF ALTAIR
-	ldireg R9, 0xfbff	; R9 = vidmem pointer
-  ENDIF
-  IFDEF DESTROYER
-	ldireg R9, 0xfbff	; R9 = vidmem pointer
-  ENDIF
-	ldireg R10, 0x00c9
-  ELSE
-	ldireg R9, 0xfbff	; R9 = vidmem pointer
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	ldireg R10,0x7CC3	; load current out 5 (low byte) video setting from 0x7cc3
-  ENDIF    
-  IFDEF  COMX 
-	ldireg R10,0x41C3	; load current out 5 (low byte) video setting from 0x41C3
-  ENDIF    
+	ldireg R9, _vis_shape_pointer	; R9 = vidmem pointer
+	ldireg R10, _vis_out5
+  SELECT_VIS   
+  IFNDEF CIDELSA 
 	ldn  R10                      
 	ori  1
 	plo  R10                        
@@ -333,6 +223,7 @@ $$nextshape:
 	glo R13
 	str R9
 	inc R13
+  IFDEF  PECOM 
 	ghi R13
 	lbz $$standardlines
 	ldi 8
@@ -345,18 +236,13 @@ $$nextshape:
 	ghi R13
 	lskp
 $$standardlines:
-  IFDEF CIDELSA
-	ldi 8
-  ELSE
-    ldi 9
   ENDIF
+	ldi _vis_char_lines
 	plo R14
   IFDEF CIDELSA
 	lda R12
 	str R2
-;  ENDIF
 $$nextline:
-;  IFDEF CIDELSA
 	ghi R15
 	lbnz $$usecolor1
 	ldn R2
@@ -420,11 +306,7 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 						; 2 green		yellow		blue		cyan			
 						; 3	cyan		white		magenta		white
 						
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-  ENDIF
+  SELECT_VIS
 	ld2 R15,'O',sp,(7)
 	shrc
 	shrc
@@ -432,15 +314,10 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	ani  0xc0
 	plo  R15			; put color bits in bit 6 and 7
 	sex  R8
-  IFDEF  PECOM 
-	ldireg R8,0x7CC3; load current out 5 (low byte) video setting from 0x7cc3
-  ENDIF    
-  IFDEF  COMX 
-	ldireg R8,0x41C3; load current out 5 (low byte) video setting from 0x41C3
-  ENDIF    
   IFDEF  CIDELSA
     ldi  0xc8
   ELSE 
+	ldireg R8,_vis_out5	; load current out 5 (low byte) video setting from 0x41C3
 	ldn  R8                      
   ENDIF    
 	ori  1
@@ -455,38 +332,14 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	out  6                       
 $$nextchar:
 	ldireg R9,0xf800	; R9 is page mem pointer               
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	glo  R12			; load character         
 	str  R9             ; store on screen         
 	inc  R12                 
 	ldi  0xf4           ; R9 is cmem pointer
 	phi  R9                      
 $$nextline:
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1 $
-  ENDIF
-  IFDEF ALTAIR
-	bn1 $
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $
-  ENDIF
-  ELSE
-	b1 $			; wait til video is quiet
-  ENDIF
+  WAIT_DISPLAY
 	ldi  0x3f                  
 	and                 ; clear color bit         
 	str  R9                      
@@ -520,22 +373,8 @@ _bgcolor:			; set background to 'color' in R12.0
 					; 5: yellow
 					; 6: magenta
 					; 7: white
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-	ldireg R8, 0x7cc4
-  ENDIF
-  IFDEF  COMX 
-	ldireg R8, 0x41c0
-  ENDIF
-  IFDEF  TMC600 
-	ldireg R8, 0x600b
-  ENDIF
-  IFDEF  CIDELSA 
-	ldireg R8, _vis_out3_value
-  ENDIF
+  SELECT_VIS_SEX2
+	ldireg R8, _vis_out3
 	ldn R8			; get latest out 3 value
 	ani 7			; get old background color
 	plo R15
@@ -648,19 +487,8 @@ _textcolordefinition:	; set text color to definition in R12.0
 					;   0	 0	CB0	 Cb1	PCB
 					;   0	 1  CCB0 PCB	CCb1
 					;   1  0/1 PCB	 CCB0	CCb1
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-	ldireg R8, 0x7cc4
-  ENDIF
-  IFDEF  COMX 
-	ldireg R8, 0x41C0
-  ENDIF
-  IFDEF  CIDELSA 
-	ldireg R8, _vis_out3_value
-  ENDIF
+  SELECT_VIS_SEX2
+	ldireg R8, _vis_out3
 	ldn R8			; get latest out 3 value
 	ani 0x9f		; clear text color definition
 	str R2			; store value on stack
@@ -682,19 +510,8 @@ _textcolordefinition:	; set text color to definition in R12.0
   
   IFNDEF TMC600
 _monochrome:		; set video to mono if mono=1, set to color if 0
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-	ldireg R8, 0x7cc4
-  ENDIF
-  IFDEF  COMX 
-	ldireg R8, 0x41C0
-  ENDIF
-  IFDEF  CIDELSA 
-	ldireg R8, _vis_out3_value
-  ENDIF
+  SELECT_VIS_SEX2
+	ldireg R8, _vis_out3
 	ldn R8			; get latest out 3 value
 	ani 0xf7		; clear cfc
 	str R2			; store value on stack
