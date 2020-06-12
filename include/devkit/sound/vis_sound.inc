@@ -9,13 +9,9 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
+
 _generatetone:			; generate 'tone' in R12, with 'range' in R13 and 'volume' on R2
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-  ENDIF
+  SELECT_VIS_SEX2
 	ld2 R15,'O',sp,(7)
 	ani 0xf				
 	lbnz $$toneon		; if volume = 0 turn off tone
@@ -54,18 +50,9 @@ $$tone:
 	cretn
 
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
-  IFDEF  PECOM 
-	sex R3
-	out 1
-	db  2
-	sex R2
-	ldireg R8,0x7CC3	; load current OUT 5 (low byte) video setting from 0x7cc3
-  ENDIF  
-  IFDEF  COMX 
-	ldireg R8,0x41C3	; load current OUT 5 (low byte) video setting from 0x41C3
-  ENDIF  
-  IFDEF  TMC600 
-	ldireg R8,0x600C	; load current OUT 5 (low byte) video setting from 0x600C
+  SELECT_VIS_SEX2  
+  IFNDEF  CIDELSA 
+	ldireg R8,_vis_out5	; load current OUT 5 (low byte) video setting from 0x41C3/0x7cc3/0x600C
   ENDIF  
     glo R13 
 	ani 0xf
