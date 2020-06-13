@@ -4,12 +4,12 @@
 //comx_character_set header
 
 #define ALPHA_COLOR1 0xC000 
-#define ALPHA_COLOR2 0x4000 
-#define NUMBER_COLOR1 0x4000 
+#define ALPHA_COLOR2 0x8000 
+#define NUMBER_COLOR1 0xC000 
 #define NUMBER_COLOR2 0x8000 
 
 // Color definition with textcolordefinition(3) & character_set (1 or 2)
-// ALPHA / NUMBER
+//
 // textcolor		0		1			
 // COLOR1				
 // 0x1000			BLACK	RED		
@@ -18,29 +18,13 @@
 // 0xC000			CYAN	WHITE		
 
 // Color definition with textcolordefinition(3) & character_set (3 or 4)
-// ALPHA
-// textcolor		0		1		2		3	
-// COLOR1	COLOR2			
-// 0x1000			BLACK			RED		
-//			0x1000			RED				BLACK
-// 0x4000			BLUE			MAGENTA			
-//			0x4000			MAGENTA			BLUE	
-// 0x8000			GREEN			YELLOW	
-//			0x8000			YELLOW			GREEN
-// 0xC000			CYAN			WHITE		
-//			0xC000			WHITE			CYAN
-//
-// NUMBER			COLOR1	COLOR2	COLOR1	COLOR2
-// textcolor		0		1		2		3	
-// COLOR1	COLOR2			
-// 0x1000			BLACK			RED		
-//			0x1000			BLACK			RED
-// 0x4000			BLUE			MAGENTA 
-//			0x4000			BLUE			MAGENTA
-// 0x8000			GREEN			YELLOW		
-//			0x8000			GREEN			YELLOW
-// 0xC000			CYAN			WHITE	
-//			0xC000			CYAN			WHITE
+// 			
+// textcolor		0 / 1		2 / 3	
+// COLORx	
+// 0x1000			BLACK		RED		
+// 0x4000			BLUE		MAGENTA 
+// 0x8000			GREEN		YELLOW		
+// 0xC000			CYAN		WHITE	
 
 /*
 static const unsigned char shapes[] =

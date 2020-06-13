@@ -10,10 +10,13 @@
 ; *******************************************************************
 ; 
 
+
   IFDEF COMX 
 _vis_video_base		equ	0x4195
 _vis_shape_pointer	equ	0xfbff
+_vis_out3_value		equ	0xE0
 _vis_out3			equ	0x41C0
+_vis_out5_value		equ	0x80
 _vis_out5			equ	0x41C3
 _vis_space			equ	0
 _vis_char_lines		equ	9
@@ -22,7 +25,9 @@ _vis_char_lines		equ	9
   IFDEF PECOM 
 _vis_video_base		equ 0x7cc8
 _vis_shape_pointer	equ 0xfbff
+_vis_out3_value		equ	0xe0
 _vis_out3			equ	0x7cc4
+_vis_out5_value		equ	0x80
 _vis_out5			equ 0x7CC3
 _vis_space			equ 0x20
 _vis_char_lines		equ 9
@@ -30,13 +35,16 @@ _vis_char_lines		equ 9
 
   IFDEF TMC600 
 _vis_video_base		equ 0x6002
+_vis_out3_value		equ	0x80
 _vis_out3			equ	0x600b
+_vis_out5_value		equ	0x80
 _vis_out5			equ 0x600C
 _vis_space			equ 0x20
   ENDIF  
   
   IFDEF CIDELSA
-_vis_out5			equ 0x00c9
+_vis_out3_value		equ	0xe0
+_vis_out5_value		equ	0xc8
 _vis_space			equ 0x20
 _vis_char_lines		equ 8
 
@@ -86,3 +94,13 @@ WAIT_DISPLAY MACRO
 	b1 $			; wait til video is quiet
   ENDIF
   ENDM
+
+colortable:
+	db 1			; 0: textcolor(COLOR_BLACK)
+	db 1			; 1: textcolor(COLOR_GREEN)
+	db 0			; 2: textcolor(COLOR_BLUE)
+	db 0			; 3: textcolor(COLOR_CYAN)
+	db 3			; 3: textcolor(COLOR_RED)
+	db 3			; 5: textcolor(COLOR_CYAN)
+	db 2			; 6: textcolor(COLOR_MAGENTA)
+	db 2			; 7: textcolor(COLOR_WHITE)

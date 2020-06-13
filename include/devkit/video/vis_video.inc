@@ -16,20 +16,24 @@ _initvideo:				; initialize vis video output and system settings
 	str R8
   IFNDEF TMC600 
 	ldireg R8, _vis_text_color_mask
-	ldi 0x80
+	ldi 0x7f
 	str R8
 	ldireg R8, _vis_text_color
 	ldi 0
 	str R8
-  ENDIF  
-  IFDEF CIDELSA 
+    SELECT_VIS
     ldireg R8, _vis_out3
-    ldi 0x80
+    ldi _vis_out3_value
     str R8
     sex R8
     out 3
-    ldireg R8, 0xc8
+    ldireg R9, _vis_out5
+    ldireg R8, _vis_out5_value
+    glo R8
+    str R9
     out 5
+  ENDIF  
+  IFDEF CIDELSA 
     sex R2
   ENDIF
 	cretn
@@ -121,7 +125,11 @@ $$flushbuffer:
   ENDIF
 _vidstrcpy:			; write 'text' to 'vidmem'
 	ldireg r14, _vis_buffer
-  SELECT_VIS_SEX2
+  IFNDEF TMC600 
+	ldireg R8, _vis_text_color_mask
+	ldireg R9, _vis_text_color
+  ENDIF
+  SELECT_VIS
     ldn R14
 	bz $$cpy
 	phi r15
@@ -134,12 +142,14 @@ _vidstrcpy:			; write 'text' to 'vidmem'
   WAIT_DISPLAY
 	str r15
 $$cpy:
-	ldireg R9, _vis_text_color
-	ldn R9
-	str R2
 	lda R13			; pick up input pointer
 	bz $$end
+  IFNDEF TMC600 
+	sex R8
+	and
+	sex R9
 	add
+  ENDIF
   WAIT_DISPLAY
 	str R12			; move the byte
   IFDEF CIDELSA
@@ -150,20 +160,24 @@ $$cpy:
     smbi 0
     phi R12
     smi 0xf7
-    bnz $$pos_ok
+    bz $$pos_nok
+  ELSE
+	inc R12			; ++
+  ENDIF
+	br $$cpy
+$$end:
+  IFDEF CIDELSA 
+	sex R2
+  ENDIF
+	cretn
+$$pos_nok:
     glo R12
     adi 0x29
     plo R12
     ghi R12
     adci 5
     phi R12    
-$$pos_ok:
-  ELSE
-	inc R12			; ++
-  ENDIF
-	br $$cpy
-$$end:
-	cretn
+	lbr $$cpy
 
 	align	64
 _vidclr:			; clear screen by writing 0's to video memory
@@ -204,13 +218,11 @@ _shapechar:				; shape 'number' of charcters from 'shapelocation'
 	ldireg R9, _vis_shape_pointer	; R9 = vidmem pointer
 	ldireg R10, _vis_out5
   SELECT_VIS   
-  IFNDEF CIDELSA 
 	ldn  R10                      
 	ori  1
 	plo  R10                        
 	ldi  0                    
 	phi  R10                        
-  ENDIF
 	sex R10
 	out 5				; set cmem acccess
 	sex R9
@@ -314,12 +326,8 @@ _shapecolor:			; shape color for 'character' start in R12, 'number' in R13 with 
 	ani  0xc0
 	plo  R15			; put color bits in bit 6 and 7
 	sex  R8
-  IFDEF  CIDELSA
-    ldi  0xc8
-  ELSE 
 	ldireg R8,_vis_out5	; load current out 5 (low byte) video setting from 0x41C3
 	ldn  R8                      
-  ENDIF    
 	ori  1
 	plo  R8                        
 	ldi  0                    
@@ -392,7 +400,7 @@ _bgcolor:			; set background to 'color' in R12.0
     out 7
     db 0x30			; select VIS register 3
     sex R8
-    out 5			; set new color valu
+    out 5			; set new color value
   ELSE	
 	sex R8
 	out 3			; set new color value
@@ -430,18 +438,19 @@ _textcolor:			; set text to 'color' in R12.0
 					; If character_set is defined as 4, 4 colors will be available (0-0x3f, 0x40-0x7f etc.) Only numbers and capitals
 	ldireg R8, _vis_text_color_mask
 	ldireg R9, _vis_text_color
-	ldn R8
+	ldireg R10, colortable
+	glo R12
 	str R2
-	smi 0xc0
-	lbz $$fourcolors
-	glo R12
-    shrc
-    shrc
-    and
-    str R9
-    cretn
-$$fourcolors:
-	glo R12
+	glo R10
+	add
+	plo R10
+	ghi R10
+	adci 0
+	phi R10
+	ldn R8
+	xri 0xff
+	str R2
+	ldn R10
 	shrc
 	shrc
 	shrc

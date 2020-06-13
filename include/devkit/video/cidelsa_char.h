@@ -1,14 +1,14 @@
 #ifndef _CIDELSA_CHAR_H
 #define _CIDELSA_CHAR_H
 
-#define ALPHA_COLOR1 0xE000 
-#define ALPHA_COLOR2 0x6000 
-#define ALPHA_COLOR3 0x4000 
+#define ALPHA_COLOR1 0x6000 
+#define ALPHA_COLOR2 0x4000 
+#define ALPHA_COLOR3 0xE000 
 #define ALPHA_COLOR4 0xC000 
-#define NUMBER_COLOR1 0xE000 
-#define NUMBER_COLOR2 0x2000 
-#define NUMBER_COLOR3 0x8000 
-#define NUMBER_COLOR4 0xA000 
+#define NUMBER_COLOR1 0x6000 
+#define NUMBER_COLOR2 0x4000 
+#define NUMBER_COLOR3 0xE000 
+#define NUMBER_COLOR4 0xC000 
 
 // Color definition with textcolordefinition(3)
 // BLACK 0x0000

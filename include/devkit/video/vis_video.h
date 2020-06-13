@@ -3,6 +3,15 @@
 
 //vis_video header
 
+#define COLOR_BLACK 0
+#define COLOR_GREEN 1	
+#define COLOR_BLUE 2
+#define COLOR_CYAN 3     
+#define COLOR_RED 4
+#define COLOR_YELLOW 5
+#define COLOR_MAGENTA 6
+#define COLOR_WHITE 7  
+
 #include "devkit/video/vis.h"
 
 unsigned char vis_text_color;
@@ -10,6 +19,7 @@ unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
 #ifdef __CIDELSA__
 unsigned char vis_out3;
+unsigned char vis_out5;
 #endif
 
 void initvideo();
