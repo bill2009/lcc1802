@@ -11,7 +11,7 @@
 ; 
 
 _generatetone:			; generate 'tone' in R12, with 'range' in R13 and 'volume' on R2
-  SELECT_VIS_SEX2
+    select_vis_sex2
 	ld2 R15,'O',sp,(7)
 	ani 0xf				
 	lbnz $$toneon		; if volume = 0 turn off tone
@@ -34,36 +34,18 @@ $$toneon:
 	ani 0x7f	
 	phi R15				; R15 = tone		
 $$tone:
-  IFDEF  TMC600 
-    sex R3
-    out 7
-    db 0x40				; select VIS register 4
-	sex R15				; tone generation value
-    out 5				
-  ELSE	
-	sex R15				; tone generation value
-	out 4
-  ENDIF
-  IFDEF CIDELSA 
-    sex R2
-  ENDIF
-	cretn
+    out_vis R15, 4
+	c_return
 
 _generatenoise			; generate noise with 'range' in R12 and 'volume' on R13
-  SELECT_VIS_SEX2  
-  IFNDEF  CIDELSA 
-	ldireg R8,_vis_out5	; load current OUT 5 (low byte) video setting from 0x41C3/0x7cc3/0x600C
-  ENDIF  
+    select_vis_sex2  
+	ldireg R8,_vis_out5	; load current OUT 5 (low byte) video setting from 0x41C3/0x7cc3/0x600C/vis_out5
     glo R13 
 	ani 0xf
 	lbnz $$noiseon		; if volume = 0 turn off noise
 	ldi 0x80
 	phi R15
-  IFDEF  CIDELSA 
-	ldi 0xc8
-  ELSE
 	ldn R8				; get low byte video value	
-  ENDIF  
 	plo R15				; R15 = 0x80xx = turn off tone
 	lbr  $$noise	
 $$noiseon:
@@ -76,22 +58,9 @@ $$noiseon:
 	shl					; shift range 4 bits to the left
 	or					; D = range<<4 | volume
 	phi R15				; R15.1 = range<<4 | volume
-  IFDEF  CIDELSA 
-	ldi 0xc8
-  ELSE
 	ldn R8				; get low byte video value	
-  ENDIF	
 	plo R15				; store in R15.0
 $$noise:					  
-  IFDEF  TMC600 
-    sex R3
-    out 7
-    db 0x50				; select VIS register 5
-  ENDIF	
-	sex R15				; Noise  generation value
-	out 5
-  IFDEF CIDELSA 
-    sex R2
-  ENDIF
-	cretn
+    out_vis R15, 5
+	c_return
 
