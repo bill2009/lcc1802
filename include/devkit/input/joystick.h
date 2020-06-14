@@ -11,6 +11,14 @@
 #define MOVE_FIRE 0x5f
 #endif
 
+#ifdef __MICRO__
+#define MOVE_UP 0x82
+#define MOVE_RIGHT 0x83
+#define MOVE_LEFT 0x84
+#define MOVE_DOWN 0x85
+#define MOVE_FIRE 0x5f
+#endif
+
 #ifdef __PECOM__
 #define MOVE_UP 0x5e
 #define MOVE_RIGHT 0x5d

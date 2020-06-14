@@ -39,6 +39,36 @@ $$nokey:
 
   ENDIF
   
+  IFDEF  MICRO 
+	
+	align	16
+_cgetc:				; wait for key press
+$$loop:
+	b3 $$keypressed	; Check if a key is pressed for the 'first time'
+	bn2 $$loop		;  Loop if no key was pressed previously
+$$keypressed:
+	inp 3
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+
+	align	16
+_kbhit:				; return 1 if a key is pressed, 0 if not
+    b3 $$keypressed	; Check if a key is pressed for the 'first time'
+    bn2 $$nokey		; Branch to nokey if no key was pressed previously
+$$keypressed:
+	ldi 1
+	lskp
+$$nokey:
+	ldi 0
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+
+  ENDIF
+
   IFDEF  PECOM 
   
 	align	32	

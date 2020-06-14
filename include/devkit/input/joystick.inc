@@ -173,3 +173,20 @@ $$nokey:
 	cretn
 	
   ENDIF
+	
+  IFDEF  MICRO 
+	align	16
+_get_stick:			; get key value if pressed, otherwise return 0
+	b3 $$keypressed	; Check if a key is pressed for the 'first time'
+	bn2 $$nokey		; Branch to nokey if no key was pressed previously
+$$keypressed:
+	inp 3
+	lskp
+$$nokey:
+	ldi 0
+	plo R15
+	ldi 0
+	phi R15
+	cretn
+	
+  ENDIF
