@@ -10,7 +10,6 @@
 ; *******************************************************************
 ; 
 
-
   IFDEF COMX 
 _vis_video_base		equ	0x4195
 _vis_shape_pointer	equ	0xfbff
@@ -62,24 +61,45 @@ _vis_shape_pointer	equ 0xfbff
   
   ENDIF
 
-SELECT_VIS MACRO
+  IFDEF MICRO
+_vis_out3_value		equ	0xe0
+_vis_out5_value		equ	0x80
+_vis_space			equ 0x20
+_vis_char_lines		equ 9
+_vis_shape_pointer	equ 0xfbff
+_vis_io_group		equ 0x80
+  ENDIF
+
+
+select_vis macro
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
   ENDIF
-  ENDM
+  IFDEF  MICRO 
+	sex R3
+	out 1
+	db  _vis_io_group
+  ENDIF
+  endm
 
-SELECT_VIS_SEX2 MACRO
+select_vis_sex2 macro
   IFDEF  PECOM 
 	sex R3
 	out 1
 	db  2
 	sex R2
   ENDIF
-  ENDM
+  IFDEF  MICRO 
+	sex R3
+	out 1
+	db  _vis_io_group
+	sex R2
+  ENDIF
+  endm
 
-WAIT_DISPLAY MACRO
+wait_display macro
   IFDEF CIDELSA
   IFDEF DRACO
 	b1 $
@@ -93,7 +113,30 @@ WAIT_DISPLAY MACRO
   ELSE
 	b1 $			; wait til video is quiet
   ENDIF
-  ENDM
+  endm
+
+out_vis:	macro	reg, output
+  IFDEF TMC600 
+    sex R3
+    out 7
+    db output<<4			; select VIS register 'reg'
+    sex reg
+    out 5					; set new baseaddress
+  ELSE
+	sex reg
+    out output				; set new baseaddress
+  ENDIF
+  endm
+
+c_return:	macro
+  IFDEF CIDELSA 
+    sex R2
+  ENDIF
+  IFDEF MICRO 
+    sex R2
+  ENDIF
+	cretn
+  endm
 
 colortable:
 	db 1			; 0: textcolor(COLOR_BLACK)

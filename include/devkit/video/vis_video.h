@@ -17,7 +17,7 @@
 unsigned char vis_text_color;
 unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
-#ifdef __CIDELSA__
+#if defined __CIDELSA__ || defined __MICRO__
 unsigned char vis_out3;
 unsigned char vis_out5;
 #endif
