@@ -28,9 +28,16 @@ _initvideo:				; initialize vis video output and system settings
     str R8
     out_vis R8, 3
     ldireg R9, _vis_out5
+  IFDEF COMX
+    ldn R9
+    plo R8
+    ldi 0
+    phi R8
+  ELSE
     ldireg R8, _vis_out5_value
     glo R8
     str R9
+  ENDIF
     out_vis R8, 5
 	c_return
 
@@ -246,7 +253,7 @@ $$nextshape:
 	lskp
 $$standardlines:
   ENDIF
-	ldi _vis_char_lines
+ 	ldi _vis_char_lines
 	plo R14
   IFDEF CIDELSA
 	lda R12

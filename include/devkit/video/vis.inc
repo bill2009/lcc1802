@@ -14,11 +14,11 @@
 _vis_video_base		equ	0x4195
 _vis_shape_pointer	equ	0xfbff
 _vis_out3_value		equ	0xE0
-_vis_out3			equ	0x41C0
+_vis_out3			equ	0x41c0
 _vis_out5_value		equ	0x80
-_vis_out5			equ	0x41C3
+_vis_out5			equ	0x41c3
 _vis_space			equ	0
-_vis_char_lines		equ	9
+_vis_char_lines		equ 9
   ENDIF
   
   IFDEF PECOM 
@@ -37,7 +37,7 @@ _vis_video_base		equ 0x6002
 _vis_out3_value		equ	0x80
 _vis_out3			equ	0x600b
 _vis_out5_value		equ	0x80
-_vis_out5			equ 0x600C
+_vis_out5			equ 0x600c
 _vis_space			equ 0x20
   ENDIF  
   
