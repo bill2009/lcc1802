@@ -43,10 +43,7 @@ $$nokey:
 	
 	align	16
 _cgetc:				; wait for key press
-$$loop:
-	b3 $$keypressed	; Check if a key is pressed for the 'first time'
-	bn2 $$loop		;  Loop if no key was pressed previously
-$$keypressed:
+	bn3 _cgetc		;  Loop if no key is pressed
 	inp 3
 	plo R15
 	ldi 0
@@ -55,9 +52,7 @@ $$keypressed:
 
 	align	16
 _kbhit:				; return 1 if a key is pressed, 0 if not
-    b3 $$keypressed	; Check if a key is pressed for the 'first time'
-    bn2 $$nokey		; Branch to nokey if no key was pressed previously
-$$keypressed:
+    bn3 $$nokey		; Branch to nokey if no key is pressed 
 	ldi 1
 	lskp
 $$nokey:

@@ -177,8 +177,7 @@ $$nokey:
   IFDEF  MICRO 
 	align	16
 _get_stick:			; get key value if pressed, otherwise return 0
-	b3 $$keypressed	; Check if a key is pressed for the 'first time'
-	bn2 $$nokey		; Branch to nokey if no key was pressed previously
+	bn3 $$nokey;	; Branch to nokey if no key is pressed 
 $$keypressed:
 	inp 3
 	lskp
