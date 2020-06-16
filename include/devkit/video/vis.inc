@@ -65,7 +65,11 @@ _vis_shape_pointer	equ 0xfbff
 _vis_out3_value		equ	0xe0
 _vis_out5_value		equ	0x80
 _vis_space			equ 0x20
+  IFDEF CHARLINES8 
+_vis_char_lines		equ 8
+  ELSE
 _vis_char_lines		equ 9
+  ENDIF
 _vis_shape_pointer	equ 0xfbff
 _vis_io_group		equ 0x80
   ENDIF
@@ -139,9 +143,9 @@ c_return:	macro
   endm
 
 colortable:
-	db 1			; 0: textcolor(COLOR_BLACK)
+	db 3			; 0: textcolor(COLOR_BLACK)
 	db 1			; 1: textcolor(COLOR_GREEN)
-	db 0			; 2: textcolor(COLOR_BLUE)
+	db 2			; 2: textcolor(COLOR_BLUE)
 	db 0			; 3: textcolor(COLOR_CYAN)
 	db 3			; 3: textcolor(COLOR_RED)
 	db 3			; 5: textcolor(COLOR_CYAN)

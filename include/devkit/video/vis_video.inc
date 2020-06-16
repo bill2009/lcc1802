@@ -115,21 +115,6 @@ $$flushbuffer:
 	str R12			; move the byte
 	cretn
 
-  IFDEF  PECOM 
-	align	64
-  ENDIF
-  IFDEF  CIDELSA 
-	align	64
-  ENDIF
-  IFDEF  COMX 
-	align	32
-  ENDIF
-  IFDEF  TMC600 
-	align	32
-  ENDIF
-  IFDEF  MICRO 
-	align	64
-  ENDIF
 _vidstrcpy:			; write 'text' to 'vidmem'
 	ldireg r14, _vis_buffer
   IFNDEF TMC600 
@@ -138,7 +123,7 @@ _vidstrcpy:			; write 'text' to 'vidmem'
   ENDIF
     select_vis
     ldn R14
-	bz $$cpy
+	lbz $$cpy
 	phi r15
 	ldi 0
 	str r14
@@ -149,14 +134,27 @@ _vidstrcpy:			; write 'text' to 'vidmem'
     wait_display
 	str r15
 $$cpy:
-	lda R13			; pick up input pointer
-	bz $$end
+	ldn R13			; pick up input pointer
+	lbz $$end
   IFNDEF TMC600 
+    smi 0x30
+    lbnf $$nocolorchange
+    smi 0xa
+    lbnf $$colorchange
+    smi 0x7
+    lbnf $$nocolorchange
+    smi 0x1a
+    lbdf $$nocolorchange
+$$colorchange:
+	lda R13
 	sex R8
 	and
 	sex R9
 	add
+	skp
   ENDIF
+$$nocolorchange:
+    lda R13
     wait_display
 	str R12			; move the byte
   IFDEF CIDELSA
@@ -167,11 +165,11 @@ $$cpy:
     smbi 0
     phi R12
     smi 0xf7
-    bz $$pos_nok
+    lbz $$pos_nok
   ELSE
 	inc R12			; ++
   ENDIF
-	br $$cpy
+	lbr $$cpy
 $$end:
 	c_return
 $$pos_nok:
@@ -298,6 +296,9 @@ $$shape:
 	dec R14
 	glo R14
 	lbnz $$nextline	; number of lines not 8 or 9 zero do next line
+  IFDEF CHARLINES8
+    inc R12
+  ENDIF
 	dec r15
 	glo r15
 	lbnz $$nextshape

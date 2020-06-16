@@ -5,19 +5,14 @@
 
 #define ALPHA_COLOR1 0xC000 
 #define ALPHA_COLOR2 0x8000 
+#define ALPHA_COLOR3 0x4000 
+#define ALPHA_COLOR4 0x1000 
 #define NUMBER_COLOR1 0xC000 
 #define NUMBER_COLOR2 0x8000 
+#define NUMBER_COLOR3 0x4000 
+#define NUMBER_COLOR4 0x1000 
 
-// Color definition with textcolordefinition(3) & character_set (1 or 2)
-//
-// textcolor		0		1			
-// COLOR1				
-// 0x1000			BLACK	RED		
-// 0x4000			BLUE	MAGENTA			
-// 0x8000			GREEN	YELLOW	
-// 0xC000			CYAN	WHITE		
-
-// Color definition with textcolordefinition(3) & character_set (3 or 4)
+// Color definition with textcolordefinition(3)
 // 			
 // textcolor		0 / 1		2 / 3	
 // COLORx	
@@ -25,6 +20,9 @@
 // 0x4000			BLUE		MAGENTA 
 // 0x8000			GREEN		YELLOW		
 // 0xC000			CYAN		WHITE	
+
+// COLOR1 and COLOR2 are used for systems with 128 characters and 3rd color bit in charcater bit 7
+// COLOR3 and COLOR4 are used for systems with 256 charcaters and no 3rd color bit (i.e. 4 colors only: BLACK, BLUE, GREEN, CYAN)
 
 /*
 static const unsigned char shapes[] =
