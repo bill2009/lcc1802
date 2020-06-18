@@ -19,7 +19,8 @@ void character_set(unsigned char number)
 	unsigned char *shape_rom;
 #endif
 	number--;
-	switch (number&3)
+	number = number &3;
+	switch (number)
 	{
 		case 0:
 			vis_text_color_mask = 0xff;
@@ -70,11 +71,11 @@ void character_set(unsigned char number)
 			shapechar(shape_space, 0x20, 1);
 			shapechar(shape_numbers, 0x30, NUMBER_COLOR1+0xa);
 			shapechar(shape_alpha, 0x41, ALPHA_COLOR1+0x1a);
-#ifdef __CHAR256__
+#ifdef __NTSC2_9__
 			shapechar(shape_space, 0x80, 1);
 			shapechar(shape_space, 0xA0, 1);
 			shapechar(shape_numbers, 0xB0, NUMBER_COLOR2+0xa);
-			shapechar(shape_alpha, 0xC1, ALPHA_COLOR1+0x1a);
+			shapechar(shape_alpha, 0xC1, ALPHA_COLOR2+0x1a);
 #endif
 #endif
 		break;
@@ -115,7 +116,7 @@ void character_set(unsigned char number)
 			shapechar(shape_space, 0x60, 1);
 			shapechar(shape_alpha, 0x41, ALPHA_COLOR2+0x1a);
 			shapechar(shape_numbers, 0x70, NUMBER_COLOR2+0xa);
-#ifdef __CHAR256__
+#ifdef __NTSC2_9__
 			shapechar(shape_space, 0x80, 1);
 			shapechar(shape_space, 0xA0, 1);
 			shapechar(shape_alpha, 0x81, ALPHA_COLOR3+0x1a);

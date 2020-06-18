@@ -65,7 +65,7 @@ _vis_shape_pointer	equ 0xfbff
 _vis_out3_value		equ	0xe0
 _vis_out5_value		equ	0x80
 _vis_space			equ 0x20
-  IFDEF CHARLINES8 
+  IF (SYMTYPE(PAL1) <> -1) || (SYMTYPE(NTSC2_9) <> -1)  || (SYMTYPE(NTSC1_4_8) <> -1)
 _vis_char_lines		equ 8
   ELSE
 _vis_char_lines		equ 9

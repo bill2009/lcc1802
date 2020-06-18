@@ -12,6 +12,11 @@
 #define COLOR_MAGENTA 6
 #define COLOR_WHITE 7  
 
+#define CHAR_SET_0 3
+#define CHAR_SET_1 1
+#define CHAR_SET_2 2
+#define CHAR_SET_3 0
+
 #include "devkit/video/vis.h"
 
 unsigned char vis_text_color;
@@ -32,8 +37,10 @@ void textcolor(unsigned char color);
 #ifdef __TMC600__
 void setcolor(unsigned int colormem, unsigned char color);
 #else
+#ifndef __NTSC5_6_7__
 void shapechar(const unsigned char * shapelocation, unsigned short int lines_character, unsigned short int color_number);
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
+#endif
 void textcolordefinition(unsigned char definition);
 void monochrome(unsigned char mono);
 #endif

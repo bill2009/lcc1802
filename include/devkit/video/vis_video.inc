@@ -43,23 +43,12 @@ _initvideo:				; initialize vis video output and system settings
 
 _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
     select_vis  
-  IFDEF CIDELSA 
+  IF (SYMTYPE(CIDELSA) <> -1) || (SYMTYPE(MICRO) <> -1)
     out_vis R12, 7
 	c_return
   ENDIF  
-  IFDEF MICRO 
-    out_vis R12, 7
-	c_return
-  ENDIF  
-  IFDEF COMX
+  IF (SYMTYPE(COMX) <> -1) || (SYMTYPE(PECOM) <> -1) || (SYMTYPE(TMC600) <> -1)
 	ldireg R8, _vis_video_base
-  ENDIF  
-  IFDEF PECOM
-	ldireg R8, _vis_video_base
-  ENDIF  
-  IFDEF TMC600
-	ldireg R8, _vis_video_base
-  ENDIF  
 	ghi R12
 	str R8
 	inc R8
@@ -67,6 +56,7 @@ _setvideobase:		; set video base to 'vidmem', vidmem pointer is R12
 	str R8
     out_vis R12, 7
 	cretn
+  ENDIF  
 
 	align	32
 _vidchar:			; write 'character' to 'vidmem' location in video memory
@@ -75,16 +65,8 @@ _vidchar:			; write 'character' to 'vidmem' location in video memory
     ldn R14
 	bnz $$flushbuffer
 	glo r13
-  IFDEF CIDELSA
-  IFDEF DRACO
-	b1  $$pushtobuffer	; Display period so buffer data
-  ENDIF
-  IFDEF ALTAIR
+  IF (SYMTYPE(ALTAIR) <> -1) || (SYMTYPE(DESTROYER) <> -1)
 	bn1 $$pushtobuffer	; Display period so buffer data
-  ENDIF
-  IFDEF DESTROYER
-	bn1 $$pushtobuffer	; Display period so buffer data
-  ENDIF
   ELSE
 	b1  $$pushtobuffer	; Display period so buffer data
   ENDIF
@@ -209,7 +191,7 @@ $$cpy:
 	bnz $$cpy
 	cretn
 
-  IFNDEF TMC600
+  IF (SYMTYPE(TMC600) = -1) && (SYMTYPE(NTSC5_6_7) == -1)
 _shapechar:				; shape 'number' of charcters from 'shapelocation'
 						; shapelocation pointer is R12, start character R13
 						; on R2: number of shapes loaded into R15.0, color R15.1 (b7, b6 & b5)
@@ -296,8 +278,10 @@ $$shape:
 	dec R14
 	glo R14
 	lbnz $$nextline	; number of lines not 8 or 9 zero do next line
-  IFDEF CHARLINES8
+  IFDEF MICRO
+  IF (SYMTYPE(PAL1) <> -1) || (SYMTYPE(NTSC2_9) <> -1)  || (SYMTYPE(NTSC1_4_8) <> -1)
     inc R12
+  ENDIF
   ENDIF
 	dec r15
 	glo r15
