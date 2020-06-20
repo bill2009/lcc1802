@@ -33,7 +33,7 @@ _get_stick:			; get joystick values, specified bit = 1: pressed
   IFDEF DESTROYER
 	inp 1
 	xri 0xff
-	ani 0x38
+	ani 0x3e
   ENDIF
   IFDEF DRACO
 	inp 4
