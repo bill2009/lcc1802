@@ -16,7 +16,11 @@ _initvideo:				; initialize vis video output and system settings
 	str R8
   IFNDEF TMC600 
 	ldireg R8, _vis_text_color_mask
+  IFDEF NTSC5_6_7
+    ldi 0x3f
+  ELSE
 	ldi 0x7f
+  ENDIF
 	str R8
 	ldireg R8, _vis_text_color
 	ldi 0
@@ -119,6 +123,7 @@ $$cpy:
 	ldn R13			; pick up input pointer
 	lbz $$end
   IFNDEF TMC600 
+  IF (SYMTYPE(COMX) <> -1) || (SYMTYPE(PECOM) <> -1)
     smi 0x30
     lbnf $$nocolorchange
     smi 0xa
@@ -126,6 +131,11 @@ $$cpy:
     smi 0x7
     lbnf $$nocolorchange
     smi 0x1a
+  ELSE
+    smi 0x21
+    lbnf $$nocolorchange
+    smi 0x3F
+  ENDIF
     lbdf $$nocolorchange
 $$colorchange:
 	lda R13
