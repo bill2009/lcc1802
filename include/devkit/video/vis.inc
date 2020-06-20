@@ -17,7 +17,7 @@ _vis_out3_value		equ	0xE0
 _vis_out3			equ	0x41c0
 _vis_out5_value		equ	0x80
 _vis_out5			equ	0x41c3
-_vis_space			equ	0
+_vis_space			equ	0x20
 _vis_char_lines		equ 9
   ENDIF
   
