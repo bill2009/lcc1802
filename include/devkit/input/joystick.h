@@ -36,11 +36,35 @@
 #endif
 
 #ifdef __CIDELSA__
+#ifdef __ALTAIR__
+#define MOVE_UP 0x1
+#define MOVE_RIGHT 0x20
+#define MOVE_LEFT 0x40	
+#define MOVE_DOWN 0x2
+#define MOVE_FIRE 0x80
+#define MOVE_FIRE2 0x4
+#define MOVE_B1 0x8
+#define MOVE_B2 0x10
+#endif
+#ifdef __DESTROYER__
 #define MOVE_UP 0x2
 #define MOVE_RIGHT 0x8
 #define MOVE_LEFT 0x10	
 #define MOVE_DOWN 0x4
 #define MOVE_FIRE 0x20
+#define MOVE_B1 0x2
+#define MOVE_B2 0x4
+#endif
+#ifdef __DRACO__
+#define MOVE_UP 0x10
+#define MOVE_RIGHT 0x40
+#define MOVE_LEFT 0x80	
+#define MOVE_DOWN 0x20
+#define MOVE_FIRE 0x8
+#define MOVE_B1 0x1
+#define MOVE_B2 0x2
+#define MOVE_TILT 0x4
+#endif
 #endif
 
 unsigned char get_stick();

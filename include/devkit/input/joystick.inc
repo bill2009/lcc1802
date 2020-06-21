@@ -12,7 +12,7 @@
   IFDEF CIDELSA
 _get_stick:			; get joystick values, specified bit = 1: pressed
 					; bit	7		6		5		4		3		2		1		0
-					;						fire	Left 	Right 	Down 	Up 		
+					;		2		1		fire	Left 	Right 	Down 	Up 		
 					;
 					; Note: Destroyer doesn't have up/down keys.
 	ldi 0
@@ -20,12 +20,13 @@ _get_stick:			; get joystick values, specified bit = 1: pressed
   IFDEF ALTAIR
 	inp 1
 	xri 0xff
-	ani 0x38
+	ani 0x3e
+	shl
+	shl
 	plo R8
 	inp 4
 	xri 0xff
-	ani 0x03
-	shl
+	ani 0x7
 	str R2
 	glo R8
 	or
@@ -36,15 +37,18 @@ _get_stick:			; get joystick values, specified bit = 1: pressed
 	ani 0x3e
   ENDIF
   IFDEF DRACO
+    inp 1
+    xri 0xff
+    ani 0x27
+    str R2
+    shr
+    shr
+    or
+    ani 0xf
+    plo R8
 	inp 4
 	xri 0xff
-	shr
-	shr
-	shr
-	plo R8
-	inp 1
-	xri 0xff
-	ani 0x20
+	ani 0xf0
 	str R2
 	glo R8
 	or
