@@ -12,11 +12,6 @@
 #define COLOR_MAGENTA 6
 #define COLOR_WHITE 7  
 
-#define CHAR_SET_0 3
-#define CHAR_SET_1 1
-#define CHAR_SET_2 2
-#define CHAR_SET_3 0
-
 #include "devkit/video/vis.h"
 
 unsigned char vis_text_color;
