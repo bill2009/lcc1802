@@ -8,11 +8,6 @@
 #define CHAR_COLOR3 0x4000 
 #define CHAR_COLOR4 0x1000 
 
-#define NUM_COLOR1 0xC000 
-#define NUM_COLOR2 0x8000 
-#define NUM_COLOR3 0x4000 
-#define NUM_COLOR4 0x1000 
-
 // Color definition with textcolordefinition(3)
 // 			
 // textcolor		0 / 1		2 / 3	
