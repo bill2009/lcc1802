@@ -12,8 +12,6 @@
 #define COLOR_MAGENTA 6
 #define COLOR_WHITE 7  
 
-#include "devkit/video/vis.h"
-
 unsigned char vis_text_color;
 unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
@@ -21,6 +19,8 @@ unsigned long vis_buffer;
 unsigned char vis_out3;
 unsigned char vis_out5;
 #endif
+
+#include "devkit/video/vis.h"
 
 void initvideo();
 void setvideobase(unsigned short int vidmem);
