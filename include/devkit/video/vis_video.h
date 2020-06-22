@@ -12,6 +12,16 @@
 #define COLOR_MAGENTA 6
 #define COLOR_WHITE 7  
 
+#ifdef __CIDELSA__
+#ifdef __DRACO__
+#define TOP_LEFT_CORNER 0xfc10
+#else
+#define TOP_LEFT_CORNER 0xfbc0
+#endif
+#else
+#define TOP_LEFT_CORNER 0xF800
+#endif
+
 unsigned char vis_text_color;
 unsigned char vis_text_color_mask;
 unsigned long vis_buffer;

@@ -279,13 +279,14 @@ $$shape:
 	glo R14
 	lbnz $$nextline	; number of lines not 8 or 9 zero do next line
   IFDEF MICRO
-  IF (SYMTYPE(PAL1) <> -1) || (SYMTYPE(NTSC2_9) <> -1)  || (SYMTYPE(NTSC1_4_8) <> -1)
+  IF (SYMTYPE(PAL1) <> -1) || (SYMTYPE(NTSC2_9) <> -1)  || (SYMTYPE(NTSC1_4_8) <> -1) || (SYMTYPE(NTSC3) <> -1)
     inc R12
   ENDIF
   ENDIF
 	dec r15
 	glo r15
 	lbnz $$nextshape
+	dec R10
 	glo R10
 	ani 0xfe
 	plo R10
@@ -350,6 +351,7 @@ $$nextline:
 	glo  R13            ; check on last character           
 	dec  R13                     
 	lbnz  $$nextchar  
+	dec	 R8
 	glo  R8
 	ani  0xfe            
 	plo  R8
