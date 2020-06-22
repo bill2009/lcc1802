@@ -112,7 +112,7 @@ MICRO variants:
 __PAL1__ / PAL1
 PAL 1 - 128 6x8 Characters - 1 KB character RAM
 
-__PAL2__ / PAL1
+__PAL2__ / PAL2
 PAL 2 - 64 6x16 Characters - 1 KB character RAM
 
 __ NTSC1_4_8__ / NTSC1_4_8
