@@ -9,7 +9,7 @@ This devkit should be used with Bill Rowe's LCC1802 (https://sites.google.com/si
 The devkit folder should reside within lcc42/include/ and consists of:input: for input routines (joystick and keyboard)sound: for sound routinessystem: for system routines (general 1802, basic random etc.)video: for video routines (vis, character definition, printf etc.)2. Input Routines=================unsigned char get_stick()-------------------------Return joystick value currently 'pressed'. If nothing is pressed, 0 is returned.Include file: input/joystick.hDefinitions: MOVE_UP, MOVE_RIGHT, MOVE_LEFT, MOVE_DOWN, MOVE_FIRE Definitions for specific targets: CIDELSA: MOVE_B1, MOVE_B2, CIDELSA/ALTAIR: MOVE_FIRE2, CIDELSA/DRACO: MOVE_TILTTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROunsigned char cgetc()---------------------Wait for a key on the keyboard to be pressed, return key value.Include file: input/keyboard.hTargets implemented: COMX, PECOM, TMC600, MICROint kbhit()-----------Return 1 if a key is pressed, otherwise return 0.Include file: input/keyboard.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICRO3. Sound Routines=================void generatetone(unsigned char tone, unsigned char range, unsigned char volume)--------------------------------------------------------------------------------Generate a tone sound with indicated frequency tone, range and volume.tone: 7 bit valuerange: 3 bit valuevolume: 4 bit valueInclude file: sound/sound.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICRO
 void generatenoise(unsigned char range, unsigned char volume)-------------------------------------------------------------Generate a noise sound with indicated range and volume.range: 3 bit valuevolume: 4 bit valueInclude file: sound/sound.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICRO4. System Routines==================unsigned short int rand()-------------------------Return a random unsigned short value (15 bit, 0-0x7FFF). It is recommended to use this routine instead of a standard crandom routine as this one is optimized for the RCA1802 and as such will be much faster.Note for the TMC600, CIDELSA and MICRO targets this routine will generate a random value in a fixed sequence. Meaning the'random' values will be the same on every clean start. To avoid the same random value being used this routine should becalled a random number of times on start-up, like continuously during a wait for a key press on startup of the program.
 Include file: system/rand.hTargets implemented: ALLdisableinterrupt()------------------Disable the RCA1802 interrupt.Recommended to do as early as possible in startup of a program. Disabled interrupt will currently block use of printffeature
-Include file: system/system.hTargets implemented: ALLenableinterrupt()-----------------Enable the RCA1802 interrupt.Recommended to do at the end of a program before exiting back to BASIC on the COMX, PECOM and TMC600 targets.Recommended not to be used on other targets unless interrupt handling is defined and R1 contains location of the interrupt routine.Include file: system/system.hTargets implemented: ALL5. Video Routines=================void initvideo()----------------Initialize VIS video output and system settings, should be done at start of a program before using any of the VIS routines.Following will be done:- reset devkit vis character output buffer- set devkit color mask to 0x7f (COMX, PECOM, CIDELSA, MICRO targets), 0x3f (MICRO NTSC5, 6 & 7 targets)- set devkit default text color to CYAN (COMX, PECOM, CIDELSA, MICRO targets)- set VIS out 3 to 0xE0 (COMX, PECOM, CIDELSA, MICRO targets), 0x80 (TMC600 target)- set VIS out 5 to 0x80 (COMX PAL, PECOM, TMC600, MICRO targets), 0xc8 (CIDELSA target), 0 (COMX NTSC)This is wrong it should be 0 for MICRO NTSC targets?Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid setvideobase(unsigned short int vidmem)--------------------------------------------Set VIS video base address to value of vidmem. All targets (except CIDELSA) use the base address value as top left corner of 
+Include file: system/system.hTargets implemented: ALLenableinterrupt()-----------------Enable the RCA1802 interrupt.Recommended to do at the end of a program before exiting back to BASIC on the COMX, PECOM and TMC600 targets.Recommended not to be used on other targets unless interrupt handling is defined and R1 contains location of the interrupt routine.Include file: system/system.hTargets implemented: ALL5. Video Routines=================void initvideo()----------------Initialize VIS video output and system settings, should be done at start of a program before using any of the VIS routines.Following will be done:- reset devkit vis character output buffer- set devkit color mask to 0x7f (COMX, PECOM, CIDELSA, MICRO targets), 0x3f (MICRO NTSC5, 6 & 7 targets)- set devkit default text color to CYAN (COMX, PECOM, CIDELSA, MICRO targets)- set VIS out 3 to 0xE0 (COMX, PECOM, CIDELSA, MICRO targets), 0x80 (TMC600 target)- set VIS out 5 to 0x80 (COMX PAL, PECOM, TMC600, MICRO PAL targets), 0xc8 (CIDELSA target), 0x88 (COMX NTSC, MICRO NTSC targets)Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid setvideobase(unsigned short int vidmem)--------------------------------------------Set VIS video base address to value of vidmem. All targets (except CIDELSA) use the base address value as top left corner of 
 the screen. CIDELSA uses base address on top right corner and basically has a standard screen rotated by 90 degrees.On startup of a program base address is recommended be set to 0xF800. This will result in 0xF800 being the top left corner of 
 the screen (for COMX PAL, PECOM, TMC600, MICRO targets), 0xFC10 (for CIDELSA/DRACO target), 
 0xFBC0 (for CIDELSA/ALTAR, CIDELSA/DESTROYER targets).The video base address can also be used for HW scrolling, i.e. setvideobase(0xF828) would scroll one line (0x28/40 characters) 
@@ -98,28 +98,30 @@ Flags starting and ending with __ are used for the lcc compiler, without for ass
 __COMX__ / COMX=1: Build COMX target
 __PECOM__ / PECOM=1: Build PECOM target
 __TMC600__ / TMC600=1: Build TMC600 target
-__CIDELSA__ / CIDELSA=1: Build CIDELSA target, note at CIDELSA variant should also be specified
-__MICRO__ / MICRO=1: Build MICROBOARD target, default MICRO variant PAL1/NTSC3 will be build 
+__CIDELSA__ / CIDELSA=1: Build CIDELSA target, note that one CIDELSA variant should also be specified
+__MICRO__ / MICRO=1: Build MICROBOARD target, note that one MICRO variant should also be specified 
 
 CIDELSA variants
+
 __ALTAIR__ / ALTAIR=1
 __DESTROYER__ / DESTROYER=1
 __DRACO__ / DRACO=1
 
 MICRO variants:
 
-Default, i.e. no flag needed
-PAL 2 - 64 6x16 Characters - 1 KB character RAM
-NTSC 3 - 128 6x16 Characters - 2 KB character RAM
-
-Flags:
 __PAL1__ / PAL1
 PAL 1 - 128 6x8 Characters - 1 KB character RAM
+
+__PAL2__ / PAL1
+PAL 2 - 64 6x16 Characters - 1 KB character RAM
 
 __ NTSC1_4_8__ / NTSC1_4_8
 1 - 128 6x8 Characters - 1 KB character RAM
 4 - 128 6x8 Characters - 1 KB character RAM/ROM
 8 - 256 6x8 Characters - 2 KB character RAM/ROM
+
+__NTSC3__ / NTSC3
+3 - 128 6x16 Characters - 2 KB character RAM
 
 __ NTSC2_9__ / NTSC2_9
 2 - 256 6x8 Characters - 2 KB character RAM
