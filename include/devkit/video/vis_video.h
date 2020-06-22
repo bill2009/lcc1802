@@ -31,14 +31,23 @@ unsigned char bgcolor(unsigned char color);
 void textcolor(unsigned char color);
 #ifdef __TMC600__
 void setcolor(unsigned int colormem, unsigned char color);
+#define shapechar(shapelocation, lines_character, color_number)
+#define shapecolor(character, number, color)
+#define textcolordefinition(definition)
+#define monochrome(mono)
 #else
+#define setcolor(colormem, color)
 #ifndef __NTSC5_6_7__
 void shapechar(const unsigned char * shapelocation, unsigned short int lines_character, unsigned short int color_number);
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
+#else
+#define shapechar(shapelocation, lines_character, color_number)
+#define shapecolor(character, number, color)
 #endif
 void textcolordefinition(unsigned char definition);
 void monochrome(unsigned char mono);
 #endif
+
 void vis_video_includer(){
 asm(" include devkit/video/vis_video.inc\n");
 }
