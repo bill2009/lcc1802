@@ -2,6 +2,9 @@
 #define _KEYBOARD_H
  
 //keyboard_encoder header
+
+#include "devkit/system/flags.h"
+
 #ifdef __CIDELSA__
 #include "devkit/input/joystick.h"
 #define kbhit() get_stick();  

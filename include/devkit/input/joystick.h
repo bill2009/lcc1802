@@ -3,6 +3,8 @@
 
 //joystick header
 
+#include "devkit/system/flags.h"
+
 #ifdef __COMX__
 #define MOVE_UP 0x82
 #define MOVE_RIGHT 0x83
