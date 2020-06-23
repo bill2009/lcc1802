@@ -3,6 +3,8 @@
 
 //vis header
 
+#include "devkit/system/flags.h"
+
 void vis_includer(){
 asm(" include devkit/video/vis.inc\n");
 }

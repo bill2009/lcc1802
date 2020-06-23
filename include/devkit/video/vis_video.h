@@ -3,6 +3,8 @@
 
 //vis_video header
 
+#include "devkit/system/flags.h"
+
 #define COLOR_BLACK 0
 #define COLOR_GREEN 1	
 #define COLOR_BLUE 2

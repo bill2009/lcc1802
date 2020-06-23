@@ -2,6 +2,9 @@
 #define _PRINTF_H
 
 //printf header
+
+#include "devkit/system/flags.h"
+
 #ifndef __CIDELSA__
 void putlcccx(unsigned char c);
 void gotoxy(unsigned char x, unsigned char y);
