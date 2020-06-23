@@ -15,13 +15,20 @@
 #define COLOR_WHITE 7  
 
 #ifdef __CIDELSA__
+#define Y_SIZE 40
+
 #ifdef __DRACO__
 #define TOP_LEFT_CORNER 0xfc10
+#define X_SIZE 27
 #else
 #define TOP_LEFT_CORNER 0xfbc0
+#define X_SIZE 25
 #endif
+
 #else
 #define TOP_LEFT_CORNER 0xF800
+#define X_SIZE 40
+#define Y_SIZE 24
 #endif
 
 unsigned char vis_text_color;
