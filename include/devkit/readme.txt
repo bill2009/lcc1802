@@ -93,41 +93,83 @@ Change cursor position for putc() and printf() to specified x and y.
 6. Compiler flags
 =================
 
-Flags starting and ending with __ are used for the lcc compiler, without for assembler.
+Any build for the RCA1802 using the devkit should specify "-target=xr18CX" for the lcc compiler as well as one of the targets
+listed below. 
 
-__COMX__ / COMX=1: Build COMX target
-__PECOM__ / PECOM=1: Build PECOM target
-__TMC600__ / TMC600=1: Build TMC600 target
-__CIDELSA__ / CIDELSA=1: Build CIDELSA target, note that one CIDELSA variant should also be specified
-__MICRO__ / MICRO=1: Build MICROBOARD target, note that one MICRO variant should also be specified 
+For the COMX, PECOM and TMC600 the assembler should use -D LCCCX=1. Additionally a CODELOC and for some targets a STACKLOC and/or 
+DATALOC should be used as listed below. CODELOC defines where in memory the target code should start, STACKLOC where in RAM the stack pointer should start and DATALOC where in RAM global variables should be placed.
 
-CIDELSA variants
+COMX target
+-----------
 
-__ALTAIR__ / ALTAIR=1
-__DESTROYER__ / DESTROYER=1
-__DRACO__ / DRACO=1
+lcc flag: -D__COMX__
+asw flas: -D LCCCX=1 -D CODELOC=0x4401
 
-MICRO variants:
+PECOM target
+------------
 
-__PAL1__ / PAL1
+lcc flag: -D__PECOM__
+asw flas: -D LCCCX=1 -D CODELOC=0x201
+
+TMC600 target
+-------------
+
+lcc flag: -D__TMC600__
+asw flas: -D LCCCX=1 -D CODELOC=0x6300
+
+CIDELSA DRACO target
+--------------------
+
+lcc flag: -D __CIDELSA__ -D__DRACO__
+asw flas 16K target: -D NOFILLBSS=1 -D DATALOC=0x4000 -D CODELOC=0 -D STACKLOC=0x40ff 
+asw flas 32K target: -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x83ff 
+
+CIDELSA ALTAIR target
+---------------------
+
+lcc flag: -D __CIDELSA__ -D__ALTAIR__
+asw flas 12K target: -D NOFILLBSS=1 -D DATALOC=0x3000 -D CODELOC=0 -D STACKLOC=0x30ff 
+asw flas 24K target: -D NOFILLBSS=1 -D DATALOC=0x6000 -D CODELOC=0 -D STACKLOC=0x60ff 
+
+CIDELSA DESTROYER target
+------------------------
+
+lcc flag: -D __CIDELSA__ -D__DESTROYER__
+asw flas 8K target: -D NOFILLBSS=1 -D DATALOC=0x2000 -D CODELOC=0 -D STACKLOC=0x20ff 
+asw flas 12K target: -D NOFILLBSS=1 -D DATALOC=0x3000 -D CODELOC=0 -D STACKLOC=0x30ff 
+
+MCIRO targets
+-------------
+
+Microboard System have different memory configurations. The following example would be used for a 32K ROM at 0-0x7fff (with the 
+devkit code) and a 8K RAM at 0x8000-0x9fff. Other memory configurations will need a different CODELOC, DATALOC and STACKLOC. 
+
+asw flas: -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff  
+
+For a PAL1 variant the lcc compiler would need:
+lcc flag: -D __MICRO__ -D__PAL1__
+
+List flags for MICRO variants
+
+__PAL1__
 PAL 1 - 128 6x8 Characters - 1 KB character RAM
 
-__PAL2__ / PAL2
+__PAL2__
 PAL 2 - 64 6x16 Characters - 1 KB character RAM
 
-__ NTSC1_4_8__ / NTSC1_4_8
+__ NTSC1_4_8__
 1 - 128 6x8 Characters - 1 KB character RAM
 4 - 128 6x8 Characters - 1 KB character RAM/ROM
 8 - 256 6x8 Characters - 2 KB character RAM/ROM
 
-__NTSC3__ / NTSC3
+__NTSC3__
 3 - 128 6x16 Characters - 2 KB character RAM
 
-__ NTSC2_9__ / NTSC2_9
+__ NTSC2_9__
 2 - 256 6x8 Characters - 2 KB character RAM
 9 - 256 6x16 Characters - 4 KB character RAM/ROM
 
-__NTSC5_6_7__ / NTSC5_6_7
+__NTSC5_6_7__
 5 - 128 6x8 Characters - 1 KB character ROM
 6 - 256 6x8 Characters - 2 KB character ROM
 7 - 128 6x16 Characters - 2 KB character ROM
@@ -140,4 +182,5 @@ video/comx_char.h & .c: files containing COMX character set shapes used for char
 video/cidelsa_char.h & .c: files containing CIDELSA character set shapes used for character_set function (CIDELSA target)
 video/vis.h & .c: assembler macro routines
 system/basic_final.inc: assembler definition file to add BASIC program (COMX, PECOM, TMC600 target)
+system/flags.h: include file to copy c compiler flags to the assembler compiler.
  
