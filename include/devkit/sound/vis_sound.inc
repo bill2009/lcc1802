@@ -1,7 +1,7 @@
 ;
 ; *******************************************************************
 ; *** This software is copyright 2020 by Marcel van Tongeren      ***
-; *** with support from Bill Rowe and Fabrizio Caruso.			  ***
+; *** with support from Bill Rowe and Fabrizio Caruso.            ***
 ; ***                                                             ***
 ; *** You have permission to use, modify, copy, and distribute    ***
 ; *** this software so long as this copyright notice is retained. ***
