@@ -119,7 +119,7 @@ wait_display macro
     bn1 $
   ENDIF
   ELSE
-    b1 $			; wait til video is quiet
+    b1 $            ; wait til video is quiet
   ENDIF
   endm
 

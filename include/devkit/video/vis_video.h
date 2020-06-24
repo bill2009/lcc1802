@@ -6,7 +6,7 @@
 #include "devkit/system/flags.h"
 
 #define COLOR_BLACK 0
-#define COLOR_GREEN 1	
+#define COLOR_GREEN 1    
 #define COLOR_BLUE 2
 #define COLOR_CYAN 3     
 #define COLOR_RED 4
@@ -45,7 +45,9 @@ void initvideo();
 void setvideobase(unsigned short int vidmem);
 void vidclr(unsigned int vidmem, int vidlen);
 void vidchar(unsigned short int vidmem, unsigned char character);
+void vidcharxy(unsigned char x, unsigned char y, unsigned char character);
 void vidstrcpy(unsigned short int vidmem, char * text);
+void vidstrcpyxy(unsigned char x, unsigned char y, char * text);
 unsigned char bgcolor(unsigned char color);
 void textcolor(unsigned char color);
 #ifdef __TMC600__
