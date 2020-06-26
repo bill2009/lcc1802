@@ -81,13 +81,13 @@ Change color to monochrome when mono = 1, set to color if mono = 0.
 
 Used to replace putc(c) to use printf feature on VIS targets.
 
-Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600
+Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO
 
 void gotoxy(unsigned char x, unsigned char y)
 ---------------------------------------------
 
 Change cursor position for putc() and printf() to specified x and y.
-Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600
+Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO
 
 
 6. Compiler flags
