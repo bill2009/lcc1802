@@ -43,15 +43,21 @@ _initvideo:             ; initialize vis video output and system settings
     str R9
   ENDIF
     out_vis R8, 5
+    ldireg R8, _vis_cursor_position
+    ldi _vis_top_left_corner >> 8
+    str R8
+    inc R8
+    ldi _vis_top_left_corner & 0xff
+    str R8
+    ldireg R8, _vis_column_counter
+	ldi 0
+	str R8    
+    inc R8
+	str R8    
     c_return
 
 _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
     select_vis  
-  IF (SYMTYPE(CIDELSA) <> -1) || (SYMTYPE(MICRO) <> -1)
-    out_vis R12, 7
-    c_return
-  ENDIF  
-  IF (SYMTYPE(COMX) <> -1) || (SYMTYPE(PECOM) <> -1) || (SYMTYPE(TMC600) <> -1)
     ldireg R8, _vis_video_base
     ghi R12
     str R8
@@ -60,7 +66,6 @@ _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
     str R8
     out_vis R12, 7
     cretn
-  ENDIF  
 
     align    64
 _vidcharxy:             ; write 'text' to position x, y

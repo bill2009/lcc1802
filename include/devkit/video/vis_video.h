@@ -5,32 +5,6 @@
 
 #include "devkit/system/flags.h"
 
-#define COLOR_BLACK 0
-#define COLOR_GREEN 1    
-#define COLOR_BLUE 2
-#define COLOR_CYAN 3     
-#define COLOR_RED 4
-#define COLOR_YELLOW 5
-#define COLOR_MAGENTA 6
-#define COLOR_WHITE 7  
-
-#ifdef __CIDELSA__
-#define Y_SIZE 40
-
-#ifdef __DRACO__
-#define TOP_LEFT_CORNER 0xfc10
-#define X_SIZE 27
-#else
-#define TOP_LEFT_CORNER 0xfbc0
-#define X_SIZE 25
-#endif
-
-#else
-#define TOP_LEFT_CORNER 0xF800
-#define X_SIZE 40
-#define Y_SIZE 24
-#endif
-
 unsigned char vis_text_color;
 unsigned char vis_text_color_mask;
 unsigned long vis_buffer;
@@ -38,6 +12,7 @@ unsigned long vis_buffer;
 unsigned char vis_out3;
 unsigned char vis_out5;
 #endif
+
 
 #include "devkit/video/vis.h"
 

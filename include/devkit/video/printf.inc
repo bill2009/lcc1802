@@ -13,7 +13,7 @@
 _putlcccx:              ; R12 = character to output 
   IFDEF  PECOM 
     ldireg R13, 0xB102  ; value required by 0xaab8 Pecom print routine
-     sex R2
+    sex R2
     glo r12
     lbr 0xaab8
   ENDIF
@@ -27,6 +27,172 @@ _putlcccx:              ; R12 = character to output
     glo r12
     lbr 0x1fd4
   ENDIF
+  IF (SYMTYPE(MICRO) <> -1) || (SYMTYPE(CIDELSA) <> -1)
+    select_vis
+  IFNDEF TMC600 
+    ldireg R8, _vis_text_color_mask
+    ldireg R9, _vis_text_color
+  ENDIF
+    ldireg R10, _vis_cursor_position
+    ldireg R11, _vis_column_counter
+    lda R10
+    phi R15
+    ldn R10
+    plo R15
+    lda R11
+    plo R14             ; R14.0 = column
+    ldn R11
+    plo R13             ; R13.0 = line
+    glo r12
+    smi 0x8
+    lbz $$backspace
+    smi 0x1
+    lbz $$tab
+    smi 0x1
+    lbz $$nlcr
+    smi 0x1
+    lbz $$nl
+    smi 0x2
+    lbz $$cr
+    glo r12
+  IFNDEF TMC600 
+    smi 0x21
+    lbnf $$nocolorchange
+    smi 0x3F
+    lbdf $$nocolorchange
+$$colorchange:
+    glo r12
+    sex R8
+    and
+    sex R9
+    add
+    skp
+  ENDIF
+$$nocolorchange:
+    glo r12
+    wait_display
+    str R15             ; move the byte
+    inc R15
+    inc R14
+$$checkendofline:
+    glo R14
+    smi 0x28            ; end of line
+    lbnz $$endroutine
+    inc R13
+$$continue_cr
+    ldi 0
+    plo R14
+$$continue:
+    glo R15
+    smi _vis_bot_right_corner & 0xff
+    ghi R15
+    smbi _vis_bot_right_corner >> 8
+    lbnf $$noresetbase
+    ldireg R15, _vis_top_left_corner
+$$noresetbase:
+    glo R13
+    smi 0x18
+    lbnz $$endroutine
+    ldireg R8, _vis_video_base + 1
+    ldn R8
+    adi 0x28
+    plo R9
+    dec R8
+    ldn R8
+	adci 0
+    phi R9
+    ghi R9
+    smi _vis_bot_right_corner >> 8
+    lbnz $$noresetbase2
+    glo R9
+    smi _vis_bot_right_corner & 0xff
+    lbnz $$noresetbase2
+    ldireg R9, _vis_top_left_corner
+$$noresetbase2:
+    ghi R9
+    str R8
+    inc R8
+    glo R9
+    str R8
+    out_vis R9, 7
+    ghi R15
+    phi R8
+    glo R15
+    plo R8
+    ldi 0x28
+    plo R9
+$$clearline:
+    ldi _vis_space
+    wait_display
+    str R8              ; move the byte
+    inc R8
+	dec R9
+	glo R9
+	bnz $$clearline
+    dec R13
+$$endroutine:
+    sex R11
+    glo R13             ; get line counter
+    stxd                ; store 
+    glo R14             ; get new column counter
+    str R11             ; store 
+    sex R10
+    glo R15             ; get new cursor position - low
+    stxd                ; store 
+    ghi R15             ; get new cursor position - high
+    str R10             ; store
+$$return:
+    c_return
+$$nlcr:
+    glo R14
+    sex R2
+    str R2
+    ldi 0x28
+    sm
+    str R2
+    glo R15
+    add
+    plo R15
+    ghi R15
+    adci 0
+    phi R15
+    inc R13
+    lbr $$continue_cr
+$$cr:
+    glo R14
+    sex R2
+    str R2
+    glo R15
+    sm
+    plo R15
+    ghi R15
+    smbi 0
+    phi R15
+    lbr $$continue_cr
+$$nl:
+    glo R15
+    adi 0x28
+    plo R15
+    ghi R15
+    adci 0
+    phi R15
+    inc R13
+    lbr $$continue
+$$backspace:
+    glo R14
+    lbz $$return
+    dec R15
+    dec R14
+    lbr $$endroutine
+$$tab:
+    inc R14
+    inc R15
+    glo R14
+    ani 0x7
+    lbnz $$tab
+    lbr $$checkendofline   
+  ENDIF
+ 
     cretn
 
   IFDEF TMC600 
@@ -68,6 +234,28 @@ _gotoxy:                ; R12 = x, R13 = y
     ldi 0x20
     b1 $
     str R15             ; Put a space on current cursor position
+  ENDIF
+  IFDEF MICRO
+    ldireg R8, _vis_column_counter
+                        ; R8 = pointer to column position
+    glo R12 
+    str R8              ; Store new column position
+    inc R8
+    glo R13 
+    str R8              ; Store new line position
+    ldireg R8, _vis_cursor_position + 1
+                        ; R8 = pointer to cursor position low
+  ENDIF
+  IFDEF CIDELSA
+    ldireg R8, _vis_column_counter
+                        ; R8 = pointer to column position
+    glo R13 
+    str R8              ; Store new column position
+    inc R8
+    glo R12 
+    str R8              ; Store new line position
+    ldireg R8, _vis_cursor_position + 1
+                        ; R8 = pointer to cursor position low
   ENDIF
     sex R2
     ldi 0

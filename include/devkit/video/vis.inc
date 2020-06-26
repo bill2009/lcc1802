@@ -11,6 +11,7 @@
 ; 
 
   IFDEF COMX 
+_vis_cursor_position   equ 0x4193
 _vis_video_base        equ 0x4195
 _vis_shape_pointer     equ 0xfbff
 _vis_out3_value        equ 0xE0
@@ -19,9 +20,12 @@ _vis_out5_value        equ 0x80
 _vis_out5              equ 0x41c3
 _vis_space             equ 0x20
 _vis_char_lines        equ 9
+_vis_top_left_corner   equ 0xf800
+_vis_bot_right_corner  equ 0xfbc0
   ENDIF
   
   IFDEF PECOM 
+_vis_cursor_position   equ 0x7cc5
 _vis_video_base        equ 0x7cc8
 _vis_shape_pointer     equ 0xfbff
 _vis_out3_value        equ 0xe0
@@ -30,15 +34,19 @@ _vis_out5_value        equ 0x80
 _vis_out5              equ 0x7CC3
 _vis_space             equ 0x20
 _vis_char_lines        equ 9
+_vis_top_left_corner   equ 0xf800
+_vis_bot_right_corner  equ 0xfbc0
   ENDIF
 
   IFDEF TMC600 
-_vis_video_base        equ 0x6002
+_vis_cursor_position   equ 0x6002
 _vis_out3_value        equ 0x80
 _vis_out3              equ 0x600b
 _vis_out5_value        equ 0x80
 _vis_out5              equ 0x600c
 _vis_space             equ 0x20
+_vis_top_left_corner   equ 0xf800
+_vis_bot_right_corner  equ 0xfbc0
   ENDIF  
   
   IFDEF CIDELSA
@@ -49,14 +57,20 @@ _vis_char_lines        equ 8
 
   IFDEF DRACO
 _vis_shape_pointer     equ 0xffff
+_vis_top_left_corner   equ 0xfc10
+_vis_bot_right_corner  equ 0xfc38
   ENDIF
   
   IFDEF ALTAIR
 _vis_shape_pointer     equ 0xfbff
+_vis_top_left_corner   equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbe8
   ENDIF
   
   IFDEF DESTROYER
 _vis_shape_pointer     equ 0xfbff
+_vis_top_left_corner   equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbe8
   ENDIF
   
   ENDIF
@@ -76,6 +90,8 @@ _vis_char_lines        equ 9
   ENDIF
 _vis_shape_pointer     equ 0xfbff
 _vis_io_group          equ 0x80
+_vis_top_left_corner   equ 0xf800
+_vis_bot_right_corner  equ 0xfbc0
   ENDIF
 
 
@@ -119,7 +135,7 @@ wait_display macro
     bn1 $
   ENDIF
   ELSE
-    b1 $            ; wait til video is quiet
+    b1 $			; wait til video is quiet
   ENDIF
   endm
 
