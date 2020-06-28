@@ -9,7 +9,13 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
- 
+
+  IFDEF DRACO
+_vis_char_on_screen    equ 0x410
+  ELSE
+_vis_char_on_screen    equ 0x3c0
+  ENDIF
+   
 _putlcccx:              ; R12 = character to output 
   IFDEF  PECOM 
     ldireg R13, 0xB102  ; value required by 0xaab8 Pecom print routine
@@ -334,8 +340,18 @@ $$loop40:
     adc
     phi R12            ; R12 = y + x * 40
   ENDIF
-    sex R8 
+    glo R12
+    smi _vis_char_on_screen & 0xff
+    plo R9
+    ghi R12
+    smbi _vis_char_on_screen >> 8
+    lbnf $$notoutofrange
+    phi R12
+    glo R9
+    plo R12
+$$notoutofrange:
   IFDEF  COMX 
+    sex R8 
     dec R8                
     glo R12 
     stxd 
@@ -344,10 +360,15 @@ $$loop40:
     dec R8 
     dec R8 
   ENDIF
+    ldireg R9, _vis_video_base + 1
+    sex R9
     glo R12 
-    stxd 
+    add
+    str R8
+    dec R8
+    dec R9 
     ghi R12 
-    adi 0xf8 
-    stxd                ; Store new cursor postion in range 0xF800 - 0xFBBF
+    adc 
+    str R8              ; Store new cursor postion in range 0xF800 - 0xFBBF
     sex R2
     cretn
