@@ -22,6 +22,10 @@ _vis_space             equ 0x20
 _vis_char_lines        equ 9
 _vis_top_left_corner   equ 0xf800
 _vis_bot_right_corner  equ 0xfbc0
+_vis_char_on_screen    equ 0x3c0
+_x_size                equ 40
+_y_size                equ 24
+_scroll_value          equ 40
   ENDIF
   
   IFDEF PECOM 
@@ -36,6 +40,10 @@ _vis_space             equ 0x20
 _vis_char_lines        equ 9
 _vis_top_left_corner   equ 0xf800
 _vis_bot_right_corner  equ 0xfbc0
+_vis_char_on_screen    equ 0x3c0
+_x_size                equ 40
+_y_size                equ 24
+_scroll_value          equ 40
   ENDIF
 
   IFDEF TMC600 
@@ -47,6 +55,10 @@ _vis_out5              equ 0x600c
 _vis_space             equ 0x20
 _vis_top_left_corner   equ 0xf800
 _vis_bot_right_corner  equ 0xfbc0
+_vis_char_on_screen    equ 0x3c0
+_x_size                equ 40
+_y_size                equ 24
+_scroll_value          equ 40
   ENDIF  
   
   IFDEF CIDELSA
@@ -54,27 +66,37 @@ _vis_out3_value        equ 0xe0
 _vis_out5_value        equ 0xc8
 _vis_space             equ 0x20
 _vis_char_lines        equ 8
+_scroll_value          equ 4
 
   IFDEF DRACO
 _vis_shape_pointer     equ 0xffff
 _vis_top_left_corner   equ 0xfc10
 _vis_bot_right_corner  equ 0xfc38
+_vis_char_on_screen    equ 0x438
+_x_size                equ 27
+_y_size                equ 40
   ENDIF
   
   IFDEF ALTAIR
 _vis_shape_pointer     equ 0xfbff
 _vis_top_left_corner   equ 0xfbc0
 _vis_bot_right_corner  equ 0xfbe8
+_vis_char_on_screen    equ 0x3e8
+_x_size                equ 25
+_y_size                equ 40
   ENDIF
   
   IFDEF DESTROYER
 _vis_shape_pointer     equ 0xfbff
 _vis_top_left_corner   equ 0xfbc0
 _vis_bot_right_corner  equ 0xfbe8
+_vis_char_on_screen    equ 0x3e8
+_x_size                equ 25
+_y_size                equ 40
   ENDIF
   
   ENDIF
-
+  
   IFDEF MICRO
 _vis_out3_value        equ 0xe0
   IF (SYMTYPE(PAL1) <> -1) || (SYMTYPE(PAL2) <> -1)
@@ -92,6 +114,10 @@ _vis_shape_pointer     equ 0xfbff
 _vis_io_group          equ 0x80
 _vis_top_left_corner   equ 0xf800
 _vis_bot_right_corner  equ 0xfbc0
+_vis_char_on_screen    equ 0x3c0
+_x_size                equ 40
+_y_size                equ 24
+_scroll_value          equ 40
   ENDIF
 
 

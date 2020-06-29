@@ -10,12 +10,6 @@
 ; *******************************************************************
 ; 
 
-  IFDEF DRACO
-_vis_char_on_screen    equ 0x410
-  ELSE
-_vis_char_on_screen    equ 0x3c0
-  ENDIF
-   
 _putlcccx:              ; R12 = character to output 
   IFDEF  PECOM 
     ldireg R13, 0xB102  ; value required by 0xaab8 Pecom print routine
@@ -42,23 +36,23 @@ _putlcccx:              ; R12 = character to output
     ldireg R10, _vis_cursor_position
     ldireg R11, _vis_column_counter
     lda R10
-    phi R15
+    phi R15           
     ldn R10
-    plo R15
+    plo R15             ; R15 = cursor position
     lda R11
     plo R14             ; R14.0 = column
     ldn R11
     plo R13             ; R13.0 = line
     glo r12
-    smi 0x8
-    lbz $$backspace
-    smi 0x1
+    smi 0x8             ; check on 0x8, backspace
+    lbz $$backspace    
+    smi 0x1             ; check on 0x9, tab
     lbz $$tab
-    smi 0x1
+    smi 0x1             ; check on 0xa, new line and carriage return
     lbz $$nlcr
-    smi 0x1
+    smi 0x1             ; check on 0xb, new line
     lbz $$nl
-    smi 0x2
+    smi 0x2             ; check on oxd, carriage return
     lbz $$cr
     glo r12
   IFNDEF TMC600 
@@ -66,77 +60,84 @@ _putlcccx:              ; R12 = character to output
     lbnf $$nocolorchange
     smi 0x3F
     lbdf $$nocolorchange
-$$colorchange:
+$$colorchange:          ; is character is between 0x21 and 0x60 adapt color
     glo r12
     sex R8
-    and
+    and                 ; AND character with color mask, i.e. for 4 colors change to 0-0x3f range
     sex R9
-    add
+    add                 ; ADD color code 0, 0x40, 0x80 or 0xc0
     skp
   ENDIF
 $$nocolorchange:
     glo r12
     wait_display
     str R15             ; move the byte
-    inc R15
-    inc R14
+    inc R15             ; cursor positon + 1
+    inc R14             ; column position + 1
 $$checkendofline:
-    glo R14
-    smi 0x28            ; end of line
-    lbnz $$endroutine
-    inc R13
+    glo R14        
+    smi _x_size         ; if column position is _x_size, it is the end of line
+    lbnz $$saveposition ; if not end of line we are done, just save the new position in the saveposition routine
+    inc R13             ; new line, so linecounter + 1
 $$continue_cr
-    ldi 0
-    plo R14
+    ldi 0               
+    plo R14             ; new line, so set column counter to 0
 $$continue:
     glo R15
     smi _vis_bot_right_corner & 0xff
     ghi R15
     smbi _vis_bot_right_corner >> 8
-    lbnf $$noresetbase
+    lbnf $$checkendpage ; if new position >= bottum_right_corner we need to wrap around to the top_left_corner value
     ldireg R15, _vis_top_left_corner
-$$noresetbase:
-    glo R13
-    smi 0x18
-    lbnz $$endroutine
+                        ; wrap R15 around to the top_left_corner value
+$$checkendpage:
+    glo R13 
+    smi _y_size         ; if line counter is _y_size, it is the end of the page
+    lbnz $$saveposition ; if not end of page we are done, just save the new position in the saveposition routine
     ldireg R8, _vis_video_base + 1
+                        ; end of page so we need to scroll, first load pointer to low byte of the video base
     ldn R8
-    adi 0x28
+    adi _scroll_value
     plo R9
     dec R8
     ldn R8
 	adci 0
-    phi R9
-    ghi R9
-    smi _vis_bot_right_corner >> 8
-    lbnz $$noresetbase2
+    phi R9               ; R9 = video base + scroll_value (40 characters on all computer except CIDELSA 4)
     glo R9
     smi _vis_bot_right_corner & 0xff
-    lbnz $$noresetbase2
+    ghi R9
+    smbi _vis_bot_right_corner >> 8
+    lbnz $$storenewbase  ; if new video base = bottum_right_corner we need to wrap around to the top_left_corner value
     ldireg R9, _vis_top_left_corner
-$$noresetbase2:
+                        ; wrap R9 around to the top_left_corner value
+$$storenewbase:
     ghi R9
     str R8
     inc R8
     glo R9
-    str R8
-    out_vis R9, 7
-    ghi R15
-    phi R8
+    str R8              ; store new video base on video base pointer
+    glo R14
+    sex R2
+    str R2
     glo R15
+    sm
     plo R8
-    ldi 0x28
-    plo R9
+    ghi R15
+    smbi 0
+    phi R8              ; R8 = cursor position - column counter to set position to start cleaning the bottom line after scrolling
+    ldi _x_size
+    plo R12             ; R12.0 = counter to print _x_size spaces
 $$clearline:
     ldi _vis_space
     wait_display
     str R8              ; move the byte
     inc R8
-	dec R9
-	glo R9
+	dec R12
+	glo R12
 	bnz $$clearline
+    out_vis R9, 7       ; output new video base value to VIS
     dec R13
-$$endroutine:
+$$saveposition:
     sex R11
     glo R13             ; get line counter
     stxd                ; store 
@@ -189,7 +190,7 @@ $$backspace:
     lbz $$return
     dec R15
     dec R14
-    lbr $$endroutine
+    lbr $$saveposition
 $$tab:
     inc R14
     inc R15
