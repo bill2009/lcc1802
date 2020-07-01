@@ -32,6 +32,7 @@ rwork:	equ	memAddr	;work register
 ;20-05-01 saving D around Call/return
 ;20-05-18 added sex r2 in SCRT return routine
 ;20-05-23 align for dubdabx - really should move to nstdlib.inc
+;20-06-19 changed lbr die to br on return from main
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
@@ -71,7 +72,7 @@ lcc1802init:
 		sep	RPC
 	$$_00000:
 		Ccall _main	;call the main routine
-	$$_die:	lbr	$$_die		;loop here when main returns
+	$$_die:	br	$$_die		;loop here when main returns
 		db	0xde,0xad
   ENDIF
 ;the following routines don't have short jumps and don't need to worry about alignment
