@@ -48,8 +48,9 @@
 ;20-05-10 changed indirect call to detect * as the signal i.e. ccall *R11  means call the address in R11
 ;20-05-12 added JNEU1 as single byte unsigned compare
 ;20-06-02 updated to support DATALOC in combination with a change to the compiler.  macros orgd,orgc, tracking variable CSEG for current segment
+;20-06-19 fixed set of CODELOC
   IFNDEF CODELOC		;wjr 20-05-29 allow code relocation
-      CODELOC SET 0		;wjr 20-05-29 allow code relocation
+      SET CODELOC,0		;wjr 20-05-29 allow code relocation
   ENDIF				;wjr 20-05-29 allow code relocation
       org CODELOC		;wjr 20-05-29 allow code relocation
   set CSEG,1			;wjr-20-06-2 set current segment to code
