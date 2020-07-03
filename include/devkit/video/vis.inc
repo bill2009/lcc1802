@@ -63,13 +63,13 @@ _scroll_value          equ 40
   
   IFDEF CIDELSA
 _vis_out3_value        equ 0xe0
-_vis_out5_value        equ 0xc8
 _vis_space             equ 0x20
 _vis_char_lines        equ 8
 _scroll_value          equ 4
 
   IFDEF DRACO
 _vis_shape_pointer     equ 0xffff
+_vis_out5_value        equ 0xc8
 _vis_top_left_corner   equ 0xfc10
 _vis_bot_right_corner  equ 0xfc38
 _vis_char_on_screen    equ 0x438
@@ -79,6 +79,7 @@ _y_size                equ 40
   
   IFDEF ALTAIR
 _vis_shape_pointer     equ 0xfbff
+_vis_out5_value        equ 0x88
 _vis_top_left_corner   equ 0xfbc0
 _vis_bot_right_corner  equ 0xfbe8
 _vis_char_on_screen    equ 0x3e8
@@ -88,6 +89,7 @@ _y_size                equ 40
   
   IFDEF DESTROYER
 _vis_shape_pointer     equ 0xfbff
+_vis_out5_value        equ 0x88
 _vis_top_left_corner   equ 0xfbc0
 _vis_bot_right_corner  equ 0xfbe8
 _vis_char_on_screen    equ 0x3e8
