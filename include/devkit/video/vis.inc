@@ -13,6 +13,7 @@
   IFDEF COMX 
 _vis_cursor_position   equ 0x4193
 _vis_video_base        equ 0x4195
+_vis_rom_column        equ 0x419a
 _vis_shape_pointer     equ 0xfbff
 _vis_out3_value        equ 0xE0
 _vis_out3              equ 0x41c0
@@ -21,11 +22,13 @@ _vis_out5              equ 0x41c3
 _vis_space             equ 0x20
 _vis_char_lines        equ 9
 _vis_top_left_corner   equ 0xf800
-_vis_bot_right_corner  equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbc0   ; actually bot_right_corner +1
 _vis_char_on_screen    equ 0x3c0
 _x_size                equ 40
-_y_size                equ 24
+_y_size                equ 24 
 _scroll_value          equ 40
+_printf_rom_routine    equ 0x2cd3
+_prtinf_rom_r13        equ 0x3302
   ENDIF
   
   IFDEF PECOM 
@@ -39,14 +42,17 @@ _vis_out5              equ 0x7CC3
 _vis_space             equ 0x20
 _vis_char_lines        equ 9
 _vis_top_left_corner   equ 0xf800
-_vis_bot_right_corner  equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbc0   ; actually bot_right_corner +1
 _vis_char_on_screen    equ 0x3c0
 _x_size                equ 40
 _y_size                equ 24
 _scroll_value          equ 40
+_printf_rom_routine    equ 0xaab8
+_prtinf_rom_r13        equ 0xB102
   ENDIF
 
   IFDEF TMC600 
+_vis_rom_column        equ 0x6001
 _vis_cursor_position   equ 0x6002
 _vis_out3_value        equ 0x80
 _vis_out3              equ 0x600b
@@ -54,11 +60,13 @@ _vis_out5_value        equ 0x80
 _vis_out5              equ 0x600c
 _vis_space             equ 0x20
 _vis_top_left_corner   equ 0xf800
-_vis_bot_right_corner  equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbc0   ; actually bot_right_corner +1
 _vis_char_on_screen    equ 0x3c0
 _x_size                equ 40
 _y_size                equ 24
 _scroll_value          equ 40
+_printf_rom_routine    equ 0x1fd4
+_prtinf_rom_r13        equ 0x2703
   ENDIF  
   
   IFDEF CIDELSA
@@ -71,7 +79,7 @@ _scroll_value          equ 4
 _vis_shape_pointer     equ 0xffff
 _vis_out5_value        equ 0xc8
 _vis_top_left_corner   equ 0xfc10
-_vis_bot_right_corner  equ 0xfc38
+_vis_bot_right_corner  equ 0xfc38   ; on the CIDELSA this is actually bot_left_corner +1
 _vis_char_on_screen    equ 0x438
 _x_size                equ 27
 _y_size                equ 40
@@ -81,7 +89,7 @@ _y_size                equ 40
 _vis_shape_pointer     equ 0xfbff
 _vis_out5_value        equ 0x88
 _vis_top_left_corner   equ 0xfbc0
-_vis_bot_right_corner  equ 0xfbe8
+_vis_bot_right_corner  equ 0xfbe8   ; on the CIDELSA this is actually bot_left_corner +1
 _vis_char_on_screen    equ 0x3e8
 _x_size                equ 25
 _y_size                equ 40
@@ -91,7 +99,7 @@ _y_size                equ 40
 _vis_shape_pointer     equ 0xfbff
 _vis_out5_value        equ 0x88
 _vis_top_left_corner   equ 0xfbc0
-_vis_bot_right_corner  equ 0xfbe8
+_vis_bot_right_corner  equ 0xfbe8   ; on the CIDELSA this is actually bot_left_corner +1
 _vis_char_on_screen    equ 0x3e8
 _x_size                equ 25
 _y_size                equ 40
@@ -115,7 +123,7 @@ _vis_char_lines        equ 9
 _vis_shape_pointer     equ 0xfbff
 _vis_io_group          equ 0x80
 _vis_top_left_corner   equ 0xf800
-_vis_bot_right_corner  equ 0xfbc0
+_vis_bot_right_corner  equ 0xfbc0   ; actually bot_right_corner +1
 _vis_char_on_screen    equ 0x3c0
 _x_size                equ 40
 _y_size                equ 24

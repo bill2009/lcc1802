@@ -11,23 +11,11 @@
 ; 
 
 _putlcccx:              ; R12 = character to output 
-  IFDEF  PECOM 
-    ldireg R13, 0xB102  ; value required by 0xaab8 Pecom print routine
-    sex R2
+  IFDEF PRINTF_ROM
+    ldireg R13, _prtinf_rom_r13  ; value required by ROM print routine
     glo r12
-    lbr 0xaab8
-  ENDIF
-  IFDEF  COMX 
-    ldireg R13, 0x3302  ; value required by 0x2cd3 COMX print routine
-    glo r12
-    lbr 0x2cd3
-  ENDIF
-  IFDEF TMC600 
-    ldireg R13, 0x2703  ; value required by 0x1fd4 TMC600 print routine
-    glo r12
-    lbr 0x1fd4
-  ENDIF
-  IF (SYMTYPE(MICRO) <> -1) || (SYMTYPE(CIDELSA) <> -1)
+    lbr _printf_rom_routine
+  ELSE
     select_vis
   IFNDEF TMC600 
     ldireg R8, _vis_text_color_mask
@@ -347,7 +335,7 @@ _gotoxy:                ; R12 = x, R13 = y
     sex R3
     out 1
     db  2
-    ldireg R8, 0x7CC5   ; R8 = pointer to current cursor position
+    ldireg R8, _vis_cursor_position    ; R8 = pointer to current cursor position
     lda R8            
     phi R15
     ldn 8
@@ -357,18 +345,26 @@ _gotoxy:                ; R12 = x, R13 = y
     str R15             ; Put a space on current cursor position
   ENDIF
   IFDEF  COMX 
-    ldireg R8, 0x419A   ; R8 = pointer to column position
+  IFDEF PRINTF_ROM
+    ldireg R8, _vis_rom_column         ; R8 = pointer to column position
     sex R8 
     glo R13 
     stxd                ; Store new column position
+  ELSE
+    ldireg R8, _vis_cursor_position + 1; R8 = pointer to current cursor position + 1
+  ENDIF
   ENDIF
   IFDEF  TMC600 
-    ldireg R8, 0x6001   ; R8 = pointer to column position
+  IFDEF PRINTF_ROM
+    ldireg R8, _vis_rom_column         ; R8 = pointer to column position
     sex R8 
     glo R13 
     sdi 0x28
     str 8               ; Store new column position
     inc R8
+  ELSE
+    ldireg R8, _vis_cursor_position + 1; R8 = pointer to current cursor position + 1
+  ENDIF
     lda R8            
     phi R15
     ldn 8
@@ -446,7 +442,7 @@ $$loop40:
     inc R2
     ghi R13 
     adc 
-    phi R12                ; R12 = 0xfc10 - R12(y) * 40 + R13(x)
+    phi R12             ; R12 = 0xfc10 - R12(y) * 40 + R13(x)
   ELSE
     phi R13             ; R13.1 = 0x28, marking DF=1 on an addition need
 $$loop40: 
@@ -500,11 +496,27 @@ $$notoutofrange:
     sex R9
     glo R12 
     add
-    str R8
-    dec R8
+    plo R15
     dec R9 
     ghi R12 
     adc 
+    phi R15
+    glo R15
+    smi _vis_bot_right_corner & 0xff
+    ghi R15
+    smbi _vis_bot_right_corner >> 8
+    lbnf $$nowrap       ; if new position >= bottum_right_corner we need to wrap around to the top_left_corner value
+    glo R15
+    smi _vis_char_on_screen & 0xff
+    plo R15
+    ghi R15
+    smbi _vis_char_on_screen >> 8
+    phi R15
+$$nowrap:
+    glo R15
+    str R8
+    dec R8
+    ghi R15
     str R8              ; Store new cursor postion in range 0xF800 - 0xFBBF
     sex R2
     cretn

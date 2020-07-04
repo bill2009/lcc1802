@@ -93,4 +93,9 @@ void character_set(unsigned char number)
 #endif
         break;
     }
+
+#if defined PRINTF_ROM && defined __COMX__
+    shape_rom = (unsigned char *)0x700;
+	shapechar(shape_rom, 0, 1);
+#endif
 }

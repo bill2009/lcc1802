@@ -49,6 +49,19 @@ _initvideo:             ; initialize vis video output and system settings
     inc R8
     ldi _vis_top_left_corner & 0xff
     str R8
+  IFDEF COMX
+  IFDEF PRINTF_ROM
+    ldi 0x97
+    plo R8
+    ldi 0
+    str R8
+    inc R8
+    str R8
+    inc R8
+    inc R8
+    str R8    
+  ENDIF
+  ENDIF
     ldireg R8, _vis_column_counter
 	ldi 0
 	str R8    
