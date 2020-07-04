@@ -80,14 +80,16 @@ Change color to monochrome when mono = 1, set to color if mono = 0.
 ------------------------------
 
 Used to replace putc(c) to use printf feature on VIS targets.
+Note, default devkit printf routines will be used, taking some RAM space but these routines are fasted and support the text color
+commands described above. To use the ROM print routines in the COMX, PECOM or TMC600 specify compiler flag PRINTF_ROM or add '#define PRINTF_ROM' in your source before the first devkit include file.
 
-Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO
+Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO, CIDELSA
 
 void gotoxy(unsigned char x, unsigned char y)
 ---------------------------------------------
 
 Change cursor position for putc() and printf() to specified x and y.
-Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO
+Include file: video/printf.hTargets implemented: COMX, PECOM, TMC600, MICRO, CIDELSA
 
 
 6. Compiler flags
