@@ -331,7 +331,7 @@ $$nowraptab:
     align 32
   ENDIF
 _gotoxy:                ; R12 = x, R13 = y 
-  IFDEF  PECOM 
+  IFDEF PECOM 
     sex R3
     out 1
     db  2
@@ -344,26 +344,19 @@ _gotoxy:                ; R12 = x, R13 = y
     b1 $
     str R15             ; Put a space on current cursor position
   ENDIF
-  IFDEF  COMX 
+  IFDEF COMX 
   IFDEF PRINTF_ROM
     ldireg R8, _vis_rom_column         ; R8 = pointer to column position
-    sex R8 
     glo R13 
-    stxd                ; Store new column position
-  ELSE
-    ldireg R8, _vis_cursor_position + 1; R8 = pointer to current cursor position + 1
+    str R8              ; Store new column position
   ENDIF
   ENDIF
-  IFDEF  TMC600 
+  IFDEF TMC600 
   IFDEF PRINTF_ROM
     ldireg R8, _vis_rom_column         ; R8 = pointer to column position
-    sex R8 
     glo R13 
     sdi 0x28
     str 8               ; Store new column position
-    inc R8
-  ELSE
-    ldireg R8, _vis_cursor_position + 1; R8 = pointer to current cursor position + 1
   ENDIF
     lda R8            
     phi R15
@@ -373,29 +366,19 @@ _gotoxy:                ; R12 = x, R13 = y
     b1 $
     str R15             ; Put a space on current cursor position
   ENDIF
-  IFDEF MICRO
-    ldireg R8, _vis_column_counter
-                        ; R8 = pointer to column position
-    glo R12 
-    str R8              ; Store new column position
-    inc R8
-    glo R13 
-    str R8              ; Store new line position
-    ldireg R8, _vis_cursor_position + 1
-                        ; R8 = pointer to cursor position low
-  ENDIF
+    ldireg R8, _vis_column_counter     ; R8 = pointer to column position
   IFDEF CIDELSA
-    ldireg R8, _vis_column_counter
-                        ; R8 = pointer to column position
     glo R13 
     str R8              ; Store new column position
     inc R8
     glo R12 
-    str R8              ; Store new line position
-    ldireg R8, _vis_cursor_position + 1
-                        ; R8 = pointer to cursor position low
+  ELSE
+    glo R12 
+    str R8              ; Store new column position
+    inc R8
+    glo R13 
   ENDIF
-    sex R2
+    str R8              ; Store new line position
     ldi 0
     stxd
     str R2              ; M(R2) = result value = 0
@@ -483,14 +466,12 @@ $$loop40:
     plo R12
 $$notoutofrange:
   IFDEF  COMX 
-    sex R8 
-    dec R8                
-    glo R12 
-    stxd 
-    ghi R12 
-    stxd                ; On COMX store new cursor position 0x4197/0x4198 in range 0 - 0x3BF
-    dec R8 
-    dec R8 
+    ldireg R8, _vis_cursor_position_0   ; R8 = pointer to cursor position in range 0-0x3BF
+    ghi R15
+    str R8
+    inc R8
+    glo R15
+    str R8              ; On COMX store new cursor position 0x4197/0x4198 in range 0 - 0x3BF
   ENDIF
     ldireg R9, _vis_video_base + 1
     sex R9
@@ -513,10 +494,11 @@ $$notoutofrange:
     smbi _vis_char_on_screen >> 8
     phi R15
 $$nowrap:
-    glo R15
-    str R8
-    dec R8
+    ldireg R8, _vis_cursor_position    ; R8 = pointer to cursor position 
     ghi R15
+    str R8
+    inc R8
+    glo R15
     str R8              ; Store new cursor postion in range 0xF800 - 0xFBBF
     sex R2
     cretn

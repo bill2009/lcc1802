@@ -13,6 +13,7 @@
   IFDEF COMX 
 _vis_cursor_position   equ 0x4193
 _vis_video_base        equ 0x4195
+_vis_cursor_position_0 equ 0x4197
 _vis_rom_column        equ 0x419a
 _vis_shape_pointer     equ 0xfbff
 _vis_out3_value        equ 0xE0
