@@ -301,9 +301,9 @@ $$cpy:
   IFNDEF TMC600 
     smi 0x21
     lbnf $$nocolorchange
-    smi 0x3F
+    smi 0x5a
     lbdf $$nocolorchange
-$$colorchange:
+$$colorchange:          ; if character is between 0x21 and 0x7a adapt color
     lda R13
     sex R8
     and

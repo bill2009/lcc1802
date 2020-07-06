@@ -46,9 +46,9 @@ _putlcccx:              ; R12 = character to output
   IFNDEF TMC600 
     smi 0x21
     lbnf $$nocolorchange
-    smi 0x3F
+    smi 0x5a
     lbdf $$nocolorchange
-$$colorchange:          ; is character is between 0x21 and 0x60 adapt color
+$$colorchange:          ; if character is between 0x21 and 0x7a adapt color
     glo r12
     sex R8
     and                 ; AND character with color mask, i.e. for 4 colors change to 0-0x3f range

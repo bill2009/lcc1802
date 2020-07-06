@@ -29,6 +29,7 @@ void character_set(unsigned char number)
             shapechar(shape_rom, 0x20, CHAR_COLOR1+32);
             shape_rom = (unsigned char *)0x845;
             shapechar(shape_rom, 0x40, CHAR_COLOR1+32);
+            shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #elif __PECOM__
             shape_rom = (unsigned char *)0x8920;
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
@@ -37,6 +38,7 @@ void character_set(unsigned char number)
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR1+32);
+            shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #endif
         break;
 
@@ -47,6 +49,7 @@ void character_set(unsigned char number)
             shapechar(shape_rom, 0x20, CHAR_COLOR1+32);
             shape_rom = (unsigned char *)0x845;
             shapechar(shape_rom, 0x40, CHAR_COLOR1+32);
+            shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #elif __PECOM__
             shape_rom = (unsigned char *)0x8920;
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
@@ -55,9 +58,11 @@ void character_set(unsigned char number)
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR1+32);
+            shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #ifdef __NTSC2_9__
             shapechar(shapes_comx_32, 0xA0, CHAR_COLOR2+32);
             shapechar(shapes_comx_0, 0xC0, CHAR_COLOR2+32);
+            shapechar(shapes_comx_lowercase, 0xe1, CHAR_COLOR2+26);
 #endif
 #endif
         break;
