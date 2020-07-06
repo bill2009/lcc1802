@@ -331,6 +331,7 @@ $$nowraptab:
     align 32
   ENDIF
 _gotoxy:                ; R12 = x, R13 = y 
+  IFDEF PRINTF_ROM
   IFDEF PECOM 
     sex R3
     out 1
@@ -345,19 +346,15 @@ _gotoxy:                ; R12 = x, R13 = y
     str R15             ; Put a space on current cursor position
   ENDIF
   IFDEF COMX 
-  IFDEF PRINTF_ROM
     ldireg R8, _vis_rom_column         ; R8 = pointer to column position
     glo R13 
     str R8              ; Store new column position
   ENDIF
-  ENDIF
   IFDEF TMC600 
-  IFDEF PRINTF_ROM
     ldireg R8, _vis_rom_column         ; R8 = pointer to column position
     glo R13 
     sdi 0x28
     str 8               ; Store new column position
-  ENDIF
     lda R8            
     phi R15
     ldn 8
@@ -365,6 +362,7 @@ _gotoxy:                ; R12 = x, R13 = y
     ldi 0x20
     b1 $
     str R15             ; Put a space on current cursor position
+  ENDIF
   ENDIF
     ldireg R8, _vis_column_counter     ; R8 = pointer to column position
     glo R12 

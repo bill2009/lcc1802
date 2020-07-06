@@ -35,6 +35,8 @@ void character_set(unsigned char number)
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
             shape_rom = (unsigned char *)0x8a00;
             shapechar(shape_rom, 0x740, CHAR_COLOR1+32);
+            shape_rom = (unsigned char *)0x8ae7;
+            shapechar(shape_rom, 0x761, CHAR_COLOR1+26);
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR1+32);
@@ -55,6 +57,8 @@ void character_set(unsigned char number)
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
             shape_rom = (unsigned char *)0x8a00;
             shapechar(shape_rom, 0x740, CHAR_COLOR1+32);
+            shape_rom = (unsigned char *)0x8ae7;
+            shapechar(shape_rom, 0x761, CHAR_COLOR1+26);
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR1+32);
