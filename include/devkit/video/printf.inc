@@ -367,17 +367,10 @@ _gotoxy:                ; R12 = x, R13 = y
     str R15             ; Put a space on current cursor position
   ENDIF
     ldireg R8, _vis_column_counter     ; R8 = pointer to column position
-  IFDEF CIDELSA
-    glo R13 
-    str R8              ; Store new column position
-    inc R8
-    glo R12 
-  ELSE
     glo R12 
     str R8              ; Store new column position
     inc R8
     glo R13 
-  ENDIF
     str R8              ; Store new line position
     ldi 0
     stxd
@@ -414,19 +407,19 @@ $$loop40:
     inc R2
     ldn R2
   IFDEF DRACO  
-    sdbi 0x3c
+    sdbi 0x4
   ELSE
-    sdbi 0x3b
+    sdbi 0x3
   ENDIF
-    stxd                ; M(R2) = 0x3C10/0x3BC0 - M(R2), M(R2) is at this time y*40
+    stxd                ; M(R2) = 0x410/0x3C0 - M(R2), M(R2) is at this time y*40
     glo R13 
     add 
     plo R12 
     inc R2
-    ghi R13 
+    ldi 0 
     adc 
-    phi R12             ; R12 = 0xfc10 - R12(y) * 40 + R13(x)
-  ELSE
+    phi R12             ; R12 = 0x410/0x3C0 - R12(y) * 40 + R13(x)
+  ELSE                  ; all targets except CIDELSA below
     phi R13             ; R13.1 = 0x28, marking DF=1 on an addition need
 $$loop40: 
     glo R13 
@@ -451,7 +444,7 @@ $$loop40:
     add
     plo R12
     inc R2 
-    ghi R12
+    ldi 0
     adc
     phi R12            ; R12 = y + x * 40
   ENDIF
