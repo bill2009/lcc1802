@@ -78,7 +78,7 @@ _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
     glo R12
     str R8
     out_vis R12, 7
-    cretn
+    c_return
 
     align    64
 _vidcharxy:             ; write 'text' to position x, y
@@ -162,7 +162,7 @@ $$loop40:
     ld2 R13,'O',sp,(7)  ; move text pointer to R13
 _vidchar:               ; write 'character' to 'vidmem' location in video memory
     ldireg r14, _vis_buffer
-    select_vis
+    select_vis_sex2
     ldn R14
     bnz $$flushbuffer
     glo r13
@@ -343,7 +343,7 @@ $$pos_nok:
 _vidclr:                ; clear screen by writing 0's to video memory
                         ; vidmem pointer is R12, vidlen is R13
     ldireg r14, _vis_buffer
-    select_vis
+    select_vis_sex2
     ldn R14
     bz $$cpy
     phi r15
@@ -410,7 +410,7 @@ $$nextshape:
     lskp
 $$standardlines:
   ENDIF
-     ldi _vis_char_lines
+    ldi _vis_char_lines
     plo R14
   IFDEF CIDELSA
     lda R12
@@ -428,6 +428,7 @@ $$usecolor1:
     seq
     ghi R15
     lbnz $$usecolor2
+    lda R12
     lbr $$shape
 $$usecolor2:
     lda R12
@@ -577,7 +578,7 @@ _textcolor:             ; set text to 'color' in R12.0
     out 7
     db 0x20             ; select VIS register 2
     sex R2
-       glo R12          ; get color
+    glo R12             ; get color
     ani 0xf            
     str R2
     out 5               ; set new color value
@@ -628,7 +629,7 @@ _setcolor:              ; color RAM address in R12
     out 7
     db 0x20             ; select VIS register 2
     sex R2
-       glo R13          ; get color
+    glo R13             ; get color
     ani 0xf            
     str R2
     out 5               ; set new color value

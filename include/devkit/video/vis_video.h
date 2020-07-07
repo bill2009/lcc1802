@@ -13,7 +13,6 @@ unsigned char vis_out3;
 unsigned char vis_out5;
 #endif
 
-
 #include "devkit/video/vis.h"
 
 void initvideo();
