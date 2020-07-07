@@ -13,7 +13,7 @@
 _get_stick:         ; get joystick values, specified bit = 1: pressed
                     ; bit    7        6        5        4        3        2        1        0
                     ;        2        1        fire    Left     Right     Down     Up         
-                    ;
+                    ; DESTROYER                fire    Left     Right     2        1
                     ; Note: Destroyer doesn't have up/down keys.
     ldi 0
     phi R15
