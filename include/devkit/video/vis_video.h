@@ -32,7 +32,7 @@ void setcolor(unsigned int colormem, unsigned char color);
 #define monochrome(mono)
 #else
 #define setcolor(colormem, color)
-#ifndef __NTSC5_6_7__
+#if NTSC!=5 && NTSC!=6 && NTSC!=7
 void shapechar(const unsigned char * shapelocation, unsigned short int lines_character, unsigned short int color_number);
 void shapecolor(unsigned short int character, unsigned char number, unsigned char color);
 #else

@@ -8,7 +8,7 @@
 
 #if defined __COMX__ || defined __PECOM__ || defined __MICRO__
 
-#ifndef __NTSC5_6_7__
+#if NTSC!=5 && NTSC!=6 && NTSC!=7
 #include "devkit/video/comx_char.h"
 #include <devkit/video/comx_char.c>
 #else

@@ -66,7 +66,13 @@ _initvideo:             ; initialize vis video output and system settings
 	ldi 0
 	str R8    
     inc R8
-	str R8    
+	str R8   
+  IFDEF TMC600
+    ldi 5
+    str R2
+	out_vis R2, 2
+	dec R2
+  ENDIF 
     c_return
 
 _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12

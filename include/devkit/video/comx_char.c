@@ -63,7 +63,7 @@ void character_set(unsigned char number)
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR1+32);
             shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
-#ifdef __NTSC2_9__
+#if NTSC==2 || NTSC==9
             shapechar(shapes_comx_32, 0xA0, CHAR_COLOR2+32);
             shapechar(shapes_comx_0, 0xC0, CHAR_COLOR2+32);
             shapechar(shapes_comx_lowercase, 0xe1, CHAR_COLOR2+26);
@@ -93,7 +93,7 @@ void character_set(unsigned char number)
             shapechar(shapes_comx_32, 0x60, CHAR_COLOR2+32);
             shapechar(shapes_comx_0, 0x00, CHAR_COLOR1+32);
             shapechar(shapes_comx_0, 0x40, CHAR_COLOR2+32);
-#ifdef __NTSC2_9__
+#if NTSC==2 || NTSC==9
             shapechar(shapes_comx_32, 0xA0, CHAR_COLOR3+32);
             shapechar(shapes_comx_32, 0xE0, CHAR_COLOR4+32);
             shapechar(shapes_comx_0, 0x80, CHAR_COLOR3+32);
