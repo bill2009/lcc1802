@@ -46,15 +46,16 @@
 
 @echo compile %1.c for CIDELSA DESTROYER 12K
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__CIDELSA__ -D__ALTAIR__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__CIDELSA__ -D__DESTROYER__ -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x3000 -D CODELOC=0 -D STACKLOC=0x30ff -P -x -i ..\..\..\include -L %1.oasm
 @c:\lcc42\bin\p2hex -r $-$ %1 %1_destroyer12k | more +2
 @:quit
+
 @echo compile %1.c for MICRO PAL1 8 Char Lines
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__PAL1__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DPAL=1 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
@@ -63,25 +64,25 @@
 
 @echo compile %1.c for MICRO PAL2 - 9 lines
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__PAL2__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DPAL=2 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
 @c:\lcc42\bin\p2hex -r $-$ %1 %1_microboard_pal2 | more +2
 @:quit
 
-@@echo compile %1.c for MICRO NTSC1, 4, 8 - 8 Char Lines
+@echo compile %1.c for MICRO NTSC1, 4, 8 - 8 Char Lines
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__NTSC1_4_8__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DNTSC=1 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
 @c:\lcc42\bin\p2hex -r $-$ %1 %1_microboard_ntsc1_4_8 | more +2
 @:quit
 
-@echo compile %1.c for MICRO NTSC2 - 256 Characters
+@echo compile %1.c for MICRO NTSC2, 9 - 256 Characters
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__NTSC2_9__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DNTSC=2 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
@@ -90,7 +91,7 @@
 
 @echo compile %1.c for MICRO NTSC3 - 8 lines
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__NTSC3__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DNTSC=3 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
@@ -99,7 +100,7 @@
 
 @echo compile %1.c for MICRO NTSC5, 6, 7 - Char ROM
 
-@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -D__NTSC5_6_7__ -S %2 %3 %4 %5 %6 %1.c 
+@c:\lcc42\bin\lcc.exe "-target=xr18CX" "-Wf-g,;"  "-Wf-volatile" -O "-Wp-D nofloats" "-Wa-D LCCNOLONG" -D__MICRO__ -DNTSC=5 -S %2 %3 %4 %5 %6 %1.c 
 @IF ERRORLEVEL 1 GOTO quit
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu 1802 -quiet -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff -P -x -i ..\..\..\include -L %1.oasm
