@@ -14,8 +14,14 @@ the screen. CIDELSA uses base address on top right corner and basically has a st
 the screen (for COMX PAL, PECOM, TMC600, MICRO targets), 0xFC10 (for CIDELSA/DRACO target), 
 0xFBC0 (for CIDELSA/ALTAR, CIDELSA/DESTROYER targets).The video base address can also be used for HW scrolling, i.e. setvideobase(0xF828) would scroll one line (0x28/40 characters) 
 compared to setvideobase(0xF800). Not all 16 bits are used see VIS datasheet.Include file: video/vis_video.hDefinitions: TOP_LEFT_CORNERTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidclr(unsigned int vidmem, int vidlen)--------------------------------------------Clear screen from location specified in vidmem (top left corner is 0xf800, see setvideobase) with length of number of 
-characters in vidlen.Include file: video/vis_video.hDefinitions: X_SIZE, Y_SIZETargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidchar(unsigned int vidmem, unsigned char character)----------------------------------------------------------Output specified character to video on position specified in vidmem (top left corner is 0xf800, see setvideobase). This function does not support text color features as described below for textcolor()/character_set() except for the TMC600target.Note for fast output of 1 character vidchar or vidcharxy should be used.
-Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidcharxy(unsigned char x, unsignedchar y, unsigned char character)------------------------------------------------------------------------Output specified character to video on position specified in x, y (top left corner is 0,0). This function does not support text color features as described below for textcolor()/character_set() except for the TMC600target.Note for fast output of 1 character vidchar or vidcharxy should be used.
+characters in vidlen.Include file: video/vis_video.hDefinitions: X_SIZE, Y_SIZETargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidchar(unsigned int vidmem, unsigned char character)----------------------------------------------------------Output specified character to video on position specified in vidmem (top left corner is 0xf800, see setvideobase). This function does not support text color features as described below for textcolor()/character_set() except for the TMC600target.Note for fast output of 1 character vidchar or vidcharxy should be used. However both of these routines use a 1 character 
+buffer, the buffer is used if output to video is not allowed. This means that when using vidchar/vidcharxy there should be
+a regular output to the screen which is the case for most games anyway. If this is not done you might notice some characters
+are not shown until the next vidchar/vidcharxy.
+Include file: video/vis_video.hDefinitions: LAST_POS_PMEMTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidcharxy(unsigned char x, unsignedchar y, unsigned char character)------------------------------------------------------------------------Output specified character to video on position specified in x, y (top left corner is 0,0). This function does not support text color features as described below for textcolor()/character_set() except for the TMC600target.Note for fast output of 1 character vidchar or vidcharxy should be used. However both of these routines use a 1 character 
+buffer, the buffer is used if output to video is not allowed. This means that when using vidchar/vidcharxy there should be
+a regular output to the screen which is the case for most games anyway. If this is not done you might notice some characters
+are not shown until the next vidchar/vidcharxy.
 Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidstrcpy(unsigned int vidmem, char * text)------------------------------------------------Output text string to video on position specified in vidmem (top left corner is 0xf800, see setvideobase). This functionsupports text color setting via textcolor()/character_set() functions described below.
 
 Note vidstrcpy and vidstrcpyxy are faster than using printf/putlccccx/gotoxy.Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid vidstrcpyxy(unsigned char x, unsignedchar y, char * text)--------------------------------------------------------------Output text string to video on position specified in x, y (top left corner is 0,0). This functionsupports text color setting via textcolor()/character_set() functions described below.Note vidstrcpy and vidstrcpyxy are faster than using printf/putlccccx/gotoxy.Include file: video/vis_video.hTargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid textcolor(unsigned char color)-----------------------------------Set textcolor to specified color, for all targets (except TMC600, MICRO/NTSC2, 6, 8 & 9) max 4 colors can be used COLOR_CYAN, COLOR_WHITE, COLOR_GREEN, COLOR_YELLOW. TMC600 also supports COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_MAGENTA,. MICRO/NTSC2, 6, 8 & 9 use 4 colors: COLOR_CYAN, COLOR_GREEN, COLOR_BLACK, COLOR_BLUE.For all targets (except TMC600) it is needed to define the number charactet sets (and as such colors) via character_set(x). See also character_set() definition below. So only after a character_set(4) 4 colors will be available.Include file: video/vis_video.hDefinitions: COLOR_BLACK, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_RED, COLOR_YELLOW, COLOR_MAGENTA, COLOR_WHITETargets implemented: COMX, PECOM, TMC600, CIDELSA, MICROvoid character_set(unsigned char number)----------------------------------------Define the number of character sets as specified in number. Number can be 1, 2 or 4 (3 will result in 4 sets). Each setconsists of 64 or 90 characters (symbols, numbers, capitals and lower case, for CIDELSA only numbers and capitals) and isdefined in a specific color, see textcolor() above. Note that any shapechar() done before will be overwritten by character_set(), so it is recommended to call character_set at start of a program before any shapechar().
@@ -27,11 +33,13 @@ Numbers 2 will define 90 characters, i.e. symbols, numbers, capitals and lower c
 - Color 1: character 32-95 and 97-122 
 - Color 2: character 160-223 and 225-250
 
+Note: lower case characters will NOT work on Microboard systems NTSC4, 5, 6 & 7 and only in one color on NTSC8 & 9
+
 Number 4 will define 64 characters, i.e. symbols, numbers and capitals:
 - Color 1: character 0-63 
 - Color 2: character 64-127
-- Color 3:  character 128-191
-- Color 4:  character 192-255
+- Color 3: character 128-191
+- Color 4: character 192-255
 Include file: video/vis_char.hTargets implemented: COMX, PECOM, CIDELSA, MICROunsigned char bgcolor(unsigned char color)
 ------------------------------------------
 
@@ -166,33 +174,30 @@ devkit code) and a 8K RAM at 0x8000-0x9fff. Other memory configurations will nee
 
 asw flas: -D NOFILLBSS=1 -D DATALOC=0x8000 -D CODELOC=0 -D STACKLOC=0x9fff  
 
-For a PAL1 variant the lcc compiler would need:
-lcc flag: -D __MICRO__ -D__PAL1__
+For a PAL x=1 variant the lcc compiler would need:
+lcc flag: -D __MICRO__ -DPAL=1
 
 List flags for MICRO variants
 
-__PAL1__
-PAL 1 - 128 6x8 Characters - 1 KB character RAM
+PAL=x
+x=1: 128 6x8 Characters - 1 KB character RAM
+x=2: 64 6x16 Characters - 1 KB character RAM
 
-__PAL2__
-PAL 2 - 64 6x16 Characters - 1 KB character RAM
+NTSC=x
+x=1: 128 6x8 Characters - 1 KB character RAM
+x=2: 256 6x8 Characters - 2 KB character RAM
+x=3: 128 6x16 Characters - 2 KB character RAM
+x=4: 128 6x8 Characters - 1 KB character RAM/ROM
+x=5: 128 6x8 Characters - 1 KB character ROM
+x=6: 256 6x8 Characters - 2 KB character ROM
+x=7: 128 6x16 Characters - 2 KB character ROM
+x=8: 256 6x8 Characters - 2 KB character RAM/ROM
+x=9: 256 6x16 Characters - 4 KB character RAM/ROM
 
-__ NTSC1_4_8__
-1 - 128 6x8 Characters - 1 KB character RAM
-4 - 128 6x8 Characters - 1 KB character RAM/ROM
-8 - 256 6x8 Characters - 2 KB character RAM/ROM
-
-__NTSC3__
-3 - 128 6x16 Characters - 2 KB character RAM
-
-__ NTSC2_9__
-2 - 256 6x8 Characters - 2 KB character RAM
-9 - 256 6x16 Characters - 4 KB character RAM/ROM
-
-__NTSC5_6_7__
-5 - 128 6x8 Characters - 1 KB character ROM
-6 - 256 6x8 Characters - 2 KB character ROM
-7 - 128 6x16 Characters - 2 KB character ROM
+The following options will build the exact same binaries for devkit code: 
+- NTSC 1, 4 and 8
+- NTSC 2 and 9
+- NTSC 5, 6 and 7
 
 
 7. Other files
