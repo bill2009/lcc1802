@@ -3,6 +3,14 @@
 
 //flags header
 
+#if defined PRINTF_ROM
+#if defined __COMX__ || defined __TMC600__ || defined __PECOM__
+void printf_rom_includer(){
+asm("PRINTF_ROM equ 1\n");
+}
+#endif
+#endif
+
 // Machine definitions
 
 #if defined __COMX__
@@ -57,37 +65,37 @@ asm("DESTROYER equ 1\n");
 
 // MICRO Variants
 
-#if defined __PAL1__
+#if PAL==1
 void flags_pal1_includer(){
 asm("PAL1 equ 1\n");
 }
 #endif
 
-#if defined __PAL2__
+#if PAL==2
 void flags_pal2_includer(){
 asm("PAL2 equ 1\n");
 }
 #endif
 
-#if defined __NTSC1_4_8__
+#if NTSC==1 || NTSC==4 || NTSC==8 
 void flags_ntsc1_includer(){
 asm("NTSC1_4_8 equ 1\n");
 }
 #endif
 
-#if defined __NTSC2_9__
+#if NTSC==2 || NTSC==9
 void flags_ntsc2_includer(){
 asm("NTSC2_9 equ 1\n");
 }
 #endif
 
-#if defined __NTSC3__
+#if NTSC==3
 void flags_ntsc3_includer(){
 asm("NTSC3 equ 1\n");
 }
 #endif
 
-#if defined __NTSC5_6_7__
+#if NTSC==5 || NTSC==6 || NTSC==7
 void flags_ntsc6_includer(){
 asm("NTSC5_6_7 equ 1\n");
 }
