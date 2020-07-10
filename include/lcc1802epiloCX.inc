@@ -33,6 +33,8 @@ rwork:	equ	memAddr	;work register
 ;20-05-18 added sex r2 in SCRT return routine
 ;20-05-23 align for dubdabx - really should move to nstdlib.inc
 ;20-06-19 changed lbr die to br on return from main
+;20-07-10 (Marcel) added orgc at start to solve issue with branches to data area (suggested by Bill)
+ orgc
 lcc1802init:
   IFDEF SAVEREGS
     include "saveregs.inc"
