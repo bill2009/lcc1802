@@ -49,6 +49,7 @@
 ;20-05-12 added JNEU1 as single byte unsigned compare
 ;20-06-02 updated to support DATALOC in combination with a change to the compiler.  macros orgd,orgc, tracking variable CSEG for current segment
 ;20-06-19 fixed set of CODELOC
+;20-07-14 added jcU1 single byte compare - required change to the md file and binary
   IFNDEF CODELOC		;wjr 20-05-29 allow code relocation
       SET CODELOC,0		;wjr 20-05-29 allow code relocation
   ENDIF				;wjr 20-05-29 allow code relocation
@@ -194,6 +195,8 @@ $$go:	lda	src		;get byte to move - nb, src reg altered
 $$done:
 	endm
 	
+
+	
 jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
 	glo	reg2
 	str	sp 
@@ -240,6 +243,13 @@ jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs -28 bytes, ls@2
 	brop	label  ;execute 
 	endm
 
+jcU1:	macro	reg1,reg2,brop,label ;
+	glo	reg2
+	str	sp
+	glo	reg1
+	sm
+	brop	label
+	endm
 jcU2:	macro	reg1,reg2,brop,label ;13 bytes, lbr@10
 	dec	sp
 	glo	reg2
