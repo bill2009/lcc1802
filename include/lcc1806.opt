@@ -65,7 +65,7 @@
 
 _main:		;framesize=%1
 =
-_main: ;copt is peeping your size %1 frame with 2020 vision
+_main: ;copt is peeping your size %1 frame with 2020-7 vision
 
 	cpy2 %1,%2 ;LOAD%3(reg)
 	cpy2 %2,%1
@@ -304,3 +304,8 @@ _main: ;copt is peeping your size %1 frame with 2020 vision
 	cpy1 %2,%1;LOADU1(reg)
 =
 	incm %2,1	;opt 20-2 unsigned char for loop increment
+
+	st2 R12,'O',sp,(%1); flag1 
+	demote %1 ;aggressive opt 2020-7
+=
+	st1 R12,'O',sp,(%1); flag1 opt 2020-7.1
