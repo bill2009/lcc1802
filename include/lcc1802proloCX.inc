@@ -668,6 +668,16 @@ alu2I: macro	tgt,src,imm,op1,op2	;2 byte register/immediate alu operation
 	op2	(imm)>>8; was/256
 	phi	tgt
 	endm
+alu1: macro	tgt,src1,src2,op1,op2	;1 byte register/register alu operation with 9 bit result 
+	glo 	src2
+	str	sp
+	glo	src1
+	op1		;calculate the low order byte
+	plo	tgt
+	ldi	0
+	op2	0		;calculate the high byte in case of carry/borrow
+	phi	tgt
+	endm	
 alu2: macro	tgt,src1,src2,op1,op2	;2 byte register/register alu operation 
 	glo 	src2
 	str	sp

@@ -2,6 +2,7 @@
 ;The port is in regArg1, the output byte is in regArg2
 ;18-02-23 changed label + to $$no0 in _inp: to eliminate this style of temporary
 	align 64
+;;function_start IO1802.inc void function(void)
 _putc:
 _out5:	
 	glo	regArg1
@@ -53,5 +54,7 @@ _out:		;raw port output
 	inc	sp	;need to get rid of the 6x instruction
 	inc	sp	;and the D3
 	Cretn		;and we're done
+;;function_end IO1802.inc
+
 	
 	
