@@ -60,6 +60,7 @@
  * 20-05-23 removed GHI 15 before cretn.  now included in cretn
  * 20-06-02 updated segment() to support data relocation in combination with prolog changes.
             note uninitialized globals are now defined with the globss macro and zeroing is done by the macro when needed
+ * 20-07-31 rule optimizations for cross-shoot(J2020), tweaking of function start/end markers.
  * Portions copyright (C) 1999, 2000, Gray Research LLC.  All rights reserved.
  * Portions of this file are subject to the XSOC License Agreement;
  * you may not use them except in compliance with this Agreement.
@@ -162,6 +163,7 @@ static int wjrvolatile=0;	//controls whether interrupts are supported or not
 static int wjrcpu1805=0;	//controls whether static regs 4&5 are available for variables, sets cpu value for assembly
 static char* wjrenv=0;		//controls whether an environment include precedes the prolog
 static int wjrfloats=0;		//indicates whether floats have been used or not
+static int wjrMulInlineWeight=5; //weight of 5 allows multiplies to be done inline
 static int reg_sp_actual=REG_SP;		//stack pointer is reg 2 by default
 static int cseg;
 
@@ -375,6 +377,7 @@ stmt: ASGNI1(addr,reg)  "\tst1 R%1,%0; ASGNI1\n"  10
 stmt: ASGNI1(indaddr,reg)  "\tstr1 R%1,%0; ASGNI1(indaddr,reg)	DH\n"  5
 stmt: ASGNU1(indaddr,acon)  "\tstr1I %1,%0; ASGNU1(indaddr,acon)	DH\n"  5
 stmt: ASGNU1(addr,reg)  "\tst1 R%1,%0; ASGNU1\n"  10
+stmt: ASGNU1(indaddr,INDIRU1(indaddr))  "\tldn %1\n\tstr %0; ASGNU1(indaddr,INDIRU1(indaddr))J2020-1\n"  3
 stmt: ASGNU1(indaddr,reg)  "\tstr1 R%1,%0; ASGNU1(indaddr,reg)		DH*\n"  5
 stmt: ASGNU1(indaddr,LOADU1(LOADU2(reg)))  "\tstr1 R%1,%0; ASGNU1(indaddr,LOADU1(LOADU2(reg))) 18-03-21\n"  1
 stmt: ASGNI2(addr,acon)  "\tst2I %1,%0; ASGNI2(addr,acon)\n"  5
@@ -397,7 +400,8 @@ reg:  INDIRI4(addr)     "\tld4 R%c,%0;reg:  INDIRI4(addr)\n"  1
 reg:  INDIRU4(addr)     "\tld4 R%c,%0;reg:  INDIRU4(addr)\n"  1
 
 reg:  CVII2(INDIRI1(addr))     "\tld1 R%c,%0\n\tsExt R%c ;CVII2: widen signed char to signed int (sign extend)\n"  1
-reg:  CVUU2(INDIRU1(addr))     "\tld1 R%c,%0\n\tzExt R%c ;CVUU2: widen unsigned char to signed int (zero extend)\n" 1
+reg:  CVUU2(INDIRU1(addr))     "\tld1 R%c,%0\n\tzExt R%c ;CVUU2: widen unsigned char to unsigned int (zero extend)\n" 1
+reg:  CVUI2(INDIRU1(addr))     "\tld1 R%c,%0\n\tzExt R%c ;CVUI2(INDIRU1(addr)): *widen unsigned char to signed int (zero extend)J2020-2\n" 1
 reg:  CVII4(INDIRI1(addr))     "\tld1 R%c,%0\n\tsext R%c\n\tsext4 R%c ;CVII4: widen signed char to long int(sign extend)\n"  1
 reg:  CVII4(INDIRI2(addr))     "\tld2 R%c,%0\n\tsext4 R%c ;CVII4: widen signed int to long int(sign extend)\n"  1
 reg:  CVUU4(INDIRU1(addr))     "\tld1 R%c,%0\n\tzext R%c\n\tzext4 R%c ;CVUU4: widen unsigned char to unsigned long(zero extend)\n"   1
@@ -414,8 +418,8 @@ reg: MODI4(reg,reg)  "\tCcall _modi4\n"   1
 reg: MODU2(reg,reg)  "\tCcall _modu2\n"  1
 reg: MODU4(reg,reg)  "\tCcall _modu4\n"  1
 reg: MULI2(reg,reg)  "\tCcall _mulu2; MULI2(reg,reg)\n"   10
-reg: MULI2(con8bit,reg)  "#\tCcall _mul8bit(%0); MULU2(con8bit,reg)\n"   1
-reg: MULU2(con8bit,reg)  "#\tCcall _mul8bit(%0); MULU2(con8bit,reg)\n"   1
+reg: MULI2(con8bit,reg)  "#\; MULU2(con8bit,reg) j2020-10\n"   wjrMulInlineWeight
+reg: MULU2(con8bit,reg)  "#\; MULU2(con8bit,reg) j2020-10\n"   wjrMulInlineWeight
 reg: MULI4(reg,reg)  "\tCcall _mulu4\n"   1
 reg: MULU2(reg,reg)  "\tCcall _mulu2; MULU2(reg,reg)\n"   2
 reg: MULU4(reg,reg)  "\tCcall _mulu4\n"   4
@@ -446,6 +450,7 @@ reg: SUBU2(reg,reg)   "\talu2 R%c,R%0,R%1,sm,smb\n"  1
 reg: SUBU4(reg,reg)   "\talu4 R%c,R%0,R%1,sm,smb\n"  1
 
 reg: ADDI2(reg,con)   "\talu2I R%c,R%0,%1,adi,adci; ADDI2(reg,con)\n"  2
+reg: ADDI2(CVUI2(reg),CVUI2(reg))   "\talu1 R%c,R%0,R%1,add,adci; ADDI2(CVUI2(reg),CVUI2(reg))J2020-3\n"  5
 reg: ADDI4(reg,con)   "\talu4I R%c,R%0,%1,adi,adci\n"  1
 reg: ADDP2(reg,con)   "\talu2I R%c,R%0,%1,adi,adci; ADDP2(reg,con)\n"  2
 reg: ADDU2(reg,con)   "\talu2I R%c,R%0,%1,adi,adci; ADDU2(reg,con)\n"  2
@@ -560,21 +565,24 @@ stmt: EQI2(reg,con)  "\tjeqU2I R%0,%1,%a;EQI2(reg,con)\n"   2
 stmt: EQI4(reg,con)  "\tjeqU4I R%0,%1,%a\n"   2
 stmt: EQU2(reg,con)  "\tjeqU2I R%0,%1,%a;EQU2(reg,con)*\n"   2
 stmt: EQU4(reg,con)  "\tjeqU4I R%0,%1,%a\n"   2
+stmt: GEI2(CVUI2(reg),con)  "\tjcI1I R%0,%1,lbdf,%a; GE is flipped test from LT J2020-4\n"   1
 stmt: GEI2(reg,con)  "\tjcI2I R%0,%1,lbdf,%a; GE is flipped test from LT\n"   2
 stmt: GEI4(reg,con)  "\tjgeI4I R%0,%1,%a; GE\n"   2
 stmt: GEU2(reg,con)  "\tjcI2I R%0,%1,lbdf,%a; GE is flipped test from LT\n"  2
 stmt: GEU4(reg,con)  "\tjgeU4I R%0,%1,%a; GE\n"  2
 stmt: GTI2(reg,con)  "\tjnI2I R%0,%1,lbnf,%a; GT reverse  the subtraction\n"   2
 stmt: GTI4(reg,con)  "\tjgtI4I R%0,%1,%a\n"   2
-stmt: GTU2(reg,con)  "\tjnU2I R%0,%1,lbnf,%a; GT reverse the subtraction\n"  2
+stmt: GTU2(reg,con)  "\tjnU2I R%0,%1,lbnf,%a; GT reverse the subtraction J2020-5\n"  1
 stmt: GTU4(reg,con)  "\tjgtU4I R%0,%1,%a\n"  2
 stmt: LEI2(reg,con)  "\tjnI2I R%0,%1,lbdf,%a ;LEI2 %1 %0 %a; LE is flipped test & subtraction\n"   2
 stmt: LEI4(reg,con)  "\tjleI4I R%0,%1,%a\n"   2
 stmt: LEU2(reg,con)  "\tjnU2I R%0,%1,lbdf,%a ;LEU2 %1 %0 %a; LE is flipped test & subtraction\n"  2
 stmt: LEU4(reg,con)  "\tjleU4I R%0,%1,%a\n"  2
-stmt: LTI2(CVUI2(reg),con)  "\tjcI1I R%0,%1,lbnf,%a  ;LTI2=lbnf i.e. subtract immedB from A and jump if borrow - nopromo 20-05-12\n"   2
+stmt: LTI2(CVUI2(reg),con)  "\tjcI1I R%0,%1,lbnf,%a  ;LTI2=lbnf i.e. subtract immedB from A and jump if borrow - nopromo 20-05-12 J2020-6\n"   1
+stmt: LTI2(reg,con)  "\tjcI2I R%0,%1,lbnf,%a  ;LT=lbnf i.e. subtract immedB from A and jump if borrow J2020-7\n"   2
 stmt: LTI4(reg,con)  "\tjltI4I R%0,%1,%a\n"   2
-stmt: LTU2(CVUI2(reg),con)  "\tjcU1I R%0,%1,lbnf,%a ;LTU2=lbnf i.e. subtract immedB from A and jump if borrow - nopromo 20-05-12\n"  2
+stmt: LTU2(CVUI2(reg),con)  "\tjcU1I R%0,%1,lbnf,%a ;LTU2=lbnf i.e. subtract immedB from A and jump if borrow - nopromo 20-05-12 J2020-8\n"  1
+stmt: LTU2(reg,con)  "\tjcU2I R%0,%1,lbnf,%a ;LT=lbnf i.e. subtract immedB from A and jump if borrow J2020-9\n"  2
 stmt: LTU4(reg,con)  "\tjltU4I R%0,%1,%a\n" 2
 stmt: NEI2(CVUI2(reg),con0) "\tjnzU1 R%0,%a; NEI2(CVUI2(reg),con0)\n"   1
 stmt: NEI2(reg,con0) "\tjnzU2 R%0,%a; NE 0\n"   1
@@ -640,7 +648,7 @@ static void progbeg(int argc, char *argv[]) {
         int i;
         time_t now;
         struct tm* ptmNow;
-        static char rev[] = "$Version: 5.0 - XR18CX $";
+        static char rev[] = "$Version: 5.2 - XR18CX $";
  
         {
                 union {
@@ -654,6 +662,10 @@ static void progbeg(int argc, char *argv[]) {
         parseflags(argc, argv);
         for (i = 0; i < argc; i++){
         	//fprintf(stderr,"arg %d is %s\n",i,argv[i]);
+                if (strstr(argv[i], "-mulcall") != 0){ //forces subroutine calls for multiply
+                	fprintf(stderr,"subroutine calls for multiply\n");
+                        wjrMulInlineWeight=15; //disallows inline multiply
+                }
                 if (strstr(argv[i], "-volatile") != 0){ //accept combined args
                 	//fprintf(stderr,"going volatile\n");
                         wjrvolatile = 1;
@@ -1017,7 +1029,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
         framesize = maxargoffset 	//the frame includes the outgoing argument area, 
                 + sizefsave + sizeisave 	//the float and int reg save areas,
                 + roundup(maxoffset, 2);       		// and the area for locals
- 	print(";$$function_start$$:%s=%t\n",f->x.name, f->type);
+ 	print(";;function_start %s %t\n",f->x.name, f->type);
         printf("%s:\t\t;framesize=%d\n", f->x.name,framesize); //wjr june 27 2013
         if (framesize > 2) { 
         		if (0!=(usedmask[IREG]+usedmask[FREG])){  //if there are regs to save
@@ -1113,7 +1125,7 @@ static void function(Symbol f, Symbol caller[], Symbol callee[], int ncalls) {
  */
         //print("\tghi 15 ;otherwise SCRT return may mess up R15.1\n"); //20-05-23 moved to cretn
         print("\tCretn\n\n");
- 	print(";$$function_end$$ %s\n",f->x.name);
+ 	print(";;function_end$$ %s\n",f->x.name);
 }
 static void defconst(int suffix, int size, Value v) {
         if (suffix == F && size == 4) {
