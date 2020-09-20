@@ -181,12 +181,12 @@ $$nokey:
   IFDEF  MICRO 
     align    16
 _get_stick:          ; get key value if pressed, otherwise return 0
-    bn3 $$nokey;     ; Branch to nokey if no key is pressed 
-$$keypressed:
+;    bn2 $$nokey;     ; Branch to nokey if no key is pressed 
+;$$keypressed:
     inp 3
-    lskp
-$$nokey:
-    ldi 0
+;    lskp
+;$$nokey:
+;    ldi 0
     plo R15
     ldi 0
     phi R15

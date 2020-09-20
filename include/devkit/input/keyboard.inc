@@ -43,7 +43,7 @@ $$nokey:
     
     align    16
 _cgetc:                ; wait for key press
-    bn3 _cgetc         ;  Loop if no key is pressed
+    bn2 _cgetc         ;  Loop if no key is pressed
     inp 3
     plo R15
     ldi 0
@@ -52,7 +52,7 @@ _cgetc:                ; wait for key press
 
     align    16
 _kbhit:                ; return 1 if a key is pressed, 0 if not
-    bn3 $$nokey        ; Branch to nokey if no key is pressed 
+    bn2 $$nokey        ; Branch to nokey if no key is pressed 
     ldi 1
     lskp
 $$nokey:

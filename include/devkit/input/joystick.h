@@ -14,11 +14,11 @@
 #endif
 
 #ifdef __MICRO__
-#define MOVE_UP 0x82
-#define MOVE_RIGHT 0x83
-#define MOVE_LEFT 0x84
-#define MOVE_DOWN 0x85
-#define MOVE_FIRE 0x5f
+#define MOVE_UP 0x3b
+#define MOVE_RIGHT 0x3c
+#define MOVE_LEFT 0x3a
+#define MOVE_DOWN 0x3d
+#define MOVE_FIRE 0x20
 #endif
 
 #ifdef __PECOM__
@@ -41,7 +41,7 @@
 #ifdef __ALTAIR__
 #define MOVE_UP 0x1
 #define MOVE_RIGHT 0x20
-#define MOVE_LEFT 0x40	
+#define MOVE_LEFT 0x40    
 #define MOVE_DOWN 0x2
 #define MOVE_FIRE 0x80
 #define MOVE_FIRE2 0x4
@@ -51,7 +51,7 @@
 #ifdef __DESTROYER__
 #define MOVE_UP 0x2
 #define MOVE_RIGHT 0x8
-#define MOVE_LEFT 0x10	
+#define MOVE_LEFT 0x10    
 #define MOVE_DOWN 0x4
 #define MOVE_FIRE 0x20
 #define MOVE_B1 0x2
@@ -60,7 +60,7 @@
 #ifdef __DRACO__
 #define MOVE_UP 0x10
 #define MOVE_RIGHT 0x40
-#define MOVE_LEFT 0x80	
+#define MOVE_LEFT 0x80    
 #define MOVE_DOWN 0x20
 #define MOVE_FIRE 0x8
 #define MOVE_B1 0x1
