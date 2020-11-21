@@ -9,11 +9,13 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
-    align    32
+    align    64
 _rand:
     ldireg R12, _seedvalue
-    lda R12    
-    bnz $$rand1         ; Do rand if high byte of seed value != 0
+    lda R12 
+    bnz $$rand1b        ; Do rand if high byte of seed value != 0
+    ldn R12
+    bnz $$rand1a        ; Do rand if low byte of seed value != 0
   IFDEF PECOM 
 $$zerolow:
     glo R0                    
@@ -38,19 +40,26 @@ $$zerohigh:
     ldi 0xAC            
     phi R15
     ldi 0xE1            ; fixed seed value
-    lskp
+    br $$rand2          
   ENDIF
   IFDEF TMC600
     ldi 0xAC            
     phi R15
     ldi 0xE1            ; fixed seed value
-    lskp
+    br $$rand2          
   ENDIF
-$$rand1:
+$$rand1a:
+	dec R12
+	lda R12
+$$rand1b:
     phi R15             ; R15.1 = high byte of seed value
     ldn R12    
 $$rand2:
     plo R15             ; R15.0 = low byte of seed value
+    ldi 3
+    plo R14
+$$loop:
+    glo R15
     ani 1
     str R2              ; Stack = bit 0 of seed value, rest is 0
     glo R15             ; D = low byte of seed value
@@ -72,15 +81,19 @@ $$rand2:
     xor                 ; D bit 0 = bit 0/2/3  XOR bit 5
     shr                 ; DF = new input bit
     ghi R15
-    shrc
-    dec R12
-    str R12             ; Store high byte new seed value, 
-                        ; R15.1 >> 1, MSB = DF, new input bit, DF = LSB
-    ani 0x7f
-    phi R15             ; R15.1 = seed value & 0x7f, allowing only postivie numbers
+    shrc                ; R15.1 >> 1, MSB = DF, new input bit, DF = LSB
+    phi R15             
     glo R15
     shrc
     plo R15             ; R15.0 >> 1, MSB = DF, DF = LSB
-    inc R12
+    dec R14
+    glo R14
+    bnz $$loop
+    glo R15
     str R12             ; Store low byte new seed value
+    dec R12
+    ghi R15				; R15.1 = seed value & 0x7f, allowing only postivie numbers
+    str R12             ; Store high byte new seed value, 
+    ani 0x7f
+    phi R15           
     cretn
