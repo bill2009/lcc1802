@@ -50,6 +50,7 @@
 ;20-06-02 updated to support DATALOC in combination with a change to the compiler.  macros orgd,orgc, tracking variable CSEG for current segment
 ;20-06-19 fixed set of CODELOC
 ;20-07-14 added jcU1 single byte compare - required change to the md file and binary
+;20-11-28 added st1i single byte immediate store for afterlife optimization
   IFNDEF CODELOC		;wjr 20-05-29 allow code relocation
       SET CODELOC,0		;wjr 20-05-29 allow code relocation
   ENDIF				;wjr 20-05-29 allow code relocation
@@ -713,6 +714,15 @@ st2:	macro	reg,OorD,destBase,destOff ;2 byte store to direct memory address or b
 	str	memAddr
 	inc	memAddr
 	glo	reg
+	str	memAddr
+	endm
+st1I:	macro	immedval,OorD,destBase,destOff ;1 byte store of a literal to direct memory address or base+offset
+	if	(OorD='O')
+		ldAX	memAddr,destbase,destoff
+	else
+		ldAD	memAddr,destBase
+	endif
+	ldi	(immedval) & 255;low byte
 	str	memAddr
 	endm
 st2I:	macro	immedval,OorD,destBase,destOff ;2 byte store of a literal to direct memory address or base+offset

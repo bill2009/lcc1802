@@ -8,6 +8,22 @@
 #20-06-07 eliminate some promotions before inc/dec followed by a store
 #20-07-15 aggressive optimizations for cross-shoot
 #20-07-24 recovered file - one more optimization
+#20-10-04 new opt 20-10.1
+#20-12-03 new opt 20-12.1/2 driven by liveness analysis
+	ldaD %1,%2; reg:acon
+	st2 %1,'O',sp,(%3); arg+f**
+	ldaD %1,%4; reg:acon
+=
+	st2i %2,'O',sp,(6+1); opt 20-12.1
+	ldaD %1,%4; reg:acon
+
+
+	ld1 %1,%2,%3,%4
+	jcI1I %1,%5,%6,%7 
+=
+	ld1 %1,%2,%3,%4
+	lbnz %7		;opt 20-10.1  
+
 	zExt %1 ;CVUI2(reg): widen unsigned char to signed int (zero extend)*
 	incm %1,%2
 	str1 %1,%3; ASGNU1(indaddr,LOADU1(LOADU2(reg))) 18-03-21
