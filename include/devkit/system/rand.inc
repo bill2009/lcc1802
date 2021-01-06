@@ -9,7 +9,7 @@
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
 ; 
-  IFDEF COMX 
+  IF (SYMTYPE(COMX) <> -1) || (SYMTYPE(PECOM) <> -1)
     align    128
   ELSE
     align    64
@@ -20,17 +20,7 @@ _rand:
     bnz $$rand1b        ; Do rand if high byte of seed value != 0
     ldn R12
     bnz $$rand1a        ; Do rand if low byte of seed value != 0
-  IFDEF PECOM 
-$$zerolow:
-    glo R0                    
-    bz $$zerolow        ; Wait until R0.0 != 0
-    phi R15             ; Use R0.0 as low byte of seed value
-$$zerohigh:
-    ghi R0
-    bnz $$rand2         ; If R0.1 != 0 use as high byte of seed value
-    br $$zerohigh       ; Wait until R0.1 != 0
-  ENDIF
-  IFDEF COMX 
+  IF (SYMTYPE(COMX) <> -1) || (SYMTYPE(PECOM) <> -1)
 $$zerolow:
     ghi R0                    
     bz $$fixedseed      ; If R0.1 == 0 use fixed seed value
@@ -38,23 +28,11 @@ $$zerolow:
     glo R0
     bnz $$rand2         ; If R0.0 != 0 use as high byte of seed value
 $$fixedseed:
+  ENDIF
     ldi 0xAC            
     phi R15
     ldi 0xE1            ; fixed seed value
     br $$rand2          
-  ENDIF
-  IFNDEF LCCCX
-    ldi 0xAC            
-    phi R15
-    ldi 0xE1            ; fixed seed value
-    br $$rand2          
-  ENDIF
-  IFDEF TMC600
-    ldi 0xAC            
-    phi R15
-    ldi 0xE1            ; fixed seed value
-    br $$rand2          
-  ENDIF
 $$rand1a:
 	dec R12
 	lda R12
