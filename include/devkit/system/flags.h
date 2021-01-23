@@ -43,6 +43,12 @@ asm("MICRO equ 1\n");
 }
 #endif
 
+#if defined __ELF2K__
+void flags_elf2k_includer(){
+asm("ELF2K equ 1\n");
+}
+#endif
+
 // CIDELSA Variants
 
 #if defined __DRACO__
