@@ -10,19 +10,18 @@
 #20-07-24 recovered file - one more optimization
 #20-10-04 new opt 20-10.1
 #20-12-03 new opt 20-12.1/2 driven by liveness analysis
+#21-01-24 corrected error in opt 20-12.1, removed opt 20-10.1 which make no sense at all to me.
+#	ld1 %1,%2,%3,%4
+#	jcI1I %1,%5,%6,%7 
+#=
+#	ld1 %1,%2,%3,%4
+#	lbnz %7		;opt 20-10.1  
 	ldaD %1,%2; reg:acon
 	st2 %1,'O',sp,(%3); arg+f**
 	ldaD %1,%4; reg:acon
 =
-	st2i %2,'O',sp,(6+1); opt 20-12.1
+	st2i %2,'O',sp,(%3); opt 20-12.1
 	ldaD %1,%4; reg:acon
-
-
-	ld1 %1,%2,%3,%4
-	jcI1I %1,%5,%6,%7 
-=
-	ld1 %1,%2,%3,%4
-	lbnz %7		;opt 20-10.1  
 
 	zExt %1 ;CVUI2(reg): widen unsigned char to signed int (zero extend)*
 	incm %1,%2
