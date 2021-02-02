@@ -1,11 +1,13 @@
 #ifndef _RAND_H
 #define _RAND_H
 
-unsigned short int seedvalue;
-
 //rand header
 
-unsigned short int rand();
+#include "stdint.h"
+
+uint16_t seedvalue;
+
+uint16_t rand();
 void rand_includer(){
 asm(" include devkit/system/rand.inc\n");
 }

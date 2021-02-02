@@ -3,7 +3,9 @@
 
 //strlen header
 
-unsigned int strlen1802(char *str);
+#include "stdint.h"
+
+uint16_t strlen1802(uint8_t *str);
 void strlen_includer(){
 asm(" include devkit/system/strlen.inc\n");
 }
