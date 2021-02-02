@@ -9,7 +9,7 @@
 #include "devkit/input/joystick.h"
 #define kbhit() get_stick();  
 #else
-unsigned char cgetc();
+uint8_t cgetc();
 int kbhit();  
 #endif
 

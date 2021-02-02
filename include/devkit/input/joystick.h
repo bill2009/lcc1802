@@ -3,6 +3,7 @@
 
 //joystick header
 
+#include "stdint.h"
 #include "devkit/system/flags.h"
 
 #ifdef __COMX__
@@ -69,7 +70,7 @@
 #endif
 #endif
 
-unsigned char get_stick();
+uint8_t get_stick();
 
 void joystick_includer(){
 asm(" include devkit/input/joystick.inc\n");
