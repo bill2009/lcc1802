@@ -14,7 +14,7 @@
 #include "devkit/video/vis_video.h"
 
 #ifdef __CIDELSA__
-void character_set(unsigned char number)
+void character_set(uint8_t number)
 {
     number--;
     switch (number&3)

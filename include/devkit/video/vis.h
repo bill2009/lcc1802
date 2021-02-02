@@ -3,17 +3,18 @@
 
 //vis header
 
+#include "stdint.h"
 #include "devkit/system/flags.h"
 
 #if defined __CIDELSA__ || defined __MICRO__
-unsigned short int vis_cursor_position;
-unsigned short int vis_video_base;
+uint16_t vis_cursor_position;
+uint16_t vis_video_base;
 #endif
 #if defined __TMC600__
-unsigned short int vis_video_base;
+uint16_t vis_video_base;
 #endif
 
-unsigned short int vis_column_counter;
+uint16_t vis_column_counter;
 
 #define COLOR_BLACK 0
 #define COLOR_GREEN 1    

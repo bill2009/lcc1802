@@ -6,8 +6,8 @@
 #include "devkit/system/flags.h"
 #include "devkit/video/vis.h"
 
-void putlcccx(unsigned char c);
-void gotoxy(unsigned char x, unsigned char y);
+void putlcccx(uint8_t c);
+void gotoxy(uint8_t x, uint8_t y);
 void printf_includer(){
 asm(" include devkit/video/printf.inc\n");
 }

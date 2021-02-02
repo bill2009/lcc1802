@@ -13,10 +13,10 @@
 #include "devkit/video/comx_char.h"
 #include "devkit/video/vis_video.h"
 
-void character_set(unsigned char number)
+void character_set(uint8_t number)
 {
 #if defined __COMX__ || defined __PECOM__
-    unsigned char *shape_rom;
+    uint8_t *shape_rom;
 #endif
     number--;
     number = number &3;
@@ -25,17 +25,17 @@ void character_set(unsigned char number)
         case 0:
             vis_text_color_mask = 0xff;
 #ifdef __COMX__
-            shape_rom = (unsigned char *)0x725;
+            shape_rom = (uint8_t *)0x725;
             shapechar(shape_rom, 0x20, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x845;
+            shape_rom = (uint8_t *)0x845;
             shapechar(shape_rom, 0x40, CHAR_COLOR1+32);
             shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #elif __PECOM__
-            shape_rom = (unsigned char *)0x8920;
+            shape_rom = (uint8_t *)0x8920;
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x8a00;
+            shape_rom = (uint8_t *)0x8a00;
             shapechar(shape_rom, 0x740, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x8ae7;
+            shape_rom = (uint8_t *)0x8ae7;
             shapechar(shape_rom, 0x761, CHAR_COLOR1+26);
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
@@ -47,17 +47,17 @@ void character_set(unsigned char number)
         case 1:
             vis_text_color_mask = 0x7f;
 #ifdef __COMX__
-            shape_rom = (unsigned char *)0x725;
+            shape_rom = (uint8_t *)0x725;
             shapechar(shape_rom, 0x20, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x845;
+            shape_rom = (uint8_t *)0x845;
             shapechar(shape_rom, 0x40, CHAR_COLOR1+32);
             shapechar(shapes_comx_lowercase, 0x61, CHAR_COLOR1+26);
 #elif __PECOM__
-            shape_rom = (unsigned char *)0x8920;
+            shape_rom = (uint8_t *)0x8920;
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x8a00;
+            shape_rom = (uint8_t *)0x8a00;
             shapechar(shape_rom, 0x740, CHAR_COLOR1+32);
-            shape_rom = (unsigned char *)0x8ae7;
+            shape_rom = (uint8_t *)0x8ae7;
             shapechar(shape_rom, 0x761, CHAR_COLOR1+26);
 #else
             shapechar(shapes_comx_32, 0x20, CHAR_COLOR1+32);
@@ -75,17 +75,17 @@ void character_set(unsigned char number)
         case 3:
             vis_text_color_mask = 0x3f;
 #ifdef __COMX__
-            shape_rom = (unsigned char *)0x725;
+            shape_rom = (uint8_t *)0x725;
             shapechar(shape_rom, 0x20, CHAR_COLOR1+32);
             shapechar(shape_rom, 0x60, CHAR_COLOR2+32);
-            shape_rom = (unsigned char *)0x845;
+            shape_rom = (uint8_t *)0x845;
             shapechar(shape_rom, 0x00, CHAR_COLOR1+32);
             shapechar(shape_rom, 0x40, CHAR_COLOR2+32);
 #elif __PECOM__
-            shape_rom = (unsigned char *)0x8920;
+            shape_rom = (uint8_t *)0x8920;
             shapechar(shape_rom, 0x720, CHAR_COLOR1+32);
             shapechar(shape_rom, 0x760, CHAR_COLOR2+32);
-            shape_rom = (unsigned char *)0x8a00;
+            shape_rom = (uint8_t *)0x8a00;
             shapechar(shape_rom, 0x700, CHAR_COLOR1+32);
             shapechar(shape_rom, 0x740, CHAR_COLOR2+32);
 #else
@@ -104,7 +104,7 @@ void character_set(unsigned char number)
     }
 
 #if defined PRINTF_ROM && defined __COMX__
-    shape_rom = (unsigned char *)0x700;
+    shape_rom = (uint8_t *)0x700;
 	shapechar(shape_rom, 0, 1);
 #endif
 }

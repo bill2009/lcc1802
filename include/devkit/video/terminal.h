@@ -3,11 +3,12 @@
 
 //terminal header
 
+#include "stdint.h"
 #include "devkit/system/flags.h"
 
 #if defined __ELF2K__
-void putchar_term(unsigned char character);
-unsigned char getchar_term();
+void putchar_term(uint8_t character);
+uint8_t getchar_term();
 #endif
 
 void terminal_includer(){
