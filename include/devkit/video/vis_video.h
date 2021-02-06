@@ -25,18 +25,18 @@ uint8_t bgcolor(uint8_t color);
 void textcolor(uint8_t color);
 #ifdef __TMC600__
 void setcolor(uint16_t colormem, uint8_t color);
-void shapechar(shapelocation, lines_character, color_number);
-void shapecolor(character, number, color);
-void textcolordefinition(definition);
-void monochrome(mono);
+#define shapechar(shapelocation, lines_character, color_number);
+#define shapecolor(character, number, color);
+#define textcolordefinition(definition);
+#define monochrome(mono);
 #else
-void setcolor(colormem, color);
+#define setcolor(colormem, color);
 #if NTSC!=5 && NTSC!=6 && NTSC!=7
 void shapechar(const uint8_t * shapelocation, uint16_t lines_character, uint16_t color_number);
 void shapecolor(uint16_t character, uint8_t number, uint8_t color);
 #else
-void shapechar(shapelocation, lines_character, color_number);
-void shapecolor(character, number, color);
+#define shapechar(shapelocation, lines_character, color_number);
+#define shapecolor(character, number, color);
 #endif
 void textcolordefinition(uint8_t definition);
 void monochrome(uint8_t mono);
