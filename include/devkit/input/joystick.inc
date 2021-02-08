@@ -179,15 +179,41 @@ $$nokey:
   ENDIF
     
   IFDEF  MICRO 
-    align    16
+;    align    16
 _get_stick:          ; get key value if pressed, otherwise return 0
-;    bn2 $$nokey;     ; Branch to nokey if no key is pressed 
+;    bn2 $$nokey;    ; Branch to nokey if no key is pressed 
 ;$$keypressed:
     inp 3
 ;    lskp
 ;$$nokey:
 ;    ldi 0
     plo R15
+    ldi 0
+    phi R15
+    cretn
+    
+  ENDIF
+
+  IFDEF  VIP 
+    align    32
+_get_stick:          ; get key value if pressed, otherwise return 0
+    ldi 0x1          ; keyboard check 0, 2, 4, 6, 8.
+    plo R15
+$$checknext:
+    glo R15    
+    ani 0xe			 ; set bit 0 to 0, so we actually check 0, 2, 4, 6 and 8
+    str R2           ; store keyboard latch on stack
+    out 2            ; test for key press
+    dec r2
+    b3  $$keypressed
+    inc R15
+    inc R15
+    glo R15
+    smi 0xb           ; stop checking when key = a (a+1 = b)
+    bnz $$checknext
+    ldi 0
+    plo R15
+$$keypressed:
     ldi 0
     phi R15
     cretn

@@ -70,6 +70,14 @@
 #endif
 #endif
 
+#ifdef __VIP__
+#define MOVE_UP 0x3
+#define MOVE_RIGHT 0x7
+#define MOVE_LEFT 0x5    
+#define MOVE_DOWN 0x9
+#define MOVE_FIRE 0x1
+#endif
+
 uint8_t get_stick();
 
 void joystick_includer(){
