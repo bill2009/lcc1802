@@ -49,6 +49,12 @@ asm("ELF2K equ 1\n");
 }
 #endif
 
+#if defined __VIP__
+void flags_vip_includer(){
+asm("VIP equ 1\n");
+}
+#endif
+
 // CIDELSA Variants
 
 #if defined __DRACO__
@@ -104,6 +110,24 @@ asm("NTSC3 equ 1\n");
 #if NTSC==5 || NTSC==6 || NTSC==7
 void flags_ntsc6_includer(){
 asm("NTSC5_6_7 equ 1\n");
+}
+#endif
+
+#if RES==32
+void flags_res32_includer(){
+asm("RES32 equ 1\n");
+}
+#endif
+
+#if RES==64
+void flags_res64_includer(){
+asm("RES64 equ 1\n");
+}
+#endif
+
+#if RES==128
+void flags_res128_includer(){
+asm("RES128 equ 1\n");
 }
 #endif
 
