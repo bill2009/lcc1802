@@ -67,8 +67,11 @@ void main(){
             break;            
         }
 		drawtile (x, y, shape_o);
-		delay = 500;
-		while (delay > 0)
-			delay--;
+		if (key != 0)
+		{
+			delay = 500;
+			while (delay > 0)
+				delay--;
+		}
 	}
 }
