@@ -140,32 +140,62 @@ _initvideo:
 
 _drawtile:			
 					ld2  R15,'O',sp,(7)
+  IFDEF RES32										
 					ldi  4
+  ENDIF
+  IFDEF RES64										
+					ldi  8
+  ENDIF
+  IFDEF RES128										
+					ldi  16
+  ENDIF
 					plo  R11
 					LDI  VIDMEM/256			; prepare the pointer to the video buffer					
 					PHI  R14						; VIDMEM + Y * 8 + X / 8
 					GLO  R13						; result goes to R14
-  IFDEF RES32
 					ANI  0x7						; between 0 - 7
+  IFDEF RES32										
+					SHL  
+					SHL  
+					SHL  
+					SHL  
+					SHL  
+					PLO  R14
   ENDIF
   IFDEF RES64
-					ANI  0xF						; between 0 - 15
-  ENDIF
-  IFDEF RES128
-					ANI  0x1F						; between 0 - 31
-  ENDIF
 					SHL
-					SHL
-					SHL
-					SHL
-					SHL
+					SHL  
+					SHL  
+					SHL  
+					SHL  
+					SHL  
 					PLO  R14
-					BNF  $$skipIncrement
+					BNF  $$skipIncrement2
 					GHI  R14
 					ADI  0x01
 					PHI  R14
-					
+  ENDIF
+  IFDEF RES128
+					SHL
+					SHL
+					SHL  
+					SHL  
+					SHL  
+					SHL  
+					PLO  R14
+					BNF  $$skipIncrement
+					GHI  R14
+					ADI  0x02
+					PHI  R14
 $$skipIncrement:	GLO  R14
+					SHL  
+					PLO  R14
+					BNF  $$skipIncrement2
+					GHI  R14
+					ADI  0x01
+					PHI  R14
+  ENDIF
+$$skipIncrement2:	GLO  R14
 					STR  R2
 					GLO  R12
 					ANI  0xF
