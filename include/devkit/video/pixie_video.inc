@@ -20,6 +20,8 @@
 
   IFDEF RES32
 
+    align    32
+
 INT_Exit:			LDXA
 					RET
 DisplayInt:			DEC  R2
@@ -58,6 +60,8 @@ INT_Loop:			GLO  R0
 ; =========================================================================================
 
   IFDEF RES64
+
+    align    32
   
 INT_Exit:			LDXA
 					RET
@@ -98,6 +102,8 @@ INT_Rest:			GLO  R0
 
   IFDEF RES128
 
+    align    16
+    
 INT_Exit:			LDXA
 					RET
 DisplayInt:			NOP
@@ -120,11 +126,48 @@ DisplayInt:			NOP
 ; =========================================================================================
 ; Initialize 1861 video output
 ; =========================================================================================
+
+    align    16
 					
 _initvideo:   
     ldireg R1, DisplayInt
     inp 1
+
+;------------------------------------------------------------------------------------------
+
+; =========================================================================================
+; Clear 1861 video output
+; =========================================================================================
+
+_vidclr:                ; clear screen by writing 0's to video memory
+	ldi  VIDMEM/256
+	phi r14
+	ldi 0
+	plo r14
+	plo r15
+  IFDEF RES32
+    ldi 1
+    phi r15
+  ENDIF
+  IFDEF RES64										
+    ldi 2
+    phi r15
+  ENDIF
+  IFDEF RES128										
+    ldi 4
+    phi r15
+  ENDIF
+$$loop:
+	ldi 0
+	str R14
+	inc R14
+	dec R15
+	glo R15
+	bnz $$loop
+	ghi R15
+	bnz $$loop
     cretn
+
 ;------------------------------------------------------------------------------------------
 
 ; =========================================================================================
@@ -137,6 +180,8 @@ _initvideo:
 ; R11		number of/remaining lines
 ; R14		Pointer to video memory
 ; =========================================================================================
+
+    align    128
 
 _drawtile:			
 					ld2  R15,'O',sp,(7)
@@ -221,22 +266,22 @@ $$byteLoop:			GLO  R11						; exit if all bytes of the sprite have been drawn
 					BNF  $$exit
 					GLO  R12
 					ANI  0x1
-					BZ   $$high_nible				; check if position is on low or high nible
+					BZ   $$high_nibble				; check if position is on low or high nibble
 					LDA  R15						; load the next byte of the sprite
 					ANI  0xF
 					STR  R2
 					LDN  R14
 					ANI  0xF0
 					OR
-					STR  R14						; OR in thr low nible of the sprite
+					STR  R14						; OR in thr low nibble of the sprite
 					BR   $$next_line
-$$high_nible:       LDA  R15						; load the next byte of the sprite
+$$high_nibble:      LDA  R15						; load the next byte of the sprite
 					ANI  0xF0
 					STR  R2
 					LDN  R14
 					ANI  0xF
 					OR
-					STR  R14						; OR in thr high nible of the sprite
+					STR  R14						; OR in thr high nibble of the sprite
 $$next_line:		GLO  R14						; advance the video buffer pointer to the next line
 					ADI  0x08
 					PLO  R14

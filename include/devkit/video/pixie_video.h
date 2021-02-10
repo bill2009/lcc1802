@@ -6,15 +6,14 @@
 #include "stdint.h"
 #include "devkit/system/flags.h"
 
+#define X_SIZE 16
+#define Y_SIZE 8
+
 void initvideo();
 void drawsprite(uint8_t x, uint8_t y, const uint8_t * spritedata);
 void drawtile(uint8_t x, uint8_t y, const uint8_t * spritedata);
-/*void vidclr(uint16_t vidmem, int vidlen);
-void vidchar(uint16_t vidmem, uint8_t character);
-void vidcharxy(uint8_t x, uint8_t y, uint8_t character);
-void vidstrcpy(uint16_t vidmem, char * text);
-void vidstrcpyxy(uint8_t x, uint8_t y, char * text);
-*/
+void vidclr();
+
 #define xstr(s) str(s)
 #define str(s) #s
 
