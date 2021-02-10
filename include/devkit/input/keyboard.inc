@@ -246,3 +246,55 @@ keytable:
     
   ENDIF
   
+  IFDEF  VIP 
+    
+    align    32
+_cgetc:                ; wait for key press
+    ldi 0x0            ; hex keypad check 0 to f
+    plo R15
+$$checknext:
+    glo R15    
+    str R2             ; store keyboard latch on stack
+    out 2              ; test for key press
+    dec r2
+    b3  $$keypressed
+    inc R15
+    glo R15
+    smi 0x10           ; stop checking when key = 0x10
+    bnz $$checknext
+    bn4 _cgetc
+    inp 3
+    plo R15
+$$keypressed:
+    ldi 0
+    phi R15
+    cretn
+
+    align    32
+_kbhit:                ; return 1 if a key is pressed, 0 if not
+    ldi 0x0            ; hex keypad check 0 to f
+    plo R15
+$$checknext:
+    glo R15    
+    str R2             ; store keyboard latch on stack
+    out 2              ; test for key press
+    dec r2
+    b3  $$keypressed
+    inc R15
+    glo R15
+    smi 0x10           ; stop checking when key = 0x10
+    bnz $$checknext
+    bn4 $$nokey
+$$keypressed:
+    ldi 1
+    plo R15
+    br $$exit
+$$nokey:
+    ldi 0
+    plo R15
+$$exit:
+    ldi 0
+    phi R15
+    cretn
+
+  ENDIF
