@@ -15,7 +15,7 @@ opsizes={
     'add':1,'adi':2,'adc':1,'adci':2,'str':1,'smi':2,'inc':1,
     'dis':1,'sav':1,
     'bz':2,'bnz':2,'br':2,'b3':2,'bn3':2,'bnf':2,'bdf':2,
-    'b1':2,'bn1':2,'b2':2,'bn2':2,
+    'b1':2,'bn1':2,'b2':2,'bn2':2,'b3':2,'bn3':2,'b4':2,'bn4':2,
     'equ': 0, 'db': -1,  'dw':2,'dd':4,
     'align':-1, #force alignment
     'pagefit':-1, #ensure bytes left on page
