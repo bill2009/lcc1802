@@ -13,6 +13,6 @@
 @c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -v -I %1.asm -O %1.oasm
 @c:\lcc42\bin\asw -cpu %cpu% -quiet -P -x -i c:\lcc42\include -D CPUSPEED=%speed% -D CODELOC=%codeloc% -D STACKLOC=%stackloc% -D LCCPX=1 %1.oasm
 @c:\Python27\python c:\lcc42\bat\brfixPX.py %1.i
-@c:\lcc42\bin\asw -cpu %cpu%  -quiet -x -i c:\lcc42\include -L -D LCCPX=1 %1.basm
+@c:\lcc42\bin\asw -cpu %cpu%  -quiet -x -i c:\lcc42\include -L -D CPUSPEED=%speed% -D CODELOC=%codeloc% -D STACKLOC=%stackloc% -D LCCPX=1 %1.basm
 @c:\lcc42\bin\p2hex -r $-$ %1 %1 | more +2
 @:quit
