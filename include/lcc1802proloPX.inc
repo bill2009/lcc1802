@@ -51,6 +51,12 @@
 ;20-06-19 fixed set of CODELOC
 ;20-07-14 added jcU1 single byte compare - required change to the md file and binary
 ;20-11-28 added st1i single byte immediate store for afterlife optimization
+;21-02-15 cumulative changes since CX version
+;         xbxx macros invoke subroutines to fake long branches, chbr macro chooses long or emulated branch based on LCCPX
+;	  pagefit nn macro makes sure there are nn bytes left in page, xsnf chooses lsnf or pagefit/br $+4 based on LCCPX
+;         some complex compares (jci4,jcf4) changed labels to avoid problems when nesting
+;	  target=xr18CX chooses either lcc1802CX or lcc1802PX depending on option -pixie
+
   IFNDEF CODELOC		;wjr 20-05-29 allow code relocation
       SET CODELOC,0		;wjr 20-05-29 allow code relocation
   ENDIF				;wjr 20-05-29 allow code relocation
@@ -196,7 +202,36 @@ $$go:	lda	src		;get byte to move - nb, src reg altered
 $$done:
 	endm
 	
-
+__BRTYP		set	""
+chbr:	macro	BROP,DEST	;chooses lbr type opcodes or xbr macros depending on setting LCCPX
+__BRTYP	  set	substr("BROP",1,strlen("BROP"))
+  	    IFDEF	LCCPX
+	      X{__BRTYP} DEST
+  	    ELSE
+  	      BROP	DEST
+  	    ENDIF
+	endm
+pagefit: macro bytesneeded	
+	if ($#256)>(255-bytesneeded)
+	    align 256
+	endif
+	endm
+xsnf:	macro	;either long skip or short branch around 2 bytes for pixie
+  IFDEF LCCPX
+  	pagefit 5
+  	bnf	$+4	;branch around following 2 bytes
+  ELSE
+  	lsnf		;no pixie, no problem
+  ENDIF
+  	endm
+xsdf:	macro	;either long skip or short branch around 2 bytes for pixie
+  IFDEF LCCPX
+  	pagefit 5
+  	bnf	$+4	;branch around following 2 bytes
+  ELSE
+  	lsnf		;no pixie, no problem
+  ENDIF
+  	endm
 	
 jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
 	glo	reg2
@@ -210,32 +245,12 @@ jcI2:	macro	reg1,reg2,brop,label	;signed comparison -20 bytes, ls@13,lb@17
 	ghi	reg1 ;
 	xor           ;sets the top bit if the signs are different
  	shlc          ;the original df is now in bit 0 and df=1 if signs were different
-	lsnf	;bypass the flip if signs were the same
+	xsnf	;bypass the flip if signs were the same
 	xri	01     ;invert original df if signs were different
 	shrc           ;put it back in df
-	brop	label  ;execute 
+	chbr	brop,label  ;execute 
 	endm
-pagefit: macro bytesneeded	
-	if ($#256)>(255-bytesneeded)
-	    align 256
-	endif
-	endm
-xsnf:	macro	;either long skip or short branch around 2 bytes for pixie
-  IFDEF LCCPX
-  	pagefit 5
-  	bnf	*+4	;branch around following 2 bytes
-  ELSE
-  	lsnf		;no pixie, no problem
-  ENDIF
-  	endm
-xsdf:	macro	;either long skip or short branch around 2 bytes for pixie
-  IFDEF LCCPX
-  	pagefit 5
-  	bnf	*+4	;branch around following 2 bytes
-  ELSE
-  	lsnf		;no pixie, no problem
-  ENDIF
-  	endm
+
 jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs -28 bytes, ls@21, lbr@25
 	dec	sp ;make a work area
 	glo	reg2	;lowest order byte
@@ -258,10 +273,10 @@ jcI4:	macro	reg1,reg2,brop,label	;signed comparison of two longs -28 bytes, ls@2
 	xor           ;sets the top bit if the signs are different
 	inc	sp ;release the work area
 	shlc          ;the original df is now in bit 0 and df=1 if signs were different
-	lsnf	;bypass the flip if signs were the same
+	xsnf	;bypass the flip if signs were the same
 	xri	01     ;invert original df if signs were different
 	shrc           ;put it back in df
-	brop	label  ;execute 
+	chbr	brop,label  ;execute 
 	endm
 
 jcU1:	macro	reg1,reg2,brop,label ;
@@ -269,7 +284,7 @@ jcU1:	macro	reg1,reg2,brop,label ;
 	str	sp
 	glo	reg1
 	sm
-	brop	label
+	chbr	brop,label
 	endm
 jcU2:	macro	reg1,reg2,brop,label ;13 bytes, lbr@10
 	dec	sp
@@ -282,7 +297,7 @@ jcU2:	macro	reg1,reg2,brop,label ;13 bytes, lbr@10
 	ghi	reg1
 	smb
 	inc	sp
-	brop	label
+	chbr	brop,label
 	endm
 jcU4:	macro	reg1,reg2,brop,label	;21 bytes, lbr@18
 	dec	sp
@@ -303,12 +318,12 @@ jcU4:	macro	reg1,reg2,brop,label	;21 bytes, lbr@18
 	ghi	reg1-1	;finish with the high byte of the high order register
 	smb
 	inc	sp
-	brop	label
+	chbr	brop,label
 	endm
 jcI1I:	macro	reg1,ival,brop,label	;signed comparison - one byte immediate -for nopromo
 	glo	reg1
 	smi	(ival)#256
-	brop	label  ;execute 
+	chbr	brop,label  ;execute 
 	endm
 jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate -17 bytes, ls@10, lbr@14
 	glo	reg1
@@ -318,10 +333,10 @@ jcI2I:	macro	reg1,ival,brop,label	;signed comparison - register immediate -17 by
 	ghi	reg1 ;
 	xri	(ival)>>8; was/256	;sets the top bit if the signs are different
 	shlc          ;the original df is now in bit 0 and df=1 if signs were different
-	lsnf	;bypass the df flip if signs were the same
+	xsnf	;bypass the df flip if signs were the same
 	xri	01     ;invert original df if signs were different
 	shrc           ;put it back in df
-	brop	label  ;execute 
+	chbr	brop,label  ;execute 
 	endm
 jnI2I:	macro	reg1,ival,brop,label	;reverse signed comparison - register immediate -17 bytes, ls@10, lbr@14
 	glo	reg1
@@ -331,24 +346,24 @@ jnI2I:	macro	reg1,ival,brop,label	;reverse signed comparison - register immediat
 	ghi	reg1 ;
 	xri	(ival)>>8; was/256	;sets the top bit if the signs are different
 	shlc          ;the original df is now in bit 0 and df=1 if signs were different
-	lsnf	;bypass the df flip if signs were the same
+	xsnf	;bypass the df flip if signs were the same
 	xri	01     ;invert original df if signs were different
 	shrc           ;put it back in df
-	brop	label  ;execute 
+	chbr	brop,label  ;execute 
 	endm
 jcU2I:	macro	reg1,ival,brop,label ;-9 bytes, lbr@6
 	glo	reg1
 	smi	(ival)#256
 	ghi	reg1
 	smbi	(ival)>>8; was/256
-	brop	label
+	chbr	brop,label
 	endm
 jnU2I:	macro	reg1,ival,brop,label	;reverse unsigned comparison - 9 byes, lbr@6
 	glo	reg1
 	sdi	(ival)#256	;subtract d FROM immediate value
 	ghi	reg1
 	sdbi	(ival)>>8; was/256 ; sfinish subtracting register FROM immediate value
-	brop	label
+	chbr	brop,label
 	endm
 jneU2:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	dec	sp
@@ -357,14 +372,14 @@ jneU2:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	glo	reg1
 	sm
 	inc	sp
-	lbnz	label
+	chbr	lbnz,label
 	dec	sp
 	ghi	reg2
 	str	sp
 	ghi	reg1
 	smb
 	inc	sp
-	lbnz	label
+	chbr	lbnz,label
 	endm
 jneU1:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	dec	sp
@@ -373,51 +388,51 @@ jneU1:	macro	reg1,reg2,label	;-18 bytes, lbr@6, lbr@15
 	glo	reg1
 	sm
 	inc 	sp
-	lbnz	label
+	chbr	lbnz,label
 	endm
 
 jneU2I:	macro	reg1,ival,label	;-12 bytes, lbr@3, lbr@9
 	glo	reg1
 	smi	(ival)#256
-	lbnz	label
+	chbr	lbnz,label
 	ghi	reg1
 	smbi	(ival)>>8; was/256
-	lbnz	label
+	chbr	lbnz,label
 	endm
 jneU2NI: macro	reg1,ival,label	;jump if storage at reg1%!=lval
 	lda	reg1
 	smi	(ival)>>8; was/256
-	lbnz	label
+	chbr	lbnz,label
 	ldn	reg1
 	smi	(ival)#256
-	lbnz	label
+	chbr lbnz,label
 	endm
 
 
 jneU1I:	macro	reg1,immedval,label
 	glo	reg1
 	smi	immedval
-	lbnz	label
+	chbr	lbnz,label
 	endm
 jnzU1:	macro	reg1,label	;4 bytes, lbr@1
 	glo	reg1
-	lbnz	label
+	chbr 	lbnz,label
 	endm
 jnzU2:	macro	reg1,label	;8 bytes, lbr@1, lbr@5
 	glo	reg1
-	lbnz	label
+	chbr	lbnz,label
 	ghi	reg1
-	lbnz	label
+	chbr	lbnz,label
 	endm
 jzU1:	macro	reg1,label	;4 bytes, lbr@1
 	glo	reg1
-	lbz	label
+	chbr	lbz,label
 	endm
 jzU2:	macro	reg1,label	;8 bytes, lbr@1-8, lbr@5
 	glo	reg1
-	lbnz	+
+	chbr	lbnz,+
 	ghi	reg1
-	lbz	label
+	chbr	lbz,label
 +
 	endm
 jeqI4:	macro	reg1,reg2,label	;36 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33
@@ -425,29 +440,29 @@ jeqI4:	macro	reg1,reg2,label	;36 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33
 	str	sp
 	glo	reg1
 	sm		;subtract from corresponding byte of the 1st operand
-	lbnz	$$nobr	;bail on test if not equal
+	chbr	lbnz,noEQbr	;bail on test if not equal
 	ghi	reg2	;repeat for high order byte of low register
 	str	sp
 	ghi	reg1
 	sm
-	lbnz	$$nobr
+	chbr	lbnz,noEQbr
 	glo	reg2-1	;low order byte of high order register
 	str	sp
 	glo	reg1-1
 	sm
-	lbnz	$$nobr
+	chbr	lbnz,noEQbr
 	ghi	reg2-1	;lhigh order byte of high order register
 	str	sp
 	ghi	reg1-1
 	sm
-	lbz	label	;if we get to here all other bytes have been equal so branch if this one is too
-$$nobr:
+	chbr	lbz,label	;if we get to here all other bytes have been equal so branch if this one is too
+noEQbr:
 	endm
 
 jneu4:	macro	reg1,reg2,label	;39 bytes, lbr@6-36, lbr@15-36, lbr@24-36,lbr@33-39, lbr@36
-	jeqi4	reg1,reg2,+
-	lbr	label
-+
+	jeqi4	reg1,reg2,noNEbr
+	chbr	lbr,label
+noNEbr
 	endm
 
 jeqI2:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
@@ -455,12 +470,12 @@ jeqI2:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	str	sp
 	glo	reg1
 	sm
-	lbnz	+
+	chbr	lbnz,+
 	ghi	reg2
 	str	sp
 	ghi	reg1
 	smb
-	lbz	label
+	chbr	lbz,label
 +:
 	endm
 jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
@@ -468,20 +483,20 @@ jeqI1:	macro	reg1,reg2,label	;18 bytes, lbr@6, lbr@15
 	str	sp
 	glo	reg1
 	sm
-	lbz	label
+	chbr	lbz,label
 	endm
 jeqU1I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
 	glo	reg1
 	smi	(ival)#256
-	lbz	label
+	chbr	lbz,label
 	endm
 jeqU2I:	macro	reg1,ival,label	;12 bytes, lbr@3-12, lbr@9
 	glo	reg1
 	smi	(ival)#256
-	lbnz	+
+	chbr	lbnz,+
 	ghi	reg1
 	smbi	(ival)>>8; was/256
-	lbz	label
+	chbr	lbz,label
 +:
 	endm
 ld2z:	macro	reg1	;load zero into a 16 bit register
@@ -1175,17 +1190,46 @@ negI4:	macro	tgt,src			;four byte negation from src to tgt
 jcF4:	macro	reg1,reg2,brop,label		;jump if float reg 1< float reg 2
 	ghi	reg1-1		;see if first arg is -v
 	shl
-	lbnf	$$comp		;if at least 1 reg positive, just compare
+	chbr	lbnf,CFcmp		;if at least 1 reg positive, just compare
 	ghi	reg2-1		;check 2nd reg
 	shl
-	lbdf	$$rcomp
-$$comp:					;moved off macro
+	chbr	lbdf,CFrcmp
+CFcmp:				;straight compare
 	jcI4	reg1,reg2,brop,label	;as long as one register is +v
-	lbr	$$done
-$$rcomp: 				;18-02-09 moved off macro
+	chbr	lbr,CFdone
+CFrcmp: 			;reverse compare
 	jcI4	reg2,reg1,brop,label	;reverse the order of the operands
-$$done:
+CFdone:
 	endm
+;macros inserted between assembler passes for pixie accommodation.
+;they get substituted for long branch instructions so as not to upset 1861 video timing
+;a cmpanion code module pxbrcode.inc is required
+xbr:	macro	target
+	sep	RCALL
+	dw	xbrsub
+	dw	target
+	endm
+xbz:	macro	target
+	sep	RCALL
+	dw	xbzsub
+	dw	target
+	endm
+xbnz:	macro	target
+	sep	RCALL
+	dw	xbnzsub
+	dw	target
+	endm
+xbdf:	macro	target
+	sep	RCALL
+	dw	xbdfsub
+	dw	target
+	endm
+xbnf:	macro	target
+	sep	RCALL
+	dw	xbnfsub
+	dw	target
+	endm
+	
 	listing	on
 	;lbr	lcc1802init	;21-02-04 init code moved to beginning of code to eliminae long branch
 ;;function_start lcc1802init.inc void function(void)

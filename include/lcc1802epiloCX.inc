@@ -35,50 +35,10 @@ rwork:	equ	memAddr	;work register
 ;20-06-19 changed lbr die to br on return from main
 ;20-07-10 (Marcel) added orgc at start to solve issue with branches to data area (suggested by Bill)
 ;20-08-01 dubdabx moved to nstdlib.inc
+;21-02-04 init code moved to beginning of module 
+;	  changed call and return to preserve D for LCCPX as well as LCCCX
+;;function_start lcc1802epilog.inc void function(void)
  orgc
-;;function_start lcc1802init.inc void function(void)
-lcc1802init:
-  IFDEF SAVEREGS
-    include "saveregs.inc"
-  ENDIF
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX - don't set stack or PC, return to BASIC at end
-  	pushr 4
-  	pushr 5
-  	pushr 7			;wjr 20-04-29 save/restore BASIC registers
-  	pushr 9	
-  	pushr 11
-  	pushr 15
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
-  	Ccall _main		;wjr 20-04-28 start the C program
-  	popr  15		;wjr 20-04-29 save/restore BASIC registers
-  	popr  11
-  	popr  9
-  	popr  7
-  	popr 5
-  	popr 4
-  	Cretn			;wjr 20-04-28 hopefully back to COMX Basic
-  ELSE
-  IF    MOMCPU<>$1805		;for 1806 use SCAL 
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
-  ELSE
-	ldiReg	RCALL,$$_die; _call
-	ldiReg	RRET,$$_die; _return
-  ENDIF
-	  IFNDEF  STACKLOC		;wjr 16-09-20 allow stack relocation
-		ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
-	  ELSEIF				;wjr 16-09-20
-		ldiReg	SP,STACKLOC	;wjr 16-09-20 start stack as specified
-	  ENDIF				;wjr 16-09-20
-		sex	SP
-		ldiReg	RPC,$$_00000
-		sep	RPC
-	$$_00000:
-		Ccall _main	;call the main routine
-	$$_die:	br	$$_die		;loop here when main returns
-		db	0xde,0xad
-  ENDIF
 ;the following routines don't have short jumps and don't need to worry about alignment
 _setqOn:
 	seq
@@ -118,8 +78,11 @@ _out4:
 ;Standard Call routine invoked as D4xxxx - big-endian stack convention
 	sep     R3 ;go to subroutine
 _call:	sex	SP ;make sure X=SP
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
-	phi	r15	;save D #wjr 20-05-01
+  IFDEF LCCCX		;wjr 20-04-28 setup for COMX
+	phi	memaddr	;save D #wjr 20-05-01
+  ENDIF
+  IFDEF LCCPX
+	phi	memaddr
   ENDIF
 	glo	retAddr ;save previous return pointer on stack
 	stxd
@@ -133,20 +96,29 @@ _call:	sex	SP ;make sure X=SP
 	phi	RPC
 	lda	retAddr
 	plo	RPC
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
-	ghi	r15	;save D #wjr 20-05-01
+  IFDEF LCCCX	;wjr 20-04-28 setup for COMX
+	ghi	memaddr	;save D #wjr 20-05-01
+  ENDIF
+  IFDEF LCCPX
+	ghi	memaddr
   ENDIF
 	br	_call-1
 
 ;Standard subroutine return 
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
+  IFDEF LCCCX	;wjr 20-04-28 setup for COMX
+	align 16
+  ENDIF
+  IFDEF LCCPX
 	align 16
   ENDIF
 	sep	RPC	;return to the original program
 _return: 
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
-	phi	r15	;save D #wjr 20-05-01
+  IFDEF LCCCX	;wjr 20-04-28 setup for COMX
+	phi	memaddr	;save D #wjr 20-05-01
         sex r2		;fix x register per marcel
+  ENDIF
+  IFDEF LCCPX
+	phi	memaddr
   ENDIF
 	glo	retAddr	;transfer the current return address to RPC
 	plo	RPC
@@ -157,8 +129,11 @@ _return:
 	phi	retAddr
 	ldn	SP
 	plo	retAddr
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX
-	ghi	r15	;save D #wjr 20-05-01
+  IFDEF LCCCX	;wjr 20-04-28 setup for COMX
+	ghi	memaddr	;save D #wjr 20-05-01
+  ENDIF
+  IFDEF LCCPX
+	ghi	memaddr
   ENDIF
 	br	_return-1
  ENDIF
@@ -427,4 +402,4 @@ _modI4:	;32 bit signed remainder
     cpy4 RL8,Rp1p2
     Cretn
  ENDIF	
-;;function_end lcc1802init.inc
+;;function_end lcc1802epilog.inc
