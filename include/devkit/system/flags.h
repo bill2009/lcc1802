@@ -115,19 +115,28 @@ asm("NTSC5_6_7 equ 1\n");
 
 #if RES==32
 void flags_res32_includer(){
-asm("RES32 equ 1\n");
+asm("RES32 equ 1\n"
+	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
+	"HEIGHT equ 4\n"	// Sprite height to detect reaching bottom size of screen
+	"RES equ 32\n");
 }
 #endif
 
 #if RES==64
 void flags_res64_includer(){
-asm("RES64 equ 1\n");
+asm("RES64 equ 1\n"
+	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
+	"HEIGHT equ 8\n"	// Sprite height to detect reaching bottom size of screen
+	"RES equ 64\n");
 }
 #endif
 
 #if RES==128
 void flags_res128_includer(){
-asm("RES128 equ 1\n");
+asm("RES128 equ 1\n"
+	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
+	"HEIGHT equ 16\n"	// Sprite height to detect reaching bottom size of screen
+	"RES equ 128\n");
 }
 #endif
 
