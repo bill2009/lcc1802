@@ -53,6 +53,17 @@ INT_Loop:			GLO  R0
   pagefit    20
 _videobuf:		db 20 dup 
   ENDIF
+  IFDEF PIXIE_PATTERN										
+  pagefit    8
+_addition_table:	db 1
+					db 9
+					db 17
+					db 25
+					db 33
+					db 41
+					db 49
+					db 57					
+  ENDIF
   ENDIF
 				
 ;------------------------------------------------------------------------------------------
@@ -98,6 +109,17 @@ INT_Rest:			GLO  R0
   pagefit    40
 _videobuf:		db 40 dup 
   ENDIF
+  IFDEF PIXIE_PATTERN										
+  pagefit    8
+_addition_table:	db 1
+					db 17
+					db 33
+					db 49
+					db 65
+					db 81
+					db 97
+					db 113					
+  ENDIF
   ENDIF
 
 ;------------------------------------------------------------------------------------------
@@ -130,6 +152,17 @@ DisplayInt:			NOP
   IFDEF PIXIE_SPRITE_MOVE										
   pagefit    80    
 _videobuf:		db 80 dup 
+  ENDIF
+  IFDEF PIXIE_PATTERN										
+  pagefit    8
+_addition_table:	db 1
+					db 33
+					db 65
+					db 97
+					db 129
+					db 161
+					db 193
+					db 225					
   ENDIF
   ENDIF
 
@@ -721,8 +754,6 @@ _draw_buffer:		LDI  0
 					PLO  R14
 					ghi  R11						; draw the shifted bytes in the video buffer
 					plo  R11
-					ghi  R8
-					bz   $$DrawLoop
 $$DrawLoop: 
   IFDEF RES32										; exit if we are about to draw outside the video buffer
 					LDI  VIDMEM/256			
@@ -753,6 +784,277 @@ $$no_collision1:	lda  R9
 					ldi  1
 					plo  R15
 $$no_collision2:	lda  R9
+					XOR
+					STR  R14
+					GLO  R14						; advance the video buffer pointer to the next line
+					ADI  0x07
+					PLO  R14
+  IFDEF RES64										
+					GHI  R14
+					ADCI 0
+					PHI  R14
+  ENDIF
+  IFDEF RES128										
+					GHI  R14
+					ADCI 0
+					PHI  R14
+  ENDIF
+					dec  R11
+					glo  R11
+					SEX  R2
+					Bnz  $$DrawLoop
+					Cretn
+$$Exit:				ldi  0
+					phi  R15
+
+  ENDIF
+
+;------------------------------------------------------------------------------------------
+
+; =========================================================================================
+; Parameters:
+; R12       sprite data pointer
+; R13		Pointer to sprite - number of lines, 8 bits per line
+; R8 		X coordinate of the sprite
+; R9		Y coordinate of the sprite
+;
+; Internal:
+; R10		16 bit temp pattern
+; R11		Size of the sprite in bytes, first byte of pointer to sprite
+; R14		Pointer to video memory
+; =========================================================================================
+
+  IFDEF PIXIE_PATTERN										
+	
+_showsprite:		glo  R2
+					adi  8
+					plo  R10
+					ghi  R2
+					adci 0
+					phi  R10
+					lda  R10
+					plo  R8
+					inc  R10
+					ldn  R10
+					plo  R9
+					ghi  R13
+					str  R12
+					inc  R12
+					glo  R13
+					str  R12
+					inc  R12
+					glo  R8
+					str  R12
+					inc  R12
+					glo  R9
+					str  R12
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
+					sep  R4
+					dw	 _draw_buffer
+					Cretn
+	
+_removesprite:		lda  R12
+					phi  R13
+					lda  R12
+					plo  R13
+					lda  R12
+					plo  R8		
+					ldn  R12
+					plo  R9
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
+					sep  R4
+					dw	 _draw_buffer
+					Cretn
+
+  pagefit    0x5c
+		
+_movesprite:		glo  R13
+					phi  R8
+					lda  R12
+					phi  R13
+					lda  R12
+					plo  R13
+					lda  R12
+					plo  R8		
+					ldn  R12
+					plo  R9
+					ghi  R8
+					smi  3
+					bz   $$up1
+					smi  2
+					bz   $$left1
+					smi  2
+					bz   $$right1
+					smi  2
+					bz   $$down1
+					br   $$exit
+$$left1:			glo  R8
+					bnz  $$removesprite
+					br   $$exit
+$$right1:			glo  R8
+					xri  64-WIDTH
+					bnz  $$removesprite
+					br   $$exit
+$$up1:				glo  R9
+					bnz  $$removesprite
+					br   $$exit
+$$down1:			glo  R9
+					xri  RES-HEIGHT
+					bz   $$exit
+$$removesprite:
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
+					sep  R4
+					dw	 _draw_buffer
+					ghi  R8
+					smi  3
+					bz   $$up
+					smi  2
+					bz   $$left
+					smi  2
+					bz   $$right
+					smi  2
+					bz   $$down
+					br   $$exit
+$$left:				dec  R8
+					br   $$nextsprite
+$$right:			inc  R8
+					br   $$nextsprite
+$$up:	    		dec  R9
+					br   $$nextsprite
+$$down:	    		inc  R9
+$$nextsprite:		glo  R9
+					str  R12
+					dec  R12		
+					glo  R8
+					str  R12
+					sep  R4
+					dw	 _draw_buffer
+$$exit:				Cretn
+
+  IFDEF RES32
+  pagefit 0x58
+  ENDIF
+  IFDEF RES64
+  pagefit 0x62
+  ENDIF
+  IFDEF RES128
+  pagefit 0x6A
+  ENDIF
+ 
+_draw_buffer:		ldn  R13
+					plo  R11
+					phi  R11
+					LDI  VIDMEM/256					; prepare the pointer to the video buffer					
+					PHI  R14						; VIDMEM + Y * 8 + X / 8
+					GLO  R9						; result goes to R14
+  IFDEF RES32
+					ANI  0x1F						; between 0 - 31
+  ENDIF
+  IFDEF RES64
+					ANI  0x3F						; between 0 - 63
+  ENDIF
+  IFDEF RES128
+					ANI  0x7F						; between 0 - 127
+  ENDIF
+  IFDEF RES32
+					SHL
+					SHL
+					SHL
+					PLO  R14
+  ENDIF
+  IFDEF RES64
+					SHL
+					SHL
+					SHL
+					PLO  R14
+					BNF  $$SkipIncrement2
+					GHI  R14
+					ADI  0x01
+					PHI  R14
+  ENDIF
+  IFDEF RES128
+					SHL
+					SHL
+					PLO  R14
+					BNF  $$skipIncrement
+					GHI  R14
+					ADI  0x02
+					PHI  R14
+$$skipIncrement:	GLO  R14
+					SHL  
+					PLO  R14
+					BNF  $$skipIncrement2
+					GHI  R14
+					ADI  0x01
+					PHI  R14
+  ENDIF
+					
+$$SkipIncrement2:	GLO  R14
+					STR  R2
+					GLO  R8
+					ANI  0x3F
+					SHR
+					SHR
+					SHR
+					ADD
+					PLO  R14
+					ldi  _addition_table&0xff
+					str  R2
+					GLO  R8							; calculate the number of required shifts 
+					ANI  0x07						
+					add
+					plo  R10
+					ldi  _addition_table/256
+					phi  R10
+					ldn  R10
+					str  R2							
+					GLO  R13
+					ADD
+					PLO  R10
+					ghi  R13
+					ADCI 0
+					PHI  R10
+					LDI  0
+					PHI  R15
+					PLO  R15
+					ghi  R11						; draw the bytes in the video buffer
+					plo  R11
+$$DrawLoop: 
+  IFDEF RES32										; exit if we are about to draw outside the video buffer
+					LDI  VIDMEM/256			
+  ENDIF
+  IFDEF RES64										
+					LDI  VIDMEM/256+1			
+  ENDIF
+  IFDEF RES128										
+					LDI  VIDMEM/256+3	
+  ENDIF
+					STR  R2
+					GHI  R14
+					SD
+					BNF  $$Exit
+					SEX  R14
+					ldn  R10
+					and
+					bz   $$no_collision1
+					ldi  1
+					plo  R15
+$$no_collision1:	lda  R10
+					XOR
+					STR  R14
+					INC  R14
+					ldn  R10
+					and
+					bz   $$no_collision2
+					ldi  1
+					plo  R15
+$$no_collision2:	lda  R10
 					XOR
 					STR  R14
 					GLO  R14						; advance the video buffer pointer to the next line

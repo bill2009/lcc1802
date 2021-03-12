@@ -37,6 +37,16 @@ uint8_t showsprite(uint32_t * spritedata, const uint8_t * spriteshape, uint8_t x
 uint8_t movesprite(uint32_t * spritedata, uint8_t direction);
 void removesprite(uint32_t * spritedata);
 #endif
+#if defined PIXIE_PATTERN
+#define X_SIZE 64
+#define Y_SIZE RES
+void flags_pixie_sprite_includer(){
+asm("PIXIE_PATTERN equ 1\n");
+}
+uint8_t showsprite(uint32_t * spritedata, const uint8_t * spriteshape, uint8_t x, uint8_t y);
+uint8_t movesprite(uint32_t * spritedata, uint8_t direction);
+void removesprite(uint32_t * spritedata);
+#endif
 #if defined PIXIE_TILE
 #define X_SIZE 16
 #define Y_SIZE 8
