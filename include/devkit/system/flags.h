@@ -1,6 +1,9 @@
 #ifndef _FLAGS_H
 #define _FLAGS_H
 
+#define xstr(s) str(s)
+#define str(s) #s
+
 //flags header
 
 #if defined PRINTF_ROM
@@ -113,30 +116,47 @@ asm("NTSC5_6_7 equ 1\n");
 }
 #endif
 
+#ifndef RES
+#define RES 32
+#endif
+
+#ifndef SPRITE_WIDTH
+#define SPRITE_WIDTH 4	// Sprite width to detect reaching right size of screen, default 4
+#endif
+
 #if RES==32
+#ifndef SPRITE_HEIGHT
+#define SPRITE_HEIGHT 4	// Sprite height to detect reaching bottom size of screen, default 4
+#endif
 void flags_res32_includer(){
 asm("RES32 equ 1\n"
-	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
-	"HEIGHT equ 4\n"	// Sprite height to detect reaching bottom size of screen
-	"RES equ 32\n");
+	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" RES: equ "xstr(RES)"\n");
 }
 #endif
 
 #if RES==64
+#ifndef SPRITE_HEIGHT
+#define SPRITE_HEIGHT 8
+#endif
 void flags_res64_includer(){
 asm("RES64 equ 1\n"
-	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
-	"HEIGHT equ 8\n"	// Sprite height to detect reaching bottom size of screen
-	"RES equ 64\n");
+	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" RES: equ "xstr(RES)"\n");
 }
 #endif
 
 #if RES==128
+#ifndef SPRITE_HEIGHT
+#define SPRITE_HEIGHT 16
+#endif
 void flags_res128_includer(){
 asm("RES128 equ 1\n"
-	"WIDTH equ 4\n"		// Sprite width to detect reaching right size of screen
-	"HEIGHT equ 16\n"	// Sprite height to detect reaching bottom size of screen
-	"RES equ 128\n");
+	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" RES: equ "xstr(RES)"\n");
 }
 #endif
 
