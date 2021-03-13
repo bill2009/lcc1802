@@ -56,13 +56,13 @@ _videobuf:		db 20 dup
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db 9
-					db 17
-					db 25
-					db 33
-					db 41
-					db 49
-					db 57					
+					db HEIGHT*2+1
+					db HEIGHT*4+1 
+					db HEIGHT*6+1 
+					db HEIGHT*8+1 
+					db HEIGHT*10+1 
+					db HEIGHT*12+1 
+					db HEIGHT*14+1					
   ENDIF
   ENDIF
 				
@@ -112,13 +112,13 @@ _videobuf:		db 40 dup
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db 17
-					db 33
-					db 49
-					db 65
-					db 81
-					db 97
-					db 113					
+					db HEIGHT*2+1
+					db HEIGHT*4+1 
+					db HEIGHT*6+1 
+					db HEIGHT*8+1 
+					db HEIGHT*10+1 
+					db HEIGHT*12+1 
+					db HEIGHT*14+1					
   ENDIF
   ENDIF
 
@@ -156,13 +156,13 @@ _videobuf:		db 80 dup
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db 33
-					db 65
-					db 97
-					db 129
-					db 161
-					db 193
-					db 225					
+					db HEIGHT*2+1
+					db HEIGHT*4+1 
+					db HEIGHT*6+1 
+					db HEIGHT*8+1 
+					db HEIGHT*10+1 
+					db HEIGHT*12+1 
+					db HEIGHT*14+1					
   ENDIF
   ENDIF
 
@@ -882,6 +882,7 @@ _movesprite:		glo  R13
 					plo  R8		
 					ldn  R12
 					plo  R9
+  IFDEF PIXIE_CHECK_BORDER										
 					ghi  R8
 					smi  3
 					bz   $$up1
@@ -906,6 +907,7 @@ $$down1:			glo  R9
 					xri  RES-HEIGHT
 					bz   $$exit
 $$removesprite:
+  ENDIF
   IFDEF PIXIE_VSYNC										
 					IDL
   ENDIF

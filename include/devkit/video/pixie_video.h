@@ -56,9 +56,6 @@ asm("PIXIE_TILE equ 1\n");
 void drawtile(uint8_t x, uint8_t y, const uint8_t * spriteshape);
 #endif
 
-#define xstr(s) str(s)
-#define str(s) #s
-
 void pixie_video_includer(){
 asm(" VIDMEM: equ "xstr(VIDMEM)"\n"
 	" include devkit/video/pixie_video.inc\n");
