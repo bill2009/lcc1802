@@ -57,32 +57,32 @@ static const uint8_t shape_o[] =
 };
 #endif
 
+static const direction_table[] =
+{
+	MOVE_UP,
+	MOVE_RIGHT,
+	MOVE_DOWN,
+	MOVE_LEFT
+};
+
 void main(){
-	int x[6], y[6], delay, collision, front, end;
+    int size=6;
+	int x[6], y[6], startx, starty, direction = 0, collision, front, end, i, delay;
     unsigned char key;
 	uint32_t sprite_data[6];
 
 	initvideo();
 
-	x[0] = (int) ((X_SIZE-1)/2);
-    y[0] = (int) ((Y_SIZE-1)/2);                   // Set x and y to middle of screen
-	x[1] = x[0];
-	y[1] = y[0]+1;
-	x[2] = x[0];
-	y[2] = y[0]+2;
-	x[3] = x[0];
-	y[3] = y[0]+3;
-	x[4] = x[0];
-	y[4] = y[0]+4;
-	x[5] = x[0];
-	y[5] = y[0]+5;
+	startx=(int) ((X_SIZE-1)/2);
+	starty=(int) ((X_SIZE-1)/2);
+	for (i=0; i<size; i++)
+	{
+		x[i] = startx;
+		y[i] = starty;
+		collision = showsprite (&sprite_data[i], shape_o, x[i], y[i]);
+		starty++;
+	}
 
-	collision = showsprite (&sprite_data[0], shape_o, x[0], y[0]);
-	collision = showsprite (&sprite_data[1], shape_o, x[1], y[1]);
-	collision = showsprite (&sprite_data[2], shape_o, x[2], y[2]);
-	collision = showsprite (&sprite_data[3], shape_o, x[3], y[3]);
-	collision = showsprite (&sprite_data[4], shape_o, x[4], y[4]);
-	collision = showsprite (&sprite_data[5], shape_o, x[5], y[5]);
 	collision = 0;
 	front = 0;
 	end = 5;
@@ -90,61 +90,66 @@ void main(){
 	while (1) {
 		key = get_stick();                  // get direction key value
 
-		if (key == MOVE_UP)
+		if (key != 0)
 		{
-			if (y[front] != 0)
+			if (key == MOVE_RIGHT)
 			{
-				removesprite (&sprite_data[end]);
-				x[end] = x[front];
-				y[end] = y[front] - 1;
-				collision = showsprite (&sprite_data[end], shape_o, x[end], y[end]);
-				front = end;
-				end--;
-				if (end == -1)  end = 5;
+				direction++;
+				if (direction == 4)  direction = 0;
 			}
-		}
-		if (key == MOVE_RIGHT)
-		{
-			if (x[front] != (X_SIZE - 1))
+			if (key == MOVE_LEFT)
 			{
-				removesprite (&sprite_data[end]);
-				x[end] = x[front] + 1;
-				y[end] = y[front];
-				collision = showsprite (&sprite_data[end], shape_o, x[end], y[end]);
-				front = end;
-				end--;
-				if (end == -1)  end = 5;
-			}
-		}
- 		if (key == MOVE_LEFT)
-		{
-			if (x[front] != 0)
-			{
-				removesprite (&sprite_data[end]);
-				x[end] = x[front] - 1;
-				y[end] = y[front];
-				collision = showsprite (&sprite_data[end], shape_o, x[end], y[end]);
-				front = end;
-				end--;
-				if (end == -1)  end = 5;
-			}
-		}
- 		if (key == MOVE_DOWN)
-		{
-			if (y[front] != (Y_SIZE - 1))
-			{
-				removesprite (&sprite_data[end]);
-				x[end] = x[front];
-				y[end] = y[front] + 1;
-				collision = showsprite (&sprite_data[end], shape_o, x[end], y[end]);
-				front = end;
-				end--;
-				if (end == -1)  end = 5;
+				direction--;
+				if (direction == -1)  direction = 3;
 			}
 		}
 
-//		while (collision == 1)
-//		{
-//		}
+		if (direction_table[direction] == MOVE_UP)
+		{
+			x[end] = x[front];
+			y[end] = y[front] - 1;
+			collision = movexysprite (&sprite_data[end], x[end], y[end]);
+			front = end;
+			end--;
+			if (end == -1)  end = 5;
+		}
+		if (direction_table[direction] == MOVE_RIGHT)
+		{
+			x[end] = x[front] + 1;
+			y[end] = y[front];
+			collision = movexysprite (&sprite_data[end], x[end], y[end]);
+			front = end;
+			end--;
+			if (end == -1)  end = 5;
+		}
+ 		if (direction_table[direction] == MOVE_LEFT)
+		{
+			x[end] = x[front] - 1;
+			y[end] = y[front];
+			collision = movexysprite (&sprite_data[end], x[end], y[end]);
+			front = end;
+			end--;
+			if (end == -1)  end = 5;
+		}
+ 		if (direction_table[direction] == MOVE_DOWN)
+		{
+			x[end] = x[front];
+			y[end] = y[front] + 1;
+			collision = movexysprite (&sprite_data[end], x[end], y[end]);
+			front = end;
+			end--;
+			if (end == -1)  end = 5;
+		}
+		if (collision == 1)
+		{
+			while(1)
+			{
+			}
+		}
+
+		delay = 100;
+		while (delay > 0)
+			delay--;
+
 	}
 }
