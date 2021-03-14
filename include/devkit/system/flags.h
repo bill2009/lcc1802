@@ -124,6 +124,14 @@ asm("NTSC5_6_7 equ 1\n");
 #define SPRITE_WIDTH 4	// Sprite width to detect reaching right size of screen, default 4
 #endif
 
+#if SPRITE_WIDTH==1
+#if SPRITE_HEIGHT==1
+void flags_pixel_includer(){
+asm("PIXEL equ 1\n");
+}
+#endif
+#endif
+
 #if RES==32
 #ifndef SPRITE_HEIGHT
 #define SPRITE_HEIGHT 4	// Sprite height to detect reaching bottom size of screen, default 4
