@@ -939,6 +939,40 @@ $$nextsprite:		glo  R9
 					dw	 _draw_buffer
 $$exit:				Cretn
 
+_movexysprite:		glo  R13
+					phi  R8
+					lda  R12
+					phi  R13
+					lda  R12
+					plo  R13
+					lda  R12
+					plo  R8		
+					ldn  R12
+					plo  R9
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
+					sep  R4
+					dw	 _draw_buffer
+					ghi  R8
+					plo  R8
+					glo  R2
+					adi  8
+					plo  R10
+					ghi  R2
+					adci 0
+					phi  R10
+					ldn  R10
+					plo  R9
+					glo  R9
+					str  R12
+					dec  R12		
+					glo  R8
+					str  R12
+					sep  R4
+					dw	 _draw_buffer
+					Cretn
+
   IFDEF RES32
   pagefit 0x58
   ENDIF
@@ -1051,6 +1085,9 @@ $$no_collision1:	lda  R10
 					XOR
 					STR  R14
 					INC  R14
+  IFDEF PIXEL
+					inc  R10
+  ELSE
 					ldn  R10
 					and
 					bz   $$no_collision2
@@ -1059,6 +1096,7 @@ $$no_collision1:	lda  R10
 $$no_collision2:	lda  R10
 					XOR
 					STR  R14
+  ENDIF
 					GLO  R14						; advance the video buffer pointer to the next line
 					ADI  0x07
 					PLO  R14

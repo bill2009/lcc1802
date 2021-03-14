@@ -45,6 +45,7 @@ asm("PIXIE_PATTERN equ 1\n");
 }
 uint8_t showsprite(uint32_t * spritedata, const uint8_t * spriteshape, uint8_t x, uint8_t y);
 uint8_t movesprite(uint32_t * spritedata, uint8_t direction);
+uint8_t movexysprite(uint32_t * spritedata, uint8_t x, uint8_t y);
 void removesprite(uint32_t * spritedata);
 #endif
 #if defined PIXIE_TILE
