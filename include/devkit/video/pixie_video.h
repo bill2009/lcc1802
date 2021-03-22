@@ -27,14 +27,15 @@ asm("PIXIE_SPRITE equ 1\n");
 }
 uint8_t drawsprite(uint8_t x, uint8_t y, const uint8_t * spriteshape);
 #endif
-#if defined PIXIE_SPRITE_MOVE
+#if defined PIXIE_MOVE
 #define X_SIZE 64
 #define Y_SIZE RES
 void flags_pixie_sprite_includer(){
-asm("PIXIE_SPRITE_MOVE equ 1\n");
+asm("PIXIE_MOVE equ 1\n");
 }
 uint8_t showsprite(uint32_t * spritedata, const uint8_t * spriteshape, uint8_t x, uint8_t y);
 uint8_t movesprite(uint32_t * spritedata, uint8_t direction);
+uint8_t movexysprite(uint32_t * spritedata, uint8_t x, uint8_t y);
 void removesprite(uint32_t * spritedata);
 #endif
 #if defined PIXIE_PATTERN

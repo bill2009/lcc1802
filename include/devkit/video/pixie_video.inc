@@ -49,20 +49,20 @@ INT_Loop:			GLO  R0
 					BN1  INT_Loop
 					BR   INT_Exit
 
-  IFDEF PIXIE_SPRITE_MOVE										
+  IFDEF PIXIE_MOVE										
   pagefit    20
 _videobuf:		db 20 dup 
   ENDIF
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db HEIGHT*2+1
-					db HEIGHT*4+1 
-					db HEIGHT*6+1 
-					db HEIGHT*8+1 
-					db HEIGHT*10+1 
-					db HEIGHT*12+1 
-					db HEIGHT*14+1					
+					db SPRITE_HEIGHT*2+1
+					db SPRITE_HEIGHT*4+1 
+					db SPRITE_HEIGHT*6+1 
+					db SPRITE_HEIGHT*8+1 
+					db SPRITE_HEIGHT*10+1 
+					db SPRITE_HEIGHT*12+1 
+					db SPRITE_HEIGHT*14+1					
   ENDIF
   ENDIF
 				
@@ -105,20 +105,20 @@ INT_Rest:			GLO  R0
 					B1   INT_Rest
 					BR   INT_Exit
 					
-  IFDEF PIXIE_SPRITE_MOVE										
+  IFDEF PIXIE_MOVE										
   pagefit    40
 _videobuf:		db 40 dup 
   ENDIF
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db HEIGHT*2+1
-					db HEIGHT*4+1 
-					db HEIGHT*6+1 
-					db HEIGHT*8+1 
-					db HEIGHT*10+1 
-					db HEIGHT*12+1 
-					db HEIGHT*14+1					
+					db SPRITE_HEIGHT*2+1
+					db SPRITE_HEIGHT*4+1 
+					db SPRITE_HEIGHT*6+1 
+					db SPRITE_HEIGHT*8+1 
+					db SPRITE_HEIGHT*10+1 
+					db SPRITE_HEIGHT*12+1 
+					db SPRITE_HEIGHT*14+1					
   ENDIF
   ENDIF
 
@@ -149,20 +149,20 @@ DisplayInt:			NOP
 					PLO  R0
 					BR   INT_Exit
 
-  IFDEF PIXIE_SPRITE_MOVE										
+  IFDEF PIXIE_MOVE										
   pagefit    80    
 _videobuf:		db 80 dup 
   ENDIF
   IFDEF PIXIE_PATTERN										
   pagefit    8
 _addition_table:	db 1
-					db HEIGHT*2+1
-					db HEIGHT*4+1 
-					db HEIGHT*6+1 
-					db HEIGHT*8+1 
-					db HEIGHT*10+1 
-					db HEIGHT*12+1 
-					db HEIGHT*14+1					
+					db SPRITE_HEIGHT*2+1
+					db SPRITE_HEIGHT*4+1 
+					db SPRITE_HEIGHT*6+1 
+					db SPRITE_HEIGHT*8+1 
+					db SPRITE_HEIGHT*10+1 
+					db SPRITE_HEIGHT*12+1 
+					db SPRITE_HEIGHT*14+1					
   ENDIF
   ENDIF
 
@@ -211,7 +211,7 @@ $$loop:
 	bnz $$loop
 	ghi R15
 	bnz $$loop
-    cretn
+    Cretn
 
 ;------------------------------------------------------------------------------------------
 
@@ -293,7 +293,9 @@ $$skipIncrement2:	GLO  R14
 					SHR
 					ADD
 					PLO  R14
-
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
 $$byteLoop:			GLO  R11						; exit if all bytes of the sprite have been drawn
 					BZ   $$exit
 					
@@ -336,7 +338,7 @@ $$next_line:		GLO  R14						; advance the video buffer pointer to the next line
 					PHI  R14
 					DEC  R11						; decrement the sprite's byte counter
 					BR   $$byteLoop
-$$exit			    cretn
+$$exit:			    Cretn
 
   ENDIF
 
@@ -485,7 +487,7 @@ $$ShiftExit:		SEX  R14						; store the shifted bytes in the video buffer
 					PHI  R14
   ENDIF
 					BR   $$ByteLoop
-$$Exit			
+$$exit:			    Cretn
 
   ENDIF
 
@@ -505,7 +507,7 @@ $$Exit
 ; R14		Pointer to video memory
 ; =========================================================================================
 
-  IFDEF PIXIE_SPRITE_MOVE										
+  IFDEF PIXIE_MOVE										
 
   pagefit    0x2e
 
@@ -572,6 +574,32 @@ _movesprite:		glo  R13
 					plo  R8		
 					ldn  R12
 					plo  R15
+  IFDEF PIXIE_CHECK_BORDER										
+					ghi  R8
+					smi  3
+					bz   $$up1
+					smi  2
+					bz   $$left1
+					smi  2
+					bz   $$right1
+					smi  2
+					bz   $$down1
+					br   $$exit
+$$left1:			glo  R8
+					bnz  $$removesprite
+					br   $$exit
+$$right1:			glo  R8
+					xri  64-SPRITE_WIDTH
+					bnz  $$removesprite
+					br   $$exit
+$$up1:				glo  R9
+					bnz  $$removesprite
+					br   $$exit
+$$down1:			glo  R9
+					xri  RES-SPRITE_HEIGHT
+					bz   $$exit
+$$removesprite:
+  ENDIF
 					dec  R12
 					dec  R12
 					dec  R12
@@ -591,23 +619,13 @@ _movesprite:		glo  R13
 					smi  2
 					bz   $$down
 					br   $$exit
-$$left:				glo  R8
-					bz   $$exit
-					dec  R8
+$$left:				dec  R8
 					br   $$nextsprite
-$$right:			glo  R8
-					xri  64-WIDTH
-					bz   $$exit
-					inc  R8
+$$right:			inc  R8
 					br   $$nextsprite
-$$up:				glo  R15
-					bz   $$exit
-		    		dec  R15
+$$up:		   		dec  R15
 					br   $$nextsprite
-$$down:				glo  R15
-					xri  RES-HEIGHT
-					bz   $$exit
-		    		inc  R15
+$$down:		  		inc  R15
 $$nextsprite:		lda  R12
 					phi  R13
 					lda  R12
@@ -629,6 +647,55 @@ $$nextsprite:		lda  R12
 					sep  R4
 					dw	 _draw_buffer
 $$exit:				Cretn
+
+_movexysprite:		glo  R13
+					phi  R8
+					lda  R12
+					phi  R13
+					lda  R12
+					plo  R13
+					lda  R12
+					plo  R8		
+					ldn  R12
+					plo  R15
+					dec  R12
+					dec  R12
+					dec  R12
+					ldi  _videobuf/256
+					phi  R9
+					ldi  _videobuf&0xff
+					plo  R9	
+					sep  R4
+					dw	 _fill_buffer
+					lda  R12
+					phi  R13
+					lda  R12
+					plo  R13
+					ghi  R8
+					plo  R8
+					str  R12
+					inc  R12		
+					glo  R2
+					adi  8
+					plo  R10
+					ghi  R2
+					adci 0
+					phi  R10
+					ldn  R10
+					plo  R15
+					str  R12
+					sep  R4
+					dw	 _fill_buffer
+					ldi  _videobuf&0xff
+					plo  R9	
+  IFDEF PIXIE_VSYNC										
+					IDL
+  ENDIF
+					sep  R4
+					dw	 _draw_buffer
+					sep  R4
+					dw	 _draw_buffer
+					Cretn
 
   IFDEF RES32
   pagefit 0x3f
@@ -806,6 +873,7 @@ $$no_collision2:	lda  R9
 					Cretn
 $$Exit:				ldi  0
 					phi  R15
+					Cretn
 
   ENDIF
 
@@ -897,14 +965,14 @@ $$left1:			glo  R8
 					bnz  $$removesprite
 					br   $$exit
 $$right1:			glo  R8
-					xri  64-WIDTH
+					xri  64-SPRITE_WIDTH
 					bnz  $$removesprite
 					br   $$exit
 $$up1:				glo  R9
 					bnz  $$removesprite
 					br   $$exit
 $$down1:			glo  R9
-					xri  RES-HEIGHT
+					xri  RES-SPRITE_HEIGHT
 					bz   $$exit
 $$removesprite:
   ENDIF
@@ -954,8 +1022,6 @@ _movexysprite:		glo  R13
   ENDIF
 					sep  R4
 					dw	 _draw_buffer
-					ghi  R8
-					plo  R8
 					glo  R2
 					adi  8
 					plo  R10
@@ -964,10 +1030,10 @@ _movexysprite:		glo  R13
 					phi  R10
 					ldn  R10
 					plo  R9
-					glo  R9
 					str  R12
 					dec  R12		
-					glo  R8
+					ghi  R8
+					plo  R8
 					str  R12
 					sep  R4
 					dw	 _draw_buffer
@@ -1117,6 +1183,7 @@ $$no_collision2:	lda  R10
 					Cretn
 $$Exit:				ldi  0
 					phi  R15
+				    Cretn
 
   ENDIF
 
