@@ -6,12 +6,18 @@
 //Oct 2 replace XR18ng with xr18DH
 //Feb 22 2017 replacing xr182b with xr18NW - 1806 adaptation
 //20-04-28 replacing xr18no with xr18CX
+//21-3-20 moving to new laptop. source directory in c:\lcc42\lcc42
 #include "c.h"
 #undef yy
 #define yy \
 xx(alpha/osf,    alphaIR) \
 xx(mips/irix,    mipsebIR) \
+xx(m1,    		 m1IR) \
+xx(xr16,    	 xr16IR) \
+xx(xr18NW,    	 xr18NWIR) \
 xx(xr18DH,    	 xr18DHIR) \
+xx(xr18CX,    	 xr18CXIR) \
+xx(xr188B,    	 xr188BIR) \
 xx(sparc/sun,    sparcIR) \
 xx(sparc/solaris,solarisIR) \
 xx(x86/win32,    x86IR) \
