@@ -6,6 +6,7 @@
 #include <nstdlib.h>
 
 #define PIXIE_PATTERN
+#define PIXIE_TEXT
 #define SPRITE_WIDTH 1
 #define SPRITE_HEIGHT 1
 
@@ -75,35 +76,25 @@ void main(){
 
 	initvideo();
 
+	vidstrcpyxy(3, (Y_SIZE-5)/2, "PRESS ARROW KEY");
+
 	while (key == 0)
 	{
 		key = get_stick(); 
-		numberOfItems = rand()&0xf+6;
+		numberOfItems = (rand()&0xf)+6;
 	}
 
-//	vidmem = (uint8_t *)(VIDMEM);
-//	*vidmem = 0xff;
+	vidclr();
 
-//	for (i=0; i<numberOfItems; i++)
-//	{
-//		vidmem = (uint8_t *)(VIDMEM + (rand()&0xff));
-//		*vidmem = 1;
-//	}
-
-/*	vidmem = (uint8_t *)VIDMEM;
-	for (i=0; i<8; i++)
-		*vidmem++ = 0xff;
-	for (i=0; i<(RES-2); i++)
+	for (i=0; i<numberOfItems; i++)
 	{
-		*vidmem = *vidmem | 0x80;
-		vidmem = (uint8_t *)vidmem + 7;
-		*vidmem++ = 0x01;
+		vidmem = (uint8_t *)(VIDMEM + (rand()&0xff));
+		*vidmem = 1;
 	}
-	for (i=0; i<8; i++)
-		*vidmem++ = 0xff;*/
 
 	startx=(int) ((X_SIZE-1)/2);
 	starty=(int) ((Y_SIZE-1)/2);
+
 	for (i=0; i<size; i++)
 	{
 		x[i] = startx;

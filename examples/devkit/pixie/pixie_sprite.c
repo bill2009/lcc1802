@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <nstdlib.h>
 
-#define PIXIE_SPRITE
+#define PIXIE_SPRITE 1
 
 #include "devkit/video/pixie_video.h"
 #include "devkit/input/joystick.h"

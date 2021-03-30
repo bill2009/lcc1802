@@ -1,1 +1,1 @@
-@..\..\..\bat\cabaPX %1 1802 1760900 0 0x0BFF "-DRES=128" "-DVIDMEM=0x0C00" "-D__VIP__" %1_128 
+@..\..\..\bat\cabaPX %1 1802 1760900 0 0x1BFF "-DRES=128" "-DVIDMEM=0x1C00" "-D__VIP__" %1_128 
