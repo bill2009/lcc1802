@@ -57,6 +57,23 @@ asm("PIXIE_TILE equ 1\n");
 }
 void drawtile(uint8_t x, uint8_t y, const uint8_t * spriteshape);
 #endif
+#if defined PIXIE_TEXT
+void flags_pixie_text_includer(){
+asm("PIXIE_TEXT equ 1\n");
+}
+void vidstrcpyxy(uint8_t x, uint8_t y, char * text);
+void vidcharxy(uint8_t x, uint8_t y, uint8_t character);
+#endif
+#if defined PIXIE_TEXT96
+void flags_pixie_text96_includer(){
+asm("PIXIE_TEXT96 equ 1\n");
+}
+#endif
+#if defined PIXIE_CHECK_BORDER
+void flags_pixie_check_border_includer(){
+asm("PIXIE_CHECK_BORDER equ 1\n");
+}
+#endif
 
 void pixie_video_includer(){
 asm(" VIDMEM: equ "xstr(VIDMEM)"\n"
