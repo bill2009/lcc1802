@@ -195,7 +195,7 @@ _get_stick:          ; get key value if pressed, otherwise return 0
   ENDIF
 
   IFDEF  VIP 
-    align    32
+    pagefit    22
 _get_stick:          ; get key value if pressed, otherwise return 0
     ldi 0x1          ; hex keypad check 0, 2, 4, 6, 8.
     plo R15
@@ -216,6 +216,5 @@ $$checknext:
 $$keypressed:
     ldi 0
     phi R15
-    cretn
     
   ENDIF
