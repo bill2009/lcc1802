@@ -1203,7 +1203,7 @@ CFdone:
 	endm
 ;macros inserted between assembler passes for pixie accommodation.
 ;they get substituted for long branch instructions so as not to upset 1861 video timing
-;a cmpanion code module pxbrcode.inc is required
+;a companion code module pxbrcode.inc is required
 xbr:	macro	target
 	sep	RCALL
 	dw	xbrsub

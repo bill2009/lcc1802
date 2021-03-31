@@ -1253,6 +1253,9 @@ lcc1802init:
 	pushr 15
 	ldiReg	RCALL,_call
 	ldiReg	RRET,_return
+	IF	LCCPX=2
+		ldireg	R7,$$BRSUB
+	ENDIF
 	Ccall _main		;wjr 20-04-28 start the C program
 	popr  15		;wjr 20-04-29 save/restore BASIC registers
 	popr  11
@@ -1284,9 +1287,9 @@ lcc1802init:
 		Ccall _main	;call the main routine
 	$$_die:	br	$$_die		;loop here when main returns
 		db	0xde,0xad
-
+  ENDIF
   IF	LCCPX=2		;long branch assist routine
-  	align 16
+  	pagefit 10
 $$RET:
 	SEP	R3
 $$BRSUB:
@@ -1299,7 +1302,5 @@ $$BRSUB:
 	br	$$RET
   ENDIF
 
-
-  ENDIF
 ;;function_end lcc1802init.inc
 
