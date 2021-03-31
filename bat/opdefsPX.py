@@ -1,5 +1,7 @@
 #20-06-21 added a few ops: b1/bn1,rshr,MACEXP_DFT,save,restore, 'function'
+#21-03-31 added idl instruction
 opsizes={
+    'idl':1,
     'xbr': 5,'xbnz':5,'xbz':5,'xbnf':5,'xbdf':5,
     'or':1,'ori':2,'xor':1,'xri':2,
     'and':1,'ani':2,
