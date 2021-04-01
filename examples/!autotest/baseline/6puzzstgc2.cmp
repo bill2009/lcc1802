@@ -1,0 +1,28 @@
+*****Storage classes 3 - more functions
+12 line visual comparison
+i = 1	j = 1
+next(i) = 1
+last(i) = 10
+new(i+j) = 12
+i = 1	j = 2
+next(i) = 2
+last(i) = 9
+new(i+j) = 13
+i = 1	j = 3
+next(i) = 3
+last(i) = 8
+new(i+j) = 14
+following 12 lines should be same as above
+i = 1	j = 1	
+next(i) = 1	
+last(i) = 10	
+new(i+j) = 12	
+i = 1	j = 2	
+next(i) = 2	
+last(i) = 9	
+new(i+j) = 13	
+i = 1	j = 3	
+next(i) = 3	
+last(i) = 8	
+new(i+j) = 14	
+And we're done

@@ -1,0 +1,9 @@
+3 line visual comparison
+p[0]->s = efgh	(*p)->s = efgh	(**p).s = efgh
+p[0]->s = abcd	(*p)->s = abcd	(*p)->s1p->s = ijkl
+p[0]->s = ijkl	(*++p[0]).s = abcd	++(*++(*p)->s1p).s = jkl
+following 3 lines should match above
+
+p[0]->s = efgh	(*p)->s = efgh	(**p).s = efgh	
+p[0]->s = abcd	(*p)->s = abcd	(*p)->s1p->s = ijkl	
+p[0]->s = ijkl	(*++p[0]).s = abcd	++(*++(*p)->s1p).s = jkl	

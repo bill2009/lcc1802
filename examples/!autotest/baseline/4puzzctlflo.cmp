@@ -1,0 +1,29 @@
+if then else(6 line block repeated)
+x = 5
+x = 5
+x = 1
+x = 7	z = 0
+x = 3	z = 0
+x = 3	z = 1
+x = 5	
+x = 5	
+x = 1	
+x = 7	z = 0	
+x = 3	z = 0	
+x = 3	z = 1	
+for & while(just look for checkfail msgs)
+x = 10	y = 10	
+x = 55	y = 10	
+x = 9	y = 11	z = 11	
+x = 9	y = 10	
+x = 10	y = 10	
+x = 0	y = 1000	
+x = 1	y = 100	
+x = 2	y = 10	
+ nested statements(look for checkfails)
+low = 25	in = 0	high = 0	
+low = 3	in = 6	high = 16	
+low = 0	in = 0	high = 3	
+switch/break/continue(prints SWITCH SWAMP
+SWITCH SWAMP 
+And we're done

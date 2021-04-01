@@ -1,0 +1,6 @@
+
+all:	1802simwjr.exe
+
+1802simwjr.exe:	1802simwjr.c
+	cl -o 1802simwjr.exe -Wall -g 1802simwjr.c
+

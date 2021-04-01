@@ -1,0 +1,15 @@
+ Basic Types 1
+Visual verification
+an address string =3310
+53 character =53
+5 integer =5
+5 string =5
+5 character =5
+5 (integer=53) =5
+1 ('5'>5) =1
+FFF8 sx =FFF8
+FFF8 ux =FFF8
+FFFF sx>>3 =FFFF
+1FFF ux>>3 =1FFF
+-1 sx>>3 =-1
+8191 ux>>3 =8191

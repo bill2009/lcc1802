@@ -1,0 +1,12 @@
+for 10:-10 scomparulator sez  != > >=
+for -10:-1 scomparulator sez  < <= !=
+for -11:-11 scomparulator sez  <= = >=
+for -1:0 scomparulator sez  < <= !=
+for 0:0 scomparulator sez  <= = >=
+for 0:1 scomparulator sez  < <= !=
+for 1:1 scomparulator sez  <= = >=
+for 1:0 scomparulator sez  != > >=
+for 0:0 comparulator sez  <= = >=
+for 0:1 comparulator sez  < <= !=
+for 1:1 comparulator sez  <= = >=
+for 1:0 comparulator sez  != > >=

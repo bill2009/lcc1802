@@ -1,0 +1,16 @@
+7 line visual comparison
+a[i] = 0	a[i] = 1	a[i] = 2	a[i] = 3	a[i] = 4
+*p = 0	*p = 1	*p = 2	*p = 3	*p = 4	(int)p = 3	(int)p = 11
+p[i] = 1	p[i] = 2	p[i] = 3	p[i] = 4	p[i] = ?????
+*(p+i) = 0	*(p+i) = 2	*(p+i) = 4
+*p = 4	*p = 3	*p = 2	*p = 1	*p = 0
+p[-i] = 4	p[-i] = 3	p[-i] = 2	p[-i] = 1	p[-i] = 0
+a[p-a] = 4	a[p-a] = 3	a[p-a] = 2	a[p-a] = 1	a[p-a] = 0
+following 7 lines should match above
+a[i] = 0	a[i] = 1	a[i] = 2	a[i] = 3	a[i] = 4	
+*p = 0	*p = 1	*p = 2	*p = 3	*p = 4	(int)p = 3	(int)p = 11	
+p[i] = 1	p[i] = 2	p[i] = 3	p[i] = 4	p[i] = -31117	
+*(p+i) = 0	*(p+i) = 2	*(p+i) = 4	
+*p = 4	*p = 3	*p = 2	*p = 1	*p = 0	
+p[-i] = 4	p[-i] = 3	p[-i] = 2	p[-i] = 1	p[-i] = 0	
+a[p-a] = 4	a[p-a] = 3	a[p-a] = 2	a[p-a] = 1	a[p-a] = 0	

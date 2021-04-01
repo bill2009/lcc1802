@@ -1,0 +1,17 @@
+look for checkfail's and check final line
+checks are based on loading at 0x0000
+(int)a = 3	*a = 0	
+(int)p = 13	(int)*p = 3	**p = 0	
+(int)pp = 13	(int)*pp = 3	**pp = 0	
+
+pp-p = 1	*pp-a = 1	**pp = 1	
+pp-p = 2	*pp-a = 2	**pp = 2	
+pp-p = 3	*pp-a = 3	**pp = 3	
+pp-p = 3	*pp-a = 4	**pp = 4	
+
+pp-p = 1	*pp-a = 1	**pp = 1	
+pp-p = 1	*pp-a = 2	**pp = 2	
+pp-p = 1	*pp-a = 2	**pp = 3	
+
+following line should read POINTER STEW
+POINTER  STEW

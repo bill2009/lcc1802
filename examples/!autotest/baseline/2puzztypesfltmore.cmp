@@ -1,0 +1,12 @@
+ Basic Types 2 - more floats
+Visual verification 4 lines
+x = 2.000	y = 1.000
+x = 1.600	y = 3.000
+y = 2.000
+x = 0.000	y = 0.000
+following 4 lines should match above
+x = 2.000	y = 1.000	
+x = 1.600	y = 3.000	
+y = 2.000	
+x = 0.000	y = 0.000	
+done

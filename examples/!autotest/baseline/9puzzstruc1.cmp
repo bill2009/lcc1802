@@ -1,0 +1,10 @@
+4 line visual comparison
+s1.c[0] = a	*s1.s = d
+s1.c = abc	s1.s = def
+s2.cp = ghi	s2.ss1.s = mno
+++s2.cp = hi	++s2.ss1.s = no
+following 4 lines should match above
+s1.c[0] = a	*s1.s = d	
+s1.c = abc	s1.s = def	
+s2.cp = ghi	s2.ss1.s = mno	
+++s2.cp = hi	++s2.ss1.s = no	

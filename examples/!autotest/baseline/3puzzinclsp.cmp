@@ -1,0 +1,10 @@
+ included files 1
+ visually verify 4 lines repeated
+5 = 5
+5 = 5	
+5 = 5	4 = 4
+5 = 5	4 = 4	
+5 = 5	4 = 4	local3 = 3
+5 = 5	4 = 4	local3 = 3	
+5 = 5	4 = 4	local3 = 3	global2 = 2
+5 = 5	4 = 4	local3 = 3	global2 = 2	
