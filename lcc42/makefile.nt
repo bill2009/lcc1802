@@ -1,13 +1,16 @@
 # $Id: makefile.nt,v 2.3 2002/09/04 18:33:11 drh Exp $
 # wjr 8 jan 2013, includes m1.md, xr16.md, xr18.md, xr18ng.md
 # wjr mar 3 adding xr18no.md
-# wjr mar 20 adding xr18fl.md for floating point support
+# wjr mar 20 adding xr188B.md for floating point support
 # april 23 replace xr18 with xr182b - expanded reg vars
 # may 15 trying to add copt modeled on cpp
 #Oct 2 2013 replacing xr18ng with xr18DH
 #Feb 22 2017 replacing xr182b with NW - beginning 1806 adaptation
 #Jan 31 2019 remove -Zi from CFLAGS and LDFLAGS to reduce debug info
 #20-04-28 xr18CX replaces xr18no
+#20-07-24 adding coptNG parallel to copt
+#20-12-09 xr188B replaces xr18fl - trying 8 bit ints
+#21-3-20 moving to new laptop
 HOSTFILE=etc/win32.c
 TARGET=x86\win32
 TEMPDIR=\\temp
@@ -24,9 +27,9 @@ T=$(TSTDIR)^\
 C=$Blcc -Wo-lccdir=$(BUILDDIR) -Wf-target=$(TARGET) -Iinclude\$(TARGET)
 
 what:
-	-@echo make all rcc lburg cpp copt lcc bprint liblcc triple clean clobber
+	-@echo make all rcc lburg cpp copt coptNG lcc bprint liblcc triple clean clobber
 
-all::	rcc lburg cpp lcc bprint liblcc copt
+all::	rcc lburg cpp lcc bprint liblcc copt coptNG
 
 rcc:	$Brcc$E
 lburg:	$Blburg$E
@@ -35,6 +38,7 @@ lcc:	$Blcc$E
 bprint:	$Bbprint$E
 liblcc:	$Bliblcc$A
 copt:	$Bcopt$E
+coptNG:	$BcoptNG$E
 
 RCCOBJS=$Balloc$O \
 	$Bbind$O \
@@ -72,7 +76,7 @@ RCCOBJS=$Balloc$O \
 	$Bxr18NW$O \
 	$Bxr18DH$O \
 	$Bxr18CX$O \
-	$Bxr18fl$O \
+	$Bxr188B$O \
 	$Bsparc$O \
 	$Bstab$O \
 	$Bx86$O \
@@ -124,7 +128,7 @@ $Bxr16$O:	$Bxr16.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr16.c
 $Bxr18NW$O:	$Bxr18NW.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18NW.c
 $Bxr18DH$O:	$Bxr18DH.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18DH.c
 $Bxr18CX$O:	$Bxr18CX.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18CX.c
-$Bxr18fl$O:	$Bxr18fl.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr18fl.c
+$Bxr188B$O:	$Bxr188B.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bxr188B.c
 $Bsparc$O:	$Bsparc.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bsparc.c
 $Bx86$O:	$Bx86.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bx86.c
 $Bx86linux$O:	$Bx86linux.c;	$(CC) $(CFLAGS) -c -Isrc -Fo$@ $Bx86linux.c
@@ -137,7 +141,7 @@ $Bxr16.c:	$Blburg$E src/xr16.md;	   $Blburg src/xr16.md       $@
 $Bxr18NW.c:	$Blburg$E src/xr18NW.md;   $Blburg src/xr18NW.md       $@
 $Bxr18DH.c:	$Blburg$E src/xr18DH.md;   $Blburg src/xr18DH.md       $@
 $Bxr18CX.c:	$Blburg$E src/xr18CX.md;   $Blburg src/xr18CX.md       $@
-$Bxr18fl.c:	$Blburg$E src/xr18fl.md;   $Blburg src/xr18fl.md       $@
+$Bxr188B.c:	$Blburg$E src/xr188B.md;   $Blburg src/xr188B.md       $@
 $Bsparc.c:	$Blburg$E src/sparc.md;    $Blburg src/sparc.md    $@
 $Bx86.c:	$Blburg$E src/x86.md;      $Blburg src/x86.md      $@
 $Bx86linux.c:	$Blburg$E src/x86linux.md; $Blburg src/x86linux.md $@
@@ -169,6 +173,12 @@ $Blburg$O $Bgram$O:	lburg/lburg.h
 
 $Blburg$O:	lburg/lburg.c;	$(CC) $(CFLAGS) -c -Ilburg -Fo$@ lburg/lburg.c
 $Bgram$O:	lburg/gram.c;	$(CC) $(CFLAGS) -c -Ilburg -Fo$@ lburg/gram.c
+
+COPTNGOBJS=$BcoptNG$O 
+$BcoptNG$E:	$(COPTNGOBJS)
+		$(LD) $(LDFLAGS) -Fe$@ $(COPTNGOBJS) 
+$(COPTNGOBJS):	copt/copt.h
+$BcoptNG$O:	copt/coptNG.c;	$(CC) $(CFLAGS) -c -Icopt -Fo$@ copt/coptNG.c
 
 COPTOBJS=$Bcopt$O 
 $Bcopt$E:	$(COPTOBJS)
@@ -360,12 +370,12 @@ testclean:
 
 clean::		testclean
 		-del /q $B*$O
-		-del /q $Bdagcheck.c $Balpha.c $Bmips.c $Bm1.c  $Bxr16.c $Bxr18NW.c  $Bxr18DH.c $Bxr18CX.c $Bxr18fl.c $Bx86.c $Bsparc.c $Bx86linux.c
+		-del /q $Bdagcheck.c $Balpha.c $Bmips.c $Bm1.c  $Bxr16.c $Bxr18NW.c  $Bxr18DH.c $Bxr18CX.c $Bxr188B.c $Bx86.c $Bsparc.c $Bx86linux.c
 		-del /q $Brcc1$E $Brcc1$E $B1rcc$E $B2rcc$E
 		-del /q $B*.ilk
 
 clobber::	clean
-		-del /q $Brcc$E $Blburg$E $Bcpp$E $Bcopt$E  $Blcc$E $Bcp$E $Bbprint$E $Bops$E $B*$A
+		-del /q $Brcc$E $Blburg$E $Bcpp$E $Bcopt$E  $BcoptNG$E  $Blcc$E $Bcp$E $Bbprint$E $Bops$E $B*$A
 		-del /q $B*.pdb $B*.pch
 
 RCCSRCS=src/alloc.c \
@@ -405,7 +415,7 @@ RCCSRCS=src/alloc.c \
 	$Bxr18NW.c \
 	$Bxr18DH.c \
 	$Bxr18CX.c \
-	$Bxr18fl.c \
+	$Bxr188B.c \
 	$Bsparc.c \
 	$Bx86linux.c \
 	$Bx86.c
