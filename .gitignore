@@ -1,1 +1,10 @@
 /bin/
+*.hex
+*.asm
+*.lst
+*.oasm
+*.basm
+*.p
+*.i
+*.pyc
+
