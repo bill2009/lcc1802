@@ -16,15 +16,20 @@ static const uint8_t shape_o[] =
 	0x60, 0x90, 0x90, 0x60, 0x60, 0x90, 0x90, 0x60, 0x60, 0x90, 0x90, 0x60, 0x60, 0x90, 0x90, 0x60
 };
 
+uint8_t x, y, delay, collision;
+unsigned char key;
+uint8_t lines = RES/8;
+
+void middle(){
+	x = (uint8_t) ((X_SIZE-4)/2);
+    y = (uint8_t) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+}
+
 void main(){
-	int x, y, delay, collision;
-    unsigned char key;
-	int lines = RES/8;
 
 	initvideo();
 
-	x = (int) ((X_SIZE-4)/2);
-    y = (int) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+	middle();
 
 	collision = drawsprite (x, y, shape_o);
 	collision = 0;
@@ -71,8 +76,7 @@ void main(){
 		if (collision == 1)
 		{
 			collision = drawsprite (x, y, shape_o);
-			x = (int) ((X_SIZE-4)/2);
-			y = (int) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+			middle();
 			collision = drawsprite (x, y, shape_o);
 		}
 	}
