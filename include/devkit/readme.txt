@@ -166,7 +166,14 @@ The return value will indicate if a sprite collision occurred, 0 = no collision,
 When using the PIXIE_PATTERN variant the spriteshape array needs to define 16 bits per sprite line where the 8 bit sprite 
 pattern is repeated shifted one bit 8 times.
 
+When using PIXIE_PATTERN also SPRITE_HEIGHT will be used, if not defined default SPRITE_WIDTH is 4 and SPRITE_HEIGHT is 
+4 when used with RES=32, 8 with RES=64 and 16 with RES=128. If only sprites with size 1x1 are used it is recommended to
+set SPRITE_WIDTH to 1 as well to use the most optimised code.
+
 Example for a PIXIE_PATTERN sprite 1 pixel wide and high:
+
+#define SPRITE_WIDTH 1
+#define SPRITE_HEIGHT 1
 
 static const uint8_t shape[] =
 {
@@ -205,7 +212,7 @@ static const uint8_t shape[] =
 };
 
 Include file: video/pixie_video.h#define: PIXIE_MOVE or PIXIE_PATTERN
-Targets implemented: VIP
+Definitions: SPRITE_WIDTH, SPRITE_HEIGHTTargets implemented: VIP
 
 uint8_t movesprite(uint32_t * spritedata, uint8_t direction)
 ------------------------------------------------------------
@@ -213,8 +220,13 @@ uint8_t movesprite(uint32_t * spritedata, uint8_t direction)
 Move the sprite defined with showsprite in spritedata in the direction indicated. Directions are as specified in the 
 joystick.h include file.
 
-Include file: video/pixie_video.h and video/joystick.hDefinitions: MOVE_UP, MOVE_RIGHT, MOVE_LEFT, MOVE_DOWN#define: PIXIE_MOVE or PIXIE_PATTERN
-Targets implemented: VIP
+When PIXIE_CHECK_BORDER is defined checks will be added for move routines to stop sprites at screen borders
+
+When using PIXIE_CHECK_BORDER also SPRITE_WIDTH and SPRITE_HEIGHT will be used, if not defined default SPRITE_WIDTH is 4 
+and SPRITE_HEIGHT is 4 when used with RES=32, 8 with RES=64 and 16 with RES=128.
+
+Include file: video/pixie_video.h and video/joystick.h#define: PIXIE_MOVE, PIXIE_PATTERN and/or PIXIE_CHECK_BORDER
+Definitions: MOVE_UP, MOVE_RIGHT, MOVE_LEFT, MOVE_DOWNTargets implemented: VIP
 
 uint8_t movexysprite(uint32_t * spritedata, uint8_t x, uint8_t y)
 -----------------------------------------------------------------
@@ -232,7 +244,10 @@ the same spritedata.
 
 Include file: video/pixie_video.h#define: PIXIE_MOVE or PIXIE_PATTERN
 Targets implemented: VIP
-
+
+void vidcharxy(unsigned char x, unsigned char y, unsigned char character)------------------------------------------------------------------------Output specified character to video on position specified in x, y (top left corner is 0, 0). Include file: video/pixie_video.h#define: PIXIE_TEXT and PIXIE_TEXT96
+Targets implemented: VIPvoid vidstrcpyxy(unsigned char x, unsigned char y, char * text)--------------------------------------------------------------Output text string to video on position specified in x, y (top left corner is 0, 0). Include file: video/pixie_video.h#define: PIXIE_TEXT and PIXIE_TEXT96
+Targets implemented: VIP
 7. Compiler and c flags
 =======================
 
@@ -343,6 +358,13 @@ PIXIE_TEXT - Text routines using 64 ASCII characters (0x20 to 0x5f), including c
 PIXIE_TEXT96 - Adding 32 ASCII (0x60 to 0x7f), including lower case characters
 
 Note that using the above flags will increase memory usage so only define what is needed to keep generated code small. 
+
+When using PIXIE_CHECK_BORDER also SPRITE_WIDTH and SPRITE_HEIGHT will be used, if not defined default SPRITE_WIDTH is 4 
+and SPRITE_HEIGHT is 4 when used with RES=32, 8 with RES=64 and 16 with RES=128.
+
+When using PIXIE_PATTERN also SPRITE_HEIGHT will be used, if not defined default SPRITE_WIDTH is 4 and SPRITE_HEIGHT is 
+4 when used with RES=32, 8 with RES=64 and 16 with RES=128. If only sprites with size 1x1 are used it is recommended to
+set SPRITE_WIDTH to 1 as well to use the most optimised code.
 
 8. Other files
 ==============
