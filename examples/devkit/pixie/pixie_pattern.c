@@ -6,6 +6,7 @@
 #include <nstdlib.h>
 
 #define PIXIE_PATTERN
+#define PIXIE_CHECK_BORDER
 
 #include "devkit/video/pixie_video.h"
 #include "devkit/input/joystick.h"

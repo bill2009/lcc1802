@@ -6,11 +6,13 @@
 #include <nstdlib.h>
 
 #define PIXIE_PATTERN
+#define PIXIE_TEXT
 #define SPRITE_WIDTH 1
 #define SPRITE_HEIGHT 1
 
 #include "devkit/video/pixie_video.h"
 #include "devkit/input/joystick.h"
+#include "devkit/system/rand.h"
 
 #if RES==32
 static const uint8_t shape_o[] =
@@ -67,14 +69,32 @@ static const direction_table[] =
 
 void main(){
     int size=6;
-	int x[6], y[6], startx, starty, direction = 0, collision, front, end, i, delay;
-    unsigned char key;
-	uint32_t sprite_data[6];
+	int x[31], y[31], x_end, y_end, startx, starty, direction = 0, collision, front, end, i, delay, numberOfItems;
+    unsigned char key = 0, oldkey = 0;
+	uint32_t sprite_data[31];
+	uint8_t * vidmem;
 
 	initvideo();
 
+	vidstrcpyxy(3, (Y_SIZE-5)/2, "PRESS ARROW KEY");
+
+	while (key == 0)
+	{
+		key = get_stick(); 
+		numberOfItems = (rand()&0xf)+6;
+	}
+
+	vidclr();
+
+	for (i=0; i<numberOfItems; i++)
+	{
+		vidmem = (uint8_t *)(VIDMEM + (rand()&0xff));
+		*vidmem = 1;
+	}
+
 	startx=(int) ((X_SIZE-1)/2);
-	starty=(int) ((X_SIZE-1)/2);
+	starty=(int) ((Y_SIZE-1)/2);
+
 	for (i=0; i<size; i++)
 	{
 		x[i] = startx;
@@ -85,12 +105,12 @@ void main(){
 
 	collision = 0;
 	front = 0;
-	end = 5;
+	end = size - 1;
 
 	while (1) {
 		key = get_stick();                  // get direction key value
 
-		if (key != 0)
+		if (key != 0 && key != oldkey)
 		{
 			if (key == MOVE_RIGHT)
 			{
@@ -103,48 +123,72 @@ void main(){
 				if (direction == -1)  direction = 3;
 			}
 		}
+		oldkey = key;
 
 		if (direction_table[direction] == MOVE_UP)
 		{
+			x_end = x[end];
+			y_end = y[end];
 			x[end] = x[front];
 			y[end] = y[front] - 1;
 			collision = movexysprite (&sprite_data[end], x[end], y[end]);
 			front = end;
 			end--;
-			if (end == -1)  end = 5;
+			if (end == -1)  end = size - 1;
 		}
 		if (direction_table[direction] == MOVE_RIGHT)
 		{
+			x_end = x[end];
+			y_end = y[end];
 			x[end] = x[front] + 1;
 			y[end] = y[front];
 			collision = movexysprite (&sprite_data[end], x[end], y[end]);
 			front = end;
 			end--;
-			if (end == -1)  end = 5;
+			if (end == -1)  end = size - 1;
 		}
  		if (direction_table[direction] == MOVE_LEFT)
 		{
+			x_end = x[end];
+			y_end = y[end];
 			x[end] = x[front] - 1;
 			y[end] = y[front];
 			collision = movexysprite (&sprite_data[end], x[end], y[end]);
 			front = end;
 			end--;
-			if (end == -1)  end = 5;
+			if (end == -1)  end = size - 1;
 		}
  		if (direction_table[direction] == MOVE_DOWN)
 		{
+			x_end = x[end];
+			y_end = y[end];
 			x[end] = x[front];
 			y[end] = y[front] + 1;
 			collision = movexysprite (&sprite_data[end], x[end], y[end]);
 			front = end;
 			end--;
-			if (end == -1)  end = 5;
+			if (end == -1)  end = size - 1;
 		}
-		if (collision == 1)
+		if (collision == 1 && size < 30)
 		{
-			while(1)
+			collision = showsprite (&sprite_data[front], shape_o, x[front], y[front]);
+			for (i=size; i>front; i--)
 			{
+				sprite_data[i] = sprite_data[i-1];
+				x[i] = x[i-1];
+				y[i] = y[i-1];
 			}
+			x[front] = x_end;
+			y[front] = y_end;
+			collision = showsprite (&sprite_data[front], shape_o, x[front], y[front]);
+			front++;
+			end++;
+			size++;
+			collision = 0;
+			
+		//	while(1)
+		//	{
+		//	}
 		}
 
 		delay = 100;
