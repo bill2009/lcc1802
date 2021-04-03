@@ -20,10 +20,10 @@ static const uint8_t shape_space[] =
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void main(){
-	int x, y, delay;
-    unsigned char key;
+uint8_t x, y, delay;
+uint8_t key;
 
+void main(){
 	initvideo();
 
 	x = (int) (X_SIZE/2);
