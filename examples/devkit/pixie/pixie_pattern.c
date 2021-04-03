@@ -6,6 +6,7 @@
 #include <nstdlib.h>
 
 #define PIXIE_PATTERN
+#define PIXIE_CHECK_BORDER
 
 #include "devkit/video/pixie_video.h"
 #include "devkit/input/joystick.h"
@@ -94,17 +95,21 @@ static const uint8_t shape_x[] =
 };
 #endif
 
-void main(){
-	int x, y, x2, y2, delay, collision1, collision2;
-    unsigned char key;
-	int lines = RES/8;
-	uint32_t sprite_data1;
-	uint32_t sprite_data2;
+uint8_t x, y, x2, y2, delay, collision1, collision2;
+unsigned char key;
+int lines = RES/8;
+uint32_t sprite_data1;
+uint32_t sprite_data2;
 
+void middle(){
+	x = (uint8_t) ((X_SIZE-4)/2);
+    y = (uint8_t) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+}
+
+void main(){
 	initvideo();
 
-	x = (int) ((X_SIZE-4)/2);
-    y = (int) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+	middle();
 	x2 = x+8;
 	y2 = y;
 
@@ -124,8 +129,7 @@ void main(){
 		if (collision1 == 1)
 		{
 			removesprite (&sprite_data1);
-			x = (int) ((X_SIZE-4)/2);
-			y = (int) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+			middle();
 			collision1 = showsprite (&sprite_data1, shape_o, x, y);
 		}
 

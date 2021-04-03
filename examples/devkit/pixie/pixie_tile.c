@@ -20,10 +20,10 @@ static const uint8_t shape_space[] =
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void main(){
-	int x, y, delay;
-    unsigned char key;
+uint8_t x, y, delay;
+uint8_t key;
 
+void main(){
 	initvideo();
 
 	x = (int) (X_SIZE/2);
@@ -39,6 +39,7 @@ void main(){
 				{
 					drawtile (x, y, shape_space);
 					y--;
+					drawtile (x, y, shape_o);
 				}
             break;
             case MOVE_RIGHT:
@@ -46,6 +47,7 @@ void main(){
 				{
 					drawtile (x, y, shape_space);
 					x++;
+					drawtile (x, y, shape_o);
 				}
             break;
             case MOVE_LEFT:
@@ -53,6 +55,7 @@ void main(){
 				{
 					drawtile (x, y, shape_space);
 					x--;
+					drawtile (x, y, shape_o);
 				}
             break;
             case MOVE_DOWN:
@@ -60,12 +63,12 @@ void main(){
 				{
 					drawtile (x, y, shape_space);
 	                y++;
+					drawtile (x, y, shape_o);
 				}
             break;
             default:
             break;            
         }
-		drawtile (x, y, shape_o);
 		if (key != 0)
 		{
 			delay = 50;

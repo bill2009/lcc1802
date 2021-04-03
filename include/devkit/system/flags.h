@@ -138,8 +138,8 @@ asm("PIXEL equ 1\n");
 #endif
 void flags_res32_includer(){
 asm("RES32 equ 1\n"
-	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
-	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" SPRITE_WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" SPRITE_HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
 	" RES: equ "xstr(RES)"\n");
 }
 #endif
@@ -150,8 +150,8 @@ asm("RES32 equ 1\n"
 #endif
 void flags_res64_includer(){
 asm("RES64 equ 1\n"
-	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
-	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" SPRITE_WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" SPRITE_HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
 	" RES: equ "xstr(RES)"\n");
 }
 #endif
@@ -162,8 +162,8 @@ asm("RES64 equ 1\n"
 #endif
 void flags_res128_includer(){
 asm("RES128 equ 1\n"
-	" WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
-	" HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
+	" SPRITE_WIDTH: equ "xstr(SPRITE_WIDTH)"\n"
+	" SPRITE_HEIGHT: equ "xstr(SPRITE_HEIGHT)"\n"
 	" RES: equ "xstr(RES)"\n");
 }
 #endif
