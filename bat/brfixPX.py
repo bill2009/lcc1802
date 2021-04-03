@@ -1,16 +1,16 @@
 #18-02-10 linear two pass scan - no recursion
 #18-02-13 trying to include aligns with jumps.
+#21-04-02 fixing pagefit process to be more like aligns
 import sys
-#sys.path.append('/lcc42/bat/branchanal/')
 from opdefsPX import *
 from opfuncsPX import *
 asminfile = open(sys.argv[1],'r')
 asmdata = asminfile.read().expandtabs()
 asmlines = asmdata.split('\n')
 print len(asmlines), 'lines read'
-jumpcount=0;aligncount=0
+jumpcount=0;aligncount=0;pagefitcount=0
 skipcount=0; skipneeded=0
-repcount=0
+repcount=0;repacount=0;reppfcount=0
 progsize=0
 i=0
 tln=0;pln=0;mln=0 #temp label numbers for $$,+ -
@@ -51,7 +51,7 @@ for i,line in enumerate(asmlines):
     brop=line.split()[0].lower() 
     if brop in ojumpdefs:
         asmlines[i]=ireplace(brop,ojumpdefs[brop],asmlines[i])
-        print "**********************",asmlines[i]
+        #print "**********************",asmlines[i]
     elif brop in skipdefs:
         asmlines[i]=ireplace(brop,skipdefs[brop],asmlines[i])
         asmlines.insert(i," pagefit 5")
@@ -71,18 +71,22 @@ for i,line in enumerate(asmlines):
                 aligncount+=1
                 labelrefs.append([i,progsize,tokens[0].lower(),tokens[1].split(",")[0],process(tokens,progsize)])
                 #print "align ",i,progsize,tokens[0].lower(),tokens[1].split(",")[0],process(tokens,progsize)
-            elif tokens[0].lower()=='pagefit':
-                skipcount+=1
-                needed=process(tokens,progsize)
-                skipneeded+=needed
-                if (needed>0):
-                    asmlines[i]='    align 256,0xE2'
-                else:
-                    asmlines[i]='    align 1,0xE2'
+            elif tokens[0].lower()=="pagefit":
+                pagefitcount+=1
+                labelrefs.append([i,progsize,tokens[0].lower(),tokens[1].split(",")[0],process(tokens,progsize)])
+                #print "pagefit ",i,progsize,tokens[0].lower(),tokens[1].split(",")[0],process(tokens,progsize)
+            #elif tokens[0].lower()=='pagefit':
+            #    skipcount+=1
+            #    needed=process(tokens,progsize)
+            #    skipneeded+=needed
+            #    if (needed>0):
+            #        asmlines[i]='    align 256,0xE2'
+            #    else:
+            #        asmlines[i]='    align 1,0xE2'
             progsize+=process(tokens,progsize)
 
     i+=1;
-print "pass 1 completed. ",len(labeldefs)," labels found. ",len(labelrefs)," jumps found."
+print "pass 1 completed. ",len(labeldefs)," labels found. ",len(labelrefs)," jumps/aligns/pagefits found."
 #print labelrefs,labeldefs
 adjb=0;adjl=0
 repacount=0
@@ -96,6 +100,12 @@ for ref in labelrefs: # line index, location, branch op(or align), label referen
         adjamt=newsize-ref[4]
         labelrefs[i][4]=newsize
         #print "*A*%4d %4x %s" %(line+1,loc,brop), label, ref[4],newsize, adjamt
+    elif brop=="pagefit":
+        reppfcount+=1
+        newsize=process([brop,label],loc)
+        adjamt=newsize-ref[4]
+        labelrefs[i][4]=newsize
+        #print "*PF*%4d %4x %s" %(line+1,loc,brop), label, ref[4],newsize, adjamt
     else:
         #print line,asmlines[line],loc,labeldefs[label]
         if (loc+1)//256==labeldefs[label]//256:
@@ -120,7 +130,7 @@ for ref in labelrefs: # line index, location, branch op(or align), label referen
 #    print "%04x %s" % (labloc,k)
 #for key, value in sorted(labeldefs.iteritems(), key=lambda x: x[1]): 
 #    print("{} : {}".format(key, value))
-print repcount,"+",repacount," fixup cycles ",adjb," branch fixups ",adjl," label fixups"
+print repcount,"+",repacount,"+",reppfcount," fixup cycles ",adjb," branch fixups ",adjl," label fixups"
 asmoutfile=open(sys.argv[1].split('.')[0]+".basm",'w'); asmoutfile.truncate()
 asmoutfile.write("    include pxbrmacs.inc\n")
 i=1

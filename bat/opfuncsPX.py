@@ -18,7 +18,8 @@ def opsizer(opsize,tokens,currentpc):
             return boundary-(currentpc%boundary)
     elif op=='pagefit':
         needed=int(operands[0])
-        left=currentpc%256 #room left on page
+        left=255-currentpc%256 #room left on page #wjt 21-4-2
+        #print "pagefit ",needed," with ",left
         if (needed<=left):
             return 0
         else:
