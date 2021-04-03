@@ -61,20 +61,35 @@ static const uint8_t shape_o[] =
 
 static const direction_table[] =
 {
+	0,
 	MOVE_UP,
 	MOVE_RIGHT,
 	MOVE_DOWN,
 	MOVE_LEFT
 };
 
-void main(){
-    int size=6;
-	int x[31], y[31], x_end, y_end, startx, starty, direction = 0, collision, front, end, i, delay, numberOfItems;
-    unsigned char key = 0, oldkey = 0;
-	uint32_t sprite_data[31];
-	uint8_t * vidmem;
+int size=6;
+uint8_t x[31], y[31], x_end, y_end, startx, starty, direction, collision, front, end, i, delay, numberOfItems;
+unsigned char key = 0, oldkey = 0;
+uint32_t sprite_data[31];
+uint8_t * vidmem;
 
+void move()
+{
+	collision = movexysprite (&sprite_data[end], x[end], y[end]);
+	front = end;
+	if (end == 0)  
+		end = size - 1;
+	else
+		end--;
+}
+
+void main(){
 	initvideo();
+
+	direction = 1;
+	key = 0;
+	oldkey = 0;
 
 	vidstrcpyxy(3, (Y_SIZE-5)/2, "PRESS ARROW KEY");
 
@@ -110,20 +125,20 @@ void main(){
 	while (1) {
 		key = get_stick();                  // get direction key value
 
-		if (key != 0 && key != oldkey)
+		if (key != 0) // && key != oldkey)
 		{
 			if (key == MOVE_RIGHT)
 			{
 				direction++;
-				if (direction == 4)  direction = 0;
+				if (direction == 5)  direction = 1;
 			}
 			if (key == MOVE_LEFT)
 			{
 				direction--;
-				if (direction == -1)  direction = 3;
+				if (direction == 0)  direction = 4;
 			}
 		}
-		oldkey = key;
+		//oldkey = key;
 
 		if (direction_table[direction] == MOVE_UP)
 		{
@@ -131,10 +146,7 @@ void main(){
 			y_end = y[end];
 			x[end] = x[front];
 			y[end] = y[front] - 1;
-			collision = movexysprite (&sprite_data[end], x[end], y[end]);
-			front = end;
-			end--;
-			if (end == -1)  end = size - 1;
+			move();
 		}
 		if (direction_table[direction] == MOVE_RIGHT)
 		{
@@ -142,10 +154,7 @@ void main(){
 			y_end = y[end];
 			x[end] = x[front] + 1;
 			y[end] = y[front];
-			collision = movexysprite (&sprite_data[end], x[end], y[end]);
-			front = end;
-			end--;
-			if (end == -1)  end = size - 1;
+			move();
 		}
  		if (direction_table[direction] == MOVE_LEFT)
 		{
@@ -153,10 +162,7 @@ void main(){
 			y_end = y[end];
 			x[end] = x[front] - 1;
 			y[end] = y[front];
-			collision = movexysprite (&sprite_data[end], x[end], y[end]);
-			front = end;
-			end--;
-			if (end == -1)  end = size - 1;
+			move();
 		}
  		if (direction_table[direction] == MOVE_DOWN)
 		{
@@ -164,10 +170,7 @@ void main(){
 			y_end = y[end];
 			x[end] = x[front];
 			y[end] = y[front] + 1;
-			collision = movexysprite (&sprite_data[end], x[end], y[end]);
-			front = end;
-			end--;
-			if (end == -1)  end = size - 1;
+			move();
 		}
 		if (collision == 1 && size < 30)
 		{
@@ -185,10 +188,6 @@ void main(){
 			end++;
 			size++;
 			collision = 0;
-			
-		//	while(1)
-		//	{
-		//	}
 		}
 
 		delay = 100;
