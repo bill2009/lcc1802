@@ -109,7 +109,7 @@ void main(){
 	while (1) {
 		key = get_stick();                  // get direction key value
 
-		if (key != 0) // && key != oldkey)
+		if (key != 0 && key != oldkey)
 		{
 			if (key == MOVE_RIGHT)
 			{
@@ -122,7 +122,7 @@ void main(){
 				if (direction == 0)  direction = 4;
 			}
 		}
-	//	oldkey = key;
+		oldkey = key;
 
 		if (direction_table[direction] == MOVE_UP)
 		{
