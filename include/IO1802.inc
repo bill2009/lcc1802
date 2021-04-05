@@ -1,8 +1,10 @@
 ;IO1802.inc contains input/output runtime routines for LCC1802
 ;The port is in regArg1, the output byte is in regArg2
 ;18-02-23 changed label + to $$no0 in _inp: to eliminate this style of temporary
+ IFNDEF LCCNOIO
 	align 64
 ;;function_start IO1802.inc void function(void)
+	pagefit 6
 _putc:
 _out5:	
 	glo	regArg1
@@ -10,6 +12,7 @@ _out5:
 	str	sp
 	out	5
 	Cretn
+	pagefit 26
 _inp:		;raw port input
 		;stores a small tailored program on the stack and executes it
 	dec	sp	;work backwards
@@ -55,6 +58,7 @@ _out:		;raw port output
 	inc	sp	;and the D3
 	Cretn		;and we're done
 ;;function_end IO1802.inc
+  ENDIF	;LCCNOIO
 
 	
 	

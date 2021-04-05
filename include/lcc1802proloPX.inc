@@ -213,7 +213,7 @@ __BRTYP	  set	substr("BROP",1,strlen("BROP"))
 	endm
 pagefit: macro bytesneeded	
 	if ($#256)>(255-bytesneeded)
-	    align 256
+	    align 256,0xe2
 	endif
 	endm
 xsnf:	macro	;either long skip or short branch around 2 bytes for pixie
@@ -1231,49 +1231,5 @@ xbnf:	macro	target
 	endm
 	
 	listing	on
-	;lbr	lcc1802init	;21-02-04 init code moved to beginning of code to eliminae long branch
-;;function_start lcc1802init.inc void function(void)
-lcc1802init:
-  IFDEF SAVEREGS
-    include "saveregs.inc"
-  ENDIF
-  IFDEF LCCCX			;wjr 20-04-28 setup for COMX - don't set stack or PC, return to BASIC at end
-	pushr 4
-	pushr 5
-	pushr 7			;wjr 20-04-29 save/restore BASIC registers
-	pushr 9	
-	pushr 11
-	pushr 15
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
-	Ccall _main		;wjr 20-04-28 start the C program
-	popr  15		;wjr 20-04-29 save/restore BASIC registers
-	popr  11
-	popr  9
-	popr  7
-	popr 5
-	popr 4
-	Cretn			;wjr 20-04-28 hopefully back to COMX Basic
-  ELSE
-  IF    MOMCPU<>$1805		;for 1806 use SCAL 
-	ldiReg	RCALL,_call
-	ldiReg	RRET,_return
-  ELSE
-	ldiReg	RCALL,$$_die; _call
-	ldiReg	RRET,$$_die; _return
-  ENDIF
-	  IFNDEF  STACKLOC		;wjr 16-09-20 allow stack relocation
-		ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
-	  ELSEIF				;wjr 16-09-20
-		ldiReg	SP,STACKLOC	;wjr 16-09-20 start stack as specified
-	  ENDIF				;wjr 16-09-20
-		sex	SP
-		ldiReg	RPC,$$_00000
-		sep	RPC
-	$$_00000:
-		Ccall _main	;call the main routine
-	$$_die:	br	$$_die		;loop here when main returns
-		db	0xde,0xad
-  ENDIF
-;;function_end lcc1802init.inc
+	lbr	lcc1802init	;21-04-05 init code re-placed in epilog
 

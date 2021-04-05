@@ -39,6 +39,68 @@ rwork:	equ	memAddr	;work register
 ;	  changed call and return to preserve D for LCCPX as well as LCCCX
 ;;function_start lcc1802epilog.inc void function(void)
  orgc
+lcc1802init:
+  IFDEF SAVEREGS
+    include "saveregs.inc"
+  ENDIF
+  IFDEF LCCCX			;wjr 20-04-28 setup for COMX - don't set stack or PC, return to BASIC at end
+	pushr 4
+	pushr 5
+	pushr 7			;wjr 20-04-29 save/restore BASIC registers
+	pushr 9	
+	pushr 11
+	pushr 15
+	ldiReg	RCALL,_call
+	ldiReg	RRET,_return
+	Ccall _main		;wjr 20-04-28 start the C program
+	popr  15		;wjr 20-04-29 save/restore BASIC registers
+	popr  11
+	popr  9
+	popr  7
+	popr 5
+	popr 4
+	Cretn			;wjr 20-04-28 hopefully back to COMX Basic
+  ELSE
+  IF    MOMCPU<>$1805		;for 1806 use SCAL 
+	ldiReg	RCALL,_call
+	ldiReg	RRET,_return
+  ELSE
+	ldiReg	RCALL,$$_die; _call
+	ldiReg	RRET,$$_die; _return
+  ENDIF
+  IFDEF LCCPX
+    IF	LCCPX=2
+	ldireg	R7,$$BRSUB
+    ENDIF
+  ENDIF
+	  IFNDEF  STACKLOC		;wjr 16-09-20 allow stack relocation
+		ldiReg	SP,0x7fff	;wjr jan 1 start stack at 32K-1 as default
+	  ELSEIF				;wjr 16-09-20
+		ldiReg	SP,STACKLOC	;wjr 16-09-20 start stack as specified
+	  ENDIF				;wjr 16-09-20
+		sex	SP
+		ldiReg	RPC,$$_00000
+		sep	RPC
+	$$_00000:
+		Ccall _main	;call the main routine
+		pagefit 3
+	$$_die:	br	$$_die		;loop here when main returns
+  ENDIF
+  IFDEF LCCPX
+    IF	LCCPX=2		;long branch assist routine
+  	pagefit 10
+$$RET:
+	SEP	R3
+$$BRSUB:
+	lda	R3
+	phi	memaddr
+	lda	R3
+	plo	R3
+	ghi	memaddr
+	phi	R3
+	br	$$RET
+    ENDIF
+  ENDIF
 ;the following routines don't have short jumps and don't need to worry about alignment
 _setqOn:
 	seq
@@ -109,7 +171,7 @@ _call:	sex	SP ;make sure X=SP
 	align 16
   ENDIF
   IFDEF LCCPX
-	align 16
+	pagefit 16
   ENDIF
 	sep	RPC	;return to the original program
 _return: 
@@ -137,7 +199,7 @@ _return:
   ENDIF
 	br	_return-1
  ENDIF
-	align 8
+	pagefit 8
 _oneMs:		;execute 1ms worth of instructions including call(15)/return(10) sequence. takes about 1 ms
 ;subroutine overhead soaks up 27 instruction time.
 ;each loop is 2 instruction times
