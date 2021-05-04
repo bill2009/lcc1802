@@ -86,7 +86,7 @@ _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
     out_vis R12, 7
     c_return
 
-    align    64
+    align    128
 _vidcharxy:             ; write 'text' to position x, y
     ldi 0
     stxd
