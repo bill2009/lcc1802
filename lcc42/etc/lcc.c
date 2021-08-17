@@ -53,6 +53,7 @@ extern char *tempname(char *);
 extern int access(char *, int);
 extern int getpid(void);
 extern char *peep[]; //wjr may 13
+extern char *Ppeep[]; //wjr 21-6-2
 extern char *cpp[], *include[], *com[], *as[],*ld[], inputs[], *suffixes[];
 extern int option(char *);
 static int savetempflag=0; /*request to keep intermediate files*/
@@ -320,17 +321,29 @@ static int compile(char *src, char *dst) { //wjr replaced may 13 to invoke copt 
                 status = callsys(av);
         } else {
                 char* nonoptname = Oflag ? tempname(".n") : dst;
+                char* coptname = Oflag ? tempname(".o") : dst;
 				//fprintf(stderr,"calling compiler\n");
                 /* compile source into non-optimized assembly code */
                 compose(com, clist, append(src, 0), append(nonoptname, 0));
                 status = callsys(av);
-                if (status >= 0 && Oflag) {
+                if (status >= 0 && Oflag==1) {
 						//fprintf(stderr,"composing copt\n");
                         /* call peephole optimizer */
                         compose(peep, clist, append(nonoptname, 0), append(dst, 0));
                         //fprintf(stderr,"calling copt\n");
                         status = callsys(av);
                       	//fprintf(stderr,"status=%d\n",status);
+                }
+                if (status >= 0 && Oflag>1) {
+                        compose(peep, clist, append(nonoptname, 0), append(coptname, 0));
+                        fprintf(stderr,"calling copt before python\n");
+                        status = callsys(av);
+						fprintf(stderr,"composing python liveness analysis\n");
+                        /* call python liveness optimizer optimizer */
+                        compose(Ppeep, clist, append(coptname, 0), append(dst, 0));
+                        fprintf(stderr,"calling python liveness analysis\n");
+                        status = callsys(av);
+                      	fprintf(stderr,"status=%d\n",status);
                 }
         }
         return status;

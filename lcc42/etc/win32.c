@@ -32,7 +32,8 @@ char *as[] = { LCCDIR "bin\\"  "asw", "-cpu 1802", "-i " LCCDIR "include", "-L",
 char *ld[] = { LCCDIR "bin\\"  "p2hex", "-r $-$", //wjr dec 27 wjr 19-4-13
 	"", "", "",
 	"$2", "$3", "","               ",0 }; //wjr dec 12
-char *peep[] = { LCCDIR "bin\\copt", LCCDIR "include\\lcc1806.opt", "-I", "$2", "-O", "$3", 0 };
+char *peep[] = { LCCDIR "bin\\copt", LCCDIR "include\\lcc1806.opt", "-v","-I", "$2", "-O", "$3", 0 };
+char *Ppeep[] = { "python", LCCDIR "bat\\livenessPP.py", "-I", "$2", "-O", "$3", 0 };
 
 extern char *concat(char *, char *);
 extern char *replace(const char *, int, int);

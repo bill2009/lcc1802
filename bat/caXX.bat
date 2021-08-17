@@ -11,7 +11,7 @@
 
 @echo compile %1.c for cpu %cpu% speed %speed% codeloc %codeloc% stackloc %stackloc% target %target%
 
-c:\lcc42\bin\lcc.exe "-target=%target%" "-Wf-g,;" -S %7 %1.c 
+c:\lcc42\bin\lcc.exe  "-target=%target%" "-Wf-g,;" -S %7 %1.c 
 IF ERRORLEVEL 1 GOTO quit
 c:\lcc42\bin\copt c:\lcc42\include\lcc1806.opt -v -I %1.asm -O %1.oasm
 c:\lcc42\bin\asw -cpu %cpu%  -x -i ..\..\include -L -D CPUSPEED=%speed% -D CODELOC=%codeloc% -D STACKLOC=%stackloc% %1.oasm
