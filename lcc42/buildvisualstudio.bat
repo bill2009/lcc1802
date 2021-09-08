@@ -1,6 +1,6 @@
-set BUILDDIR=c:\lcc42\bin
+set BUILDDIR=c:/lcc42/bin
 pushd .
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+call "C:/Program Files (x86)\Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars32.bat"
 popd
 nmake /A -f makefile.nt all
 rem nmake /G /G /P -f makefile.nt HOSTFILE=etc/win32.c lcc 
