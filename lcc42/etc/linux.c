@@ -1,6 +1,6 @@
 /* x86s running Linux */
 //20-05-10 default version xr18CX
-//21-10-01 removing LCCDIR for executables, defaulting to /lcc1802/ for includes
+//21-10-01 changing LCCDIR to LCCEXE for executables, defaulting to /lcc1802/ for includes
 #include <string.h>
 
 static char rcsid[] = "$Id: linux.c,v 1.5 1998/09/16 20:41:09 drh Exp $";
@@ -8,15 +8,18 @@ static char rcsid[] = "$Id: linux.c,v 1.5 1998/09/16 20:41:09 drh Exp $";
 #ifndef LCCDIR
 #define LCCDIR "/lcc1802/"
 #endif
+#ifndef LCCEXE
+#define LCCEXE "/usr/bin/"
+#endif
 
 char *suffixes[] = { ".c", ".i", ".s", ".o", ".out", 0 };
 char inputs[256] = "";
 char *include[] = {"-I" LCCDIR "include", "-I/usr/include", 0 };
-char *cpp[] = { "cpp", "-D__STRICT_ANSI__", "$1", "$2", "$3", 0 };
-char *com[] = { "rcc", "-target=xr18CX", "$1", "$2", "$3", 0 }; //wjr 20-18-10
-char *as[] = { "asl", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o", "$3", "$1", "$2", 0 };
-char *ld[] = { "p2hex", "", "", "", "", "$2", "$3", "","",0 }; //wjr dec 12
-char *peep[] = { "copt", LCCDIR "include/lcc1806.opt", "-I", "$2", "-O", "$3", 0 }; //#wjr 20-05-10
+char *cpp[] = { LCCEXE "cpp", "-D__STRICT_ANSI__", "$1", "$2", "$3", 0 };
+char *com[] = { LCCEXE "rcc", "-target=xr18CX", "$1", "$2", "$3", 0 }; //wjr 20-18-10
+char *as[] = { LCCEXE "asl", "-cpu 1802", "-i " LCCDIR "include", "-L", "-quiet", "", "-o", "$3", "$1", "$2", 0 };
+char *ld[] = { LCCEXE "p2hex", "", "", "", "", "$2", "$3", "","",0 }; //wjr dec 12
+char *peep[] = { LCCEXE "copt", LCCDIR "include/lcc1806.opt", "-I", "$2", "-O", "$3", 0 }; //#wjr 20-05-10
 
 extern char *concat(char *, char *);
 
