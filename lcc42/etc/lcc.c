@@ -5,6 +5,7 @@
 //feb 14 recovered after attempt to change temp file names
 //May 13, 2013  - modifying to invoke copt peephole optimizer
 //May 24 packaging for distribution
+//21-10-01 disabling references to python liveness analysis ppeep
 static char rcsid[] = "$Id: lcc.c,v 4.33 2001/06/28 22:19:58 drh Exp $";
 
 #include <stdio.h>
@@ -53,7 +54,7 @@ extern char *tempname(char *);
 extern int access(char *, int);
 extern int getpid(void);
 extern char *peep[]; //wjr may 13
-extern char *Ppeep[]; //wjr 21-6-2
+//extern char *Ppeep[]; //wjr 21-6-2
 extern char *cpp[], *include[], *com[], *as[],*ld[], inputs[], *suffixes[];
 extern int option(char *);
 static int savetempflag=0; /*request to keep intermediate files*/
@@ -334,7 +335,7 @@ static int compile(char *src, char *dst) { //wjr replaced may 13 to invoke copt 
                         status = callsys(av);
                       	//fprintf(stderr,"status=%d\n",status);
                 }
-                if (status >= 0 && Oflag>1) {
+                /*if (status >= 0 && Oflag>1) {
                         compose(peep, clist, append(nonoptname, 0), append(coptname, 0));
                         fprintf(stderr,"calling copt before python\n");
                         status = callsys(av);
@@ -343,7 +344,7 @@ static int compile(char *src, char *dst) { //wjr replaced may 13 to invoke copt 
                         compose(Ppeep, clist, append(coptname, 0), append(dst, 0));
                         fprintf(stderr,"calling python liveness analysis\n");
                         status = callsys(av);
-                      	fprintf(stderr,"status=%d\n",status);
+                      	fprintf(stderr,"status=%d\n",status);*/
                 }
         }
         return status;
