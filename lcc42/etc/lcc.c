@@ -340,12 +340,12 @@ static int compile(char *src, char *dst) { //wjr replaced may 13 to invoke copt 
                         fprintf(stderr,"calling copt before python\n");
                         status = callsys(av);
 						fprintf(stderr,"composing python liveness analysis\n");
-                        /* call python liveness optimizer optimizer */
+                        // call python liveness optimizer optimizer
                         compose(Ppeep, clist, append(coptname, 0), append(dst, 0));
                         fprintf(stderr,"calling python liveness analysis\n");
                         status = callsys(av);
-                      	fprintf(stderr,"status=%d\n",status);*/
-                }
+                      	fprintf(stderr,"status=%d\n",status);
+                }*/
         }
         return status;
 }
