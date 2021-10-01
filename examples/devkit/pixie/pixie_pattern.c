@@ -97,13 +97,12 @@ static const uint8_t shape_x[] =
 
 uint8_t x, y, x2, y2, delay, collision1, collision2;
 unsigned char key;
-int lines = RES/8;
 uint32_t sprite_data1;
 uint32_t sprite_data2;
 
 void middle(){
 	x = (uint8_t) ((X_SIZE-4)/2);
-    y = (uint8_t) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+    y = (uint8_t) ((Y_SIZE-RES/8)/2);                   // Set x and y to middle of screen
 }
 
 void main(){
@@ -137,7 +136,7 @@ void main(){
 		{
 			removesprite (&sprite_data2);
 			x2 = (int) ((X_SIZE-4)/2) + 8;
-			y2 = (int) ((Y_SIZE-lines)/2);                   // Set x and y to middle of screen
+			y2 = (int) ((Y_SIZE-RES/8)/2);                   // Set x and y to middle of screen
 			collision2 = showsprite (&sprite_data2, shape_x, x2, y);
 		}
 	}
