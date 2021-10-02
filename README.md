@@ -1,6 +1,6 @@
 # lcc1802
-An ANSI C Compiler for the RCA 1802 family of processors
-Installation on linux - command line examples use pi as the userid - tested on raspbian
+An ANSI C Compiler for the RCA 1802 family of processors<br />
+Installation on linux - command line examples use pi as the userid - tested on raspbian<br />
 -switch to the root directory: 
     cd /
 -make a directory for lcc1802:  
