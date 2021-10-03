@@ -4,8 +4,11 @@
 //June 24 poking around
 //Oct 6 counting patterns and substitutions, allowing comments
 //Dec 7, 2014 verbose flag
+//21-10-03 ciincluding <stdlib.h>, <string.h>, putting (void) type onto connect and init
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define HSIZE 107
 #define MAXLINE 100
 
@@ -28,7 +31,7 @@ void error(s) char *s; {
 }
 
 /* connect - connect p1 to p2 */
-connect(p1, p2) struct lnode *p1, *p2; {
+void connect(p1, p2) struct lnode *p1, *p2; {
 	if (p1 == 0 || p2 == 0)
 		error("connect: can't happen\n");
 	p1->l_next = p2;
@@ -62,7 +65,7 @@ int getlst(fp, quit, p1, p2) FILE *fp; char *quit; struct lnode *p1, *p2; {
 }
 
 /* init - read patterns file */
-init(fp) FILE *fp; {
+void init(fp) FILE *fp; {
 	struct lnode head, tail;
 	struct onode *p, **next;
 
