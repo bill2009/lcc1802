@@ -38,6 +38,7 @@ rwork:	equ	memAddr	;work register
 ;21-02-04 init code moved to beginning of module 
 ;	  changed call and return to preserve D for LCCPX as well as LCCCX
 ;21-07-11 elfos support. preserve re.1, use preset r4/5 pick up stack from HIMEM
+;21-10-06 setqon/off added back for compatability with previous versions
 ;;function_start lcc1802epilog.inc void function(void)
  orgd
 LCCELFOSsavRE	ds 1
@@ -52,6 +53,13 @@ lcc1802init:
 	ldn  r15
 	phi  r14
 	lbr  0x0303			;21-07-10 back to elfos
+;setqon/off added back for compatability with previous versions
+_setqOn:
+	seq
+	Cretn
+_setqOff:
+	req
+	Cretn	
  IFNDEF  LCCNOMATH		;wjr 17-04-09 disable 16 bit math
 _modU2:	;16 bit unsigned remainder
 	; just calls the 16 bit division then puts remainder into return value
