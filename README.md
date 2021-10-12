@@ -55,7 +55,9 @@ cat 8q.s
     cat 8q.hex
     more <8q.lst
 ```    
-
+* because of the way the assembler parses its parameters, they have to be passed differently in linux. 
+  For example, "-Wa-D CODELOC=0x2000" becomes "-Wa-D" "-WaCODELOC=0x2000"
+  However, multiple symbols can still be combined as "-Wa-D" "-WaCODELOC=0x2000,STACKLOC=7fff"
 ## Acknowledgments
 
 * the original lcc is at https://github.com/drh/lcc
