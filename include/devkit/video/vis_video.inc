@@ -162,7 +162,7 @@ $$loop40:
     inc R2 
     ghi R12
     adc
-    adi 0xf8
+    ori 0xf8
     phi R12             ; R12 = vidmem = y + x * 40
   ENDIF
     ld2 R13,'O',sp,(7)  ; move text pointer to R13
@@ -202,6 +202,21 @@ $$flushbuffer:
     glo r13
     wait_display
     str R12             ; move the byte
+    cretn
+
+_vidflush:
+    ldireg r14, _vis_buffer
+    select_vis_sex2
+    ldn R14
+    phi r15
+    ldi 0
+    str r14
+    inc r14
+    lda r14
+    plo r15
+    ldn r14
+    wait_display
+    str r15
     cretn
 
 _vidstrcpyxy:           ; write 'text' to position x, y
@@ -279,7 +294,7 @@ $$loop40:
     inc R2 
     ghi R12
     adc
-    adi 0xf8
+    ori 0xf8
     phi R12             ; R12 = vidmem = y + x * 40
   ENDIF
     ld2 R13,'O',sp,(7)  ; move text pointer to R13
@@ -641,7 +656,7 @@ _setcolor:              ; color RAM address in R12
     out 5               ; set new color value
     dec R2
     ghi R12
-    adi 0xf8
+    ori 0xf8
     phi R12
     b1 $                ; wait til video is quiet
     ldn R12

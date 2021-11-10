@@ -19,6 +19,7 @@ void setvideobase(uint16_t vidmem);
 void vidclr(uint16_t vidmem, int vidlen);
 void vidchar(uint16_t vidmem, uint8_t character);
 void vidcharxy(uint8_t x, uint8_t y, uint8_t character);
+void vidflush();
 void vidstrcpy(uint16_t vidmem, char * text);
 void vidstrcpyxy(uint8_t x, uint8_t y, char * text);
 uint8_t bgcolor(uint8_t color);
