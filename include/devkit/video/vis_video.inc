@@ -165,7 +165,7 @@ $$loop40:
     ori 0xf8
     phi R12             ; R12 = vidmem = y + x * 40
   ENDIF
-    ld2 R13,'O',sp,(7)  ; move text pointer to R13
+    ld2 R13,'O',sp,(7)  ; move character to R13
 _vidchar:               ; write 'character' to 'vidmem' location in video memory
     ldireg r14, _vis_buffer
     select_vis_sex2
@@ -204,10 +204,13 @@ $$flushbuffer:
     str R12             ; move the byte
     cretn
 
+  pagefit    25
+
 _vidflush:
     ldireg r14, _vis_buffer
     select_vis_sex2
     ldn R14
+    bz $$bufferempty
     phi r15
     ldi 0
     str r14
@@ -217,6 +220,7 @@ _vidflush:
     ldn r14
     wait_display
     str r15
+$$bufferempty:
     cretn
 
 _vidstrcpyxy:           ; write 'text' to position x, y
@@ -585,6 +589,8 @@ _bgcolor:               ; set background to 'color' in R12.0
     c_return
 
   IFDEF TMC600
+  pagefit    21
+
 _textcolor:             ; set text to 'color' in R12.0
                         ; 0: black
                         ; 1: green
@@ -595,6 +601,19 @@ _textcolor:             ; set text to 'color' in R12.0
                         ; 6: magenta
                         ; 7: white
                         ; bit 3 = 1: blink, 0: no blink
+    ldireg r14, _vis_buffer
+    ldn R14
+    bz $$bufferempty
+    phi r15
+    ldi 0
+    str r14
+    inc r14
+    lda r14
+    plo r15
+    ldn r14
+    wait_display
+    str r15
+$$bufferempty:
     sex R3
     out 7
     db 0x20             ; select VIS register 2
@@ -634,7 +653,43 @@ _textcolor:             ; set text to 'color' in R12.0
   ENDIF
     
   IFDEF TMC600
-    align 16
+	pagefit    71
+	
+_setcolorxy:            ; write 'color' to position x, y
+    ldi 0
+    stxd
+    str R2              ; M(R2) = result value = 0
+    ldi 0x28                 
+    phi R13             ; R13.1 = 0x28, marking DF=1 on an addition need
+$$loop40: 
+    glo R13 
+    shl 
+    plo R13 
+    ghi R13 
+    shlc 
+    phi R13             ; R13 = R13 * 2
+    bnf $$loop40        ; if no need to add result (DF=0) continue *40 loop
+    glo R13 
+    add 
+    str R2
+    inc R2 
+    ghi R13 
+    ani 0x3f            ; filter out addition marking
+    adc 
+    stxd                ; store addition result on M(R2)
+    ghi R13
+    ani 0xc0            
+    bnz $$loop40        ; check marking, if 0 stop, otherwise continue *40 loop
+    glo R12
+    add
+    plo R12
+    inc R2 
+    ghi R12
+    adc
+    ori 0xf8
+    phi R12             ; R12 = vidmem = y + x * 40
+    ld2 R13,'O',sp,(7)  ; move color to R13
+    
 _setcolor:              ; color RAM address in R12
                         ; set text to 'color' in R13.0
                         ; 0: black
@@ -646,6 +701,19 @@ _setcolor:              ; color RAM address in R12
                         ; 6: magenta
                         ; 7: white
                         ; bit 3 = 1: blink, 0: no blink
+    ldireg r14, _vis_buffer
+    ldn R14
+    bz $$bufferempty
+    phi r15
+    ldi 0
+    str r14
+    inc r14
+    lda r14
+    plo r15
+    ldn r14
+    wait_display
+    str r15
+$$bufferempty:
     sex R3
     out 7
     db 0x20             ; select VIS register 2
