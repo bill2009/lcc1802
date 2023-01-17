@@ -14,6 +14,12 @@ asm("PRINTF_ROM equ 1\n");
 #endif
 #endif
 
+#if defined VIS_INT
+void printf_rom_includer(){
+asm("VIS_INT equ 1\n");
+}
+#endif
+
 // Machine definitions
 
 #if defined __COMX__
