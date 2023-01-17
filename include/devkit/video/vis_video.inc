@@ -8,13 +8,100 @@
 ; *** This software may not be used in commercial applications    ***
 ; *** without express written permission from the author.         ***
 ; *******************************************************************
-; 
+;
 
+  IFDEF VIS_INT
+  IFDEF  MICRO
+    align    256
+    
+_vis_buffer_space   db 0xfc dup
+_vis_buffer   db 2 dup
+_vis_buf_loc equ 0xfc
+  ELSE
+_vis_buffer   equ 0x4190
+_vis_buf_loc equ 0x90
+  ENDIF
+
+  pagefit    64
+
+INT_Exit:
+    ret
+DisplayInt:
+    dec R2
+    sav
+    dec R2
+    stxd
+    glo R14
+    stxd
+    ghi R14
+    stxd
+    glo R12
+    stxd
+    ghi R12
+    stxd
+    ldireg r14, _vis_buffer+1
+  IFDEF  MICRO
+    sex R1
+    out 1
+    db  _vis_io_group
+    sex R2
+  ENDIF
+    ldn r14
+    plo r14
+    ldn R14
+    bz $$bufferempty
+$$nextchar:
+    phi R12
+    ldi 0
+    str R14
+    inc R14
+    lda R14
+    plo R12
+    lda R14
+    str R12
+    glo r14
+    xri _vis_buf_loc
+    bnz $$notendbuffer
+$$endbuffer:
+    plo R14
+$$notendbuffer:
+    ldn R14
+    bnz $$nextchar
+    ghi r14
+    phi r12
+    ldi _vis_buf_loc + 1
+    plo r12
+    glo r14
+    str R12
+$$bufferempty:
+    inc R2
+    ldxa
+    phi R12
+    ldxa
+    plo R12
+    ldxa
+    phi R14
+    ldxa
+    plo R14
+    ldxa
+    br INT_Exit
+  ENDIF
+ 
 _initvideo:             ; initialize vis video output and system settings
+  IFDEF VIS_INT
+    ldireg R8, _vis_buffer+2
+$$loopclearbuffer:
+    dec r8
+    ldi 0
+    str r8
+    glo r8
+    bnz $$loopclearbuffer
+  ELSE
     ldireg R8, _vis_buffer
     ldi 0
     str R8
-  IFNDEF TMC600 
+  ENDIF
+  IFNDEF TMC600
     ldireg R8, _vis_text_color_mask
   IFDEF NTSC5_6_7
     ldi 0x3f
@@ -73,6 +160,12 @@ _initvideo:             ; initialize vis video output and system settings
 	out_vis R2, 2
 	dec R2
   ENDIF 
+  IFDEF VIS_INT
+    sex r3
+    ret
+    db 0x23
+    ldireg R1, DisplayInt
+  ENDIF
     c_return
 
 _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
@@ -86,11 +179,22 @@ _setvideobase:          ; set video base to 'vidmem', vidmem pointer is R12
     out_vis R12, 7
     c_return
 
-    align    128
+  pagefit    113
+  
+_vidcharnobufxy:        ; write 'text' to position x, y - without using buffer
+  IFNDEF VIS_INT
+    req
+    skp
+  ENDIF
 _vidcharxy:             ; write 'text' to position x, y
+  IFNDEF VIS_INT
+    seq
+  ENDIF
+    ldireg r14, _vis_count_stack
+    sex R14
     ldi 0
     stxd
-    str R2              ; M(R2) = result value = 0
+    str R14             ; M(R14) = result value = 0
     ldi 0x28                 
   IFDEF CIDELSA
     phi R12             ; R12.1 = 0x28, marking DF=1 on an addition need
@@ -104,41 +208,41 @@ $$loop40:
     bnf $$loop40        ; if no need to add result (DF=0) continue *40 loop
     glo R12 
     add 
-    str R2
-    inc R2 
+    str R14
+    inc R14
     ghi R12 
     ani 0x3f            ; filter out addition marking
     adc 
-    stxd                ; store addition result on M(R2)
+    stxd                ; store addition result on M(R14)
     ghi R12
     ani 0xc0            
     bnz $$loop40        ; check marking, if 0 stop, otherwise continue *40 loop
-    ldn R2
+    ldn R14
   IFDEF DRACO
     sdi 0x10
   ELSE
     sdi 0xc0
   ENDIF
-    str R2 
-    inc R2
-    ldn R2
+    str R14
+    inc R14
+    ldn R14
   IFDEF DRACO  
     sdbi 0xfc
   ELSE
     sdbi 0xfb
   ENDIF
-    stxd                ; M(R2) = 0xFC10/0xFBC0 - M(R2), M(R2) is at this time y*40
+    stxd                ; M(R14) = 0xFC10/0xFBC0 - M(R14), M(R14) is at this time y*40
     glo R13 
     add 
     plo R12 
-    inc R2
+    inc R14
     ghi R13 
     adc 
     phi R12             ; R12 = 0xfc10 - R12(y) * 40 + R13(x)
   ELSE
     phi R13             ; R13.1 = 0x28, marking DF=1 on an addition need
-$$loop40: 
-    glo R13 
+$$loop40:
+    glo R13
     shl 
     plo R13 
     ghi R13 
@@ -147,39 +251,96 @@ $$loop40:
     bnf $$loop40        ; if no need to add result (DF=0) continue *40 loop
     glo R13 
     add 
-    str R2
-    inc R2 
+    str R14
+    inc R14
     ghi R13 
     ani 0x3f            ; filter out addition marking
     adc 
-    stxd                ; store addition result on M(R2)
+    stxd                ; store addition result on M(R14)
     ghi R13
     ani 0xc0            
     bnz $$loop40        ; check marking, if 0 stop, otherwise continue *40 loop
     glo R12
     add
     plo R12
-    inc R2 
+    inc R14
     ghi R12
     adc
     ori 0xf8
     phi R12             ; R12 = vidmem = y + x * 40
   ENDIF
     ld2 R13,'O',sp,(7)  ; move character to R13
+  IFDEF VIS_INT
+_vidchar:               ; write 'character' to 'vidmem' location in video memory
+_vidcharnobuf:
+    ldireg r14, _vis_buffer
+    select_vis
+    ldn r14
+    plo r14
+    xri _vis_buf_loc
+    bnz $$notendbuffer
+$$endbuffer:
+    plo R14
+$$notendbuffer:
+    ldn r14
+    bnz $$notendbuffer
+    sex r3
+    dis
+    db 0x33
+    ghi r12
+    str r14
+    inc r14
+    glo r12
+    str r14
+    inc r14
+    glo r13
+    str r14
+    inc r14
+    ret
+    db 0x23
+    glo R14
+    str R2
+    ldi _vis_buf_loc
+    plo R14
+    ldn r2
+    str R14
+    cretn
+  ELSE
+    bnq _vidcharnobuf
 _vidchar:               ; write 'character' to 'vidmem' location in video memory
     ldireg r14, _vis_buffer
     select_vis_sex2
     ldn R14
-    bnz $$flushbuffer
+    bnz _flushbuffer
     glo r13
   IF (SYMTYPE(ALTAIR) <> -1) || (SYMTYPE(DESTROYER) <> -1)
-    bn1 $$pushtobuffer  ; Display period so buffer data
+    bn1 _pushtobuffer  ; Display period so buffer data
   ELSE
-    b1  $$pushtobuffer  ; Display period so buffer data
+    b1  _pushtobuffer  ; Display period so buffer data
   ENDIF
     str R12             ; move the byte
     cretn
-$$pushtobuffer:
+_vidcharnobuf:
+    ldireg r14, _vis_buffer
+    select_vis_sex2
+    ldn R14
+    bz _outputchar
+_flushbuffer:
+    phi r15
+    ldi 0
+    str r14
+    inc r14
+    lda r14
+    plo r15
+    ldn r14
+    wait_display
+    str r15
+_outputchar:
+    glo r13
+    wait_display
+    str R12             ; move the byte
+    cretn
+_pushtobuffer:
     ghi r12
     str r14
     inc r14
@@ -189,21 +350,8 @@ $$pushtobuffer:
     glo r13
     str r14
     cretn
-$$flushbuffer:
-    phi r15
-    ldi 0
-    str r14
-    inc r14
-    lda r14
-    plo r15
-    ldn r14
-    wait_display
-    str r15
-    glo r13
-    wait_display
-    str R12             ; move the byte
-    cretn
-
+  ENDIF
+  
   pagefit    25
 
 _vidflush:
@@ -211,6 +359,7 @@ _vidflush:
     select_vis_sex2
     ldn R14
     bz $$bufferempty
+  IFNDEF VIS_INT
     phi r15
     ldi 0
     str r14
@@ -220,13 +369,21 @@ _vidflush:
     ldn r14
     wait_display
     str r15
+  ELSE
+    sex r3
+    ret
+    db 0x23
+    wait_display
+  ENDIF
 $$bufferempty:
     cretn
 
 _vidstrcpyxy:           ; write 'text' to position x, y
+    ldireg r14, _vis_count_stack
+    sex r14
     ldi 0
     stxd
-    str R2              ; M(R2) = result value = 0
+    str R14              ; M(R14) = result value = 0
     ldi 0x28                 
   IFDEF CIDELSA
     phi R12             ; R12.1 = 0x28, marking DF=1 on an addition need
@@ -240,34 +397,34 @@ $$loop40:
     lbnf $$loop40       ; if no need to add result (DF=0) continue *40 loop
     glo R12 
     add 
-    str R2
-    inc R2 
+    str r14
+    inc r14
     ghi R12 
     ani 0x3f            ; filter out addition marking
     adc 
-    stxd                ; store addition result on M(R2)
+    stxd                ; store addition result on M(R14)
     ghi R12
     ani 0xc0            
     lbnz $$loop40       ; check marking, if 0 stop, otherwise continue *40 loop
-    ldn R2
+    ldn r14
   IFDEF DRACO
     sdi 0x10
   ELSE
     sdi 0xc0
   ENDIF
-    str R2 
-    inc R2
-    ldn R2
+    str r14
+    inc r14
+    ldn r14
   IFDEF DRACO  
     sdbi 0xfc
   ELSE
     sdbi 0xfb
   ENDIF
-    stxd                ; M(R2) = 0xFC10/0xFBC0 - M(R2), M(R2) is at this time y*40
+    stxd                ; M(R14) = 0xFC10/0xFBC0 - M(R14), M(R14) is at this time y*40
     glo R13 
     add 
     plo R12 
-    inc R2
+    inc r14
     ghi R13 
     adc 
     phi R12             ; R12 = 0xfc10 - R12(y) * 40 + R13(x)
@@ -283,19 +440,19 @@ $$loop40:
     lbnf $$loop40       ; if no need to add result (DF=0) continue *40 loop
     glo R13 
     add 
-    str R2
-    inc R2 
+    str r14
+    inc r14
     ghi R13 
     ani 0x3f            ; filter out addition marking
     adc 
-    stxd                ; store addition result on M(R2)
+    stxd                ; store addition result on M(R14)
     ghi R13
     ani 0xc0            
     lbnz $$loop40       ; check marking, if 0 stop, otherwise continue *40 loop
     glo R12
     add
     plo R12
-    inc R2 
+    inc r14
     ghi R12
     adc
     ori 0xf8
@@ -311,6 +468,7 @@ _vidstrcpy:             ; write 'text' to 'vidmem'
     select_vis
     ldn R14
     lbz $$cpy
+  IFNDEF VIS_INT
     phi r15
     ldi 0
     str r14
@@ -320,6 +478,12 @@ _vidstrcpy:             ; write 'text' to 'vidmem'
     ldn r14
     wait_display
     str r15
+  ELSE
+    sex r3
+    ret
+    db 0x23
+    wait_display
+  ENDIF
 $$cpy:
     ldn R13             ; pick up input pointer
     lbz $$end
@@ -371,6 +535,7 @@ _vidclr:                ; clear screen by writing 0's to video memory
     select_vis_sex2
     ldn R14
     bz $$cpy
+  IFNDEF VIS_INT
     phi r15
     ldi 0
     str r14
@@ -380,6 +545,12 @@ _vidclr:                ; clear screen by writing 0's to video memory
     ldn r14
     wait_display
     str r15
+  ELSE
+    sex r3
+    ret
+    db 0x23
+    wait_display
+  ENDIF
 $$cpy:
     ldi _vis_space      ; source a 0 or 0x20 for clearing the screen
     wait_display
@@ -392,7 +563,7 @@ $$cpy:
     bnz $$cpy
     cretn
 
-  IF (SYMTYPE(TMC600) = -1) && (SYMTYPE(NTSC5_6_7) == -1)
+  IF (SYMTYPE(TMC600) == -1) && (SYMTYPE(NTSC5_6_7) == -1)
 _shapechar:             ; shape 'number' of charcters from 'shapelocation'
                         ; shapelocation pointer is R12, start character R13
                         ; on R2: number of shapes loaded into R15.0, color R15.1 (b7, b6 & b5)
@@ -419,6 +590,7 @@ $$nextshape:
     ldi 0
     plo R8
     glo R13
+    wait_display
     str R9
     inc R13
   IFDEF  PECOM 
@@ -475,6 +647,7 @@ $$dontusecolor:
     lda R12
   ENDIF
 $$shape:
+    wait_display
     str R8
     inc R8
     glo R8
@@ -532,9 +705,9 @@ _shapecolor:            ; shape color for 'character' start in R12, 'number' in 
     out  6                       
 $$nextchar:
     ldireg R9,0xf800    ; R9 is page mem pointer               
+    glo  R12            ; load character
     wait_display
-    glo  R12            ; load character         
-    str  R9             ; store on screen         
+    str  R9             ; store on screen
     inc  R12                 
     ldi  0xf4           ; R9 is cmem pointer
     phi  R9                      
@@ -604,6 +777,7 @@ _textcolor:             ; set text to 'color' in R12.0
     ldireg r14, _vis_buffer
     ldn R14
     bz $$bufferempty
+  IFNDEF VIS_INT
     phi r15
     ldi 0
     str r14
@@ -613,6 +787,12 @@ _textcolor:             ; set text to 'color' in R12.0
     ldn r14
     wait_display
     str r15
+  ELSE
+    sex r3
+    ret
+    db 0x23
+    wait_display
+  ENDIF
 $$bufferempty:
     sex R3
     out 7
@@ -704,6 +884,7 @@ _setcolor:              ; color RAM address in R12
     ldireg r14, _vis_buffer
     ldn R14
     bz $$bufferempty
+  IFNDEF VIS_INT
     phi r15
     ldi 0
     str r14
@@ -713,6 +894,12 @@ _setcolor:              ; color RAM address in R12
     ldn r14
     wait_display
     str r15
+  ELSE
+    sex r3
+    ret
+    db 0x23
+    wait_display
+  ENDIF
 $$bufferempty:
     sex R3
     out 7

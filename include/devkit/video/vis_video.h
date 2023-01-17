@@ -8,17 +8,22 @@
 
 uint8_t vis_text_color;
 uint8_t vis_text_color_mask;
-uint32_t vis_buffer;
+uint16_t vis_count_stack;
 #if defined __CIDELSA__ || defined __MICRO__
 uint8_t vis_out3;
 uint8_t vis_out5;
+#endif
+#ifndef VIS_INT
+uint32_t vis_buffer;
 #endif
 
 void initvideo();
 void setvideobase(uint16_t vidmem);
 void vidclr(uint16_t vidmem, int vidlen);
 void vidchar(uint16_t vidmem, uint8_t character);
+void vidcharnobuf(uint16_t vidmem, uint8_t character);
 void vidcharxy(uint8_t x, uint8_t y, uint8_t character);
+void vidcharnobufxy(uint8_t x, uint8_t y, uint8_t character);
 void vidflush();
 void vidstrcpy(uint16_t vidmem, char * text);
 void vidstrcpyxy(uint8_t x, uint8_t y, char * text);
