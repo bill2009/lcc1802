@@ -190,7 +190,7 @@ _vidcharxy:             ; write 'text' to position x, y
   IFNDEF VIS_INT
     seq
   ENDIF
-    ldireg r14, _vis_count_stack
+    ldireg r14, _vis_count_stack+1
     sex R14
     ldi 0
     stxd
@@ -379,7 +379,7 @@ $$bufferempty:
     cretn
 
 _vidstrcpyxy:           ; write 'text' to position x, y
-    ldireg r14, _vis_count_stack
+    ldireg r14, _vis_count_stack+1
     sex r14
     ldi 0
     stxd
