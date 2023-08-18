@@ -35,11 +35,11 @@ command line examples use pi as the userid - tested on raspbian
     mkdir build<br />
 * make the project: 
     make BUILDDIR=build all<br />
-* add links to the executables to /usr/bin/:
+* add links to the executables to /usr/local/bin/:
 ```
-sudo ln -sf /lcc1802/lcc42/build/lcc /usr/bin/lcc
-sudo ln -sf /lcc1802/lcc42/build/rcc /usr/bin/rcc
-sudo ln -sf /lcc1802/lcc42/build/copt /usr/bin/copt
+sudo ln -sf /lcc1802/lcc42/build/lcc /usr/local/bin/lcc
+sudo ln -sf /lcc1802/lcc42/build/rcc /usr/local/bin/rcc
+sudo ln -sf /lcc1802/lcc42/build/copt /usr/local/bin/copt
 ```    
 * at this point the compiler is installed and can be used to compile C to assembler :
 ```
