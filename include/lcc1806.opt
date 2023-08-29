@@ -11,6 +11,7 @@
 #20-10-04 new opt 20-10.1
 #20-12-03 new opt 20-12.1/2 driven by liveness analysis
 #21-01-24 corrected error in opt 20-12.1, removed opt 20-10.1 which make no sense at all to me.
+#23-08-29 disabled opt 20-02 which was misfiring on a pre-increment of an 8 bit index like foo[++index]
 #	ld1 %1,%2,%3,%4
 #	jcI1I %1,%5,%6,%7 
 #=
@@ -313,13 +314,6 @@ _main: ;copt is peeping your size %1 frame with 2020-7 vision
 	ldn1 %3,%1
 	incm %3,1
 	str1 %3,%1; end of opt 2020-3
-
-	cpy1 %1,%2
-	zExt %1 ;CVUI2(reg): widen unsigned char to signed int (zero extend)*
-	incm %1,1
-	cpy1 %2,%1;LOADU1(reg)
-=
-	incm %2,1	;opt 20-2 unsigned char for loop increment
 
 	st2 R12,'O',sp,(%1); flag1 
 	demote %1 ;aggressive opt 2020-7
