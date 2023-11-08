@@ -228,7 +228,7 @@ char *basepath(char *name) {
 #define _P_WAIT 0
 extern int fork(void);
 extern int wait(int *);
-extern int execv(const char *, char *[]);//wjr 16-11-15
+extern int execvp(const char *, char *[]);//wjr 16-11-15
 
 static int _spawnvp(int mode, const char *cmdname, const char *const argv[]) {
 	int pid, n, status;
@@ -238,7 +238,7 @@ static int _spawnvp(int mode, const char *cmdname, const char *const argv[]) {
 		fprintf(stderr, "%s: no more processes\n", progname);
 		return 100;
 	case 0:
-		execv(cmdname, (char **)argv);
+		execvp(cmdname, (char **)argv);
 		fprintf(stderr, "%s: ", progname);
 		perror(cmdname);
 		fflush(stdout);

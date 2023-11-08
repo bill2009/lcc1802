@@ -594,7 +594,7 @@ stmt: IASMV                 "# emit inline assembly\n"
 static void progend(void){
 		print(	"\tinclude lcc1802epiloDH.inc\n");
 		if (wjrfloats){
-			print("\tinclude LCC1802FP.inc\n");
+			print("\tinclude LCC1802fp.inc\n");
 		}
 		print("\tinclude IO1802.inc\n");
 
