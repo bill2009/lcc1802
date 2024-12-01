@@ -235,7 +235,7 @@ fp_sc_cln: glo   r8                    ; get high byte
            ghi   r8                    ; recover exponent
            shrc                        ; shift in sign
            phi   r8                    ; put it back
-           inc	r2	;wjr release work area
+fp_sc_end: inc	r2	;wjr release work area
 	   popr R13	;wjr restore param regs
 	   popr R12	;wjr
            popr	F7	;wjr restore c variable register
@@ -284,7 +284,7 @@ fp_getsgn: ghi   r8                    ; get sign of arg1
 ; ***        RF.1 - exponent of arg2  ***
 ; ***        F7.0 - signs        ***
 ; ***************************************
-fp_add:   ghi   r8                    ; check arg1 for zero
+fp_add:    ghi   r8                    ; check arg1 for zero
            lbnz  add_a1nz
            glo   r8
            lbnz  add_a1nz
@@ -393,55 +393,38 @@ add_lp1dn: glo   F7                    ; see if signs match
            lbnz  add_nm                ; jump if signs do not match
            Ccall fp_add_12             ; perform arg1 += arg2
            lbr   add_fnl               ; jump to clean up
-add_nm:    glo   FB                    ; perform arg1 - arg2
+add_nm:    glo   FB                    ; perform arg1 -= arg2
            str   r2
            glo   F9
            sm
-           plo   R12                    ; place into RD:RC
+           plo   F9
            ghi   FB
            str   r2
            ghi   F9
            smb
-           phi   R12
+           phi   F9
            glo   R10
            str   r2
            glo   r8
            smb
-           plo   R13
+           plo   r8
            ghi   R10
            str   r2
            ghi   r8
            smb
-           phi   R13
-           lbnf  add_no                ; jump if arg2 was larger than arg1
-           ghi   R13                    ; transfer result to arg1
            phi   r8
-           glo   R13
-           plo   r8
-           ghi   R12
-           phi   F9
-           glo   R12
-           plo   F9
-           lbr   add_fnl               ; finalize
-add_no:    glo   F9                    ; perform arg1 = arg2 - arg1
-           str   r2
-           glo   FB
-           sm
+           lbdf  add_fnl               ; finalize if arg1 >= 0
+           glo   F9                    ; perform arg1 = -arg1
+           sdi   0
            plo   F9
            ghi   F9
-           str   r2
-           ghi   FB
-           smb
+           sdbi  0
            phi   F9
            glo   r8
-           str   r2
-           glo   R10
-           smb
+           sdbi  0
            plo   r8
            ghi   r8
-           str   r2
-           ghi   R10
-           smb
+           sdbi  0
            phi   r8
            glo   F7                    ; move sign 2 to sign1
            shl
@@ -465,7 +448,6 @@ add_nz:    ghi   r8                    ; see if answer is beyond 24 bits
            ghi   R15                    ; get exp1
            adi   1                     ; increment it
            phi   R15                    ; and put it back
-           lbr   add_nz                ; keep going until not > 24 bits
 
 add_nx:    glo   F7                    ; move sign 1 to low bit
            shr
@@ -676,6 +658,8 @@ div_z:     ghi   R12                    ; move result to arg1
 ; ***        RF.1 - exponent of arg2  ***
 ; ***        F7.0 - signs             ***
 ; ***************************************
+; Preserved: r6 return position
+;            R14 baud constant
 fp_mul:    		;separated from macro
 	   pushr F7	;wjr save the C variable
 	   pushr R12	;wjr save param regs
@@ -683,46 +667,34 @@ fp_mul:    		;separated from macro
 	   dec r2	;wjr make a work area -r7 is restores and 2 inc'd in the cleanup routine fp_sc_up
 
            Ccall    fp_getexp	       ; get exponents
-           Ccall    fp_getsgn            ; get signs
            glo   R15                    ; get exp2
-           smi   127                   ; remove bias
+           lbz   mul_zero
            str   r2                    ; place into memory
            ghi   R15                    ; get exp1
-           smi   127                   ; remove bias
+           lbz   mul_zero
            add                         ; add in exponent 2
-           adi   127                   ; put bias back in
+           smi   127                   ; adjust bias
            stxd                        ; place onto stack
+           Ccall    fp_getsgn            ; get signs
            glo   F7                    ; determine sign for answer
            str   r2
            shr
            xor
            stxd                        ; place onto stack
-           ghi   R14                    ; get baud constant
-           stxd                        ; save on stack
-           ghi   r6                    ; save return position on stack
-           stxd
-           glo   r6
-           stxd
-           ldi   0                     ; initial value of ct
-           stxd
-           phi   R14                    ; set mulH to 0
-           plo   R14
-           phi   r6
-           plo   r6
-           phi   r8                    ; mulL = arg1 & 0xffffff
-           glo   r8                    ; be sure high bit is set
-           ori   080h
-           plo   r8
            ldi   0
            phi   R12                    ; set result to 0
            plo   R12
            phi   F7
            plo   F7
-           phi   R15
-           plo   R15
            phi   R13
            plo   R13
-           phi   R10                    ; arg2 &= 0ffffff
+           phi   R10                    ; arg2 &= 0xffffff
+           phi   R15                    ; set mulH to 0
+           plo   R15 
+           phi   r8                    ; mulL = arg1 & 0xffffff
+           glo   r8                    ; be sure high bit is set
+           ori   080h
+           plo   r8
            glo   R10                    ; be sure high bit is set
            ori   080h
            plo   R10
@@ -734,11 +706,8 @@ mul_lp1:   glo   FB                    ; check for zero multiplier
            lbnz  mul_go1
            ghi   R10
            lbz   mul_dn                ; jump if muliplier is zero
-mul_go1:   ghi   R10                    ; shift multiplier right
+mul_go1:   glo   R10                    ; shift multiplier right
            shr
-           phi   R10
-           glo   R10
-           shrc
            plo   R10
            ghi   FB
            shrc
@@ -767,47 +736,19 @@ mul_go1:   ghi   R10                    ; shift multiplier right
            ghi   R12
            adc
            phi   R12
-           glo   r6                    ; now high 32 bits
+           glo   R15                   ; now high 16 bits
            str   r2
            glo   R13
-           add
+           adc
            plo   R13
-           ghi   r6
+           ghi   R15
            str   r2
-           ghi   r6
+           ghi   R15
            str   r2
            ghi   R13
            adc
            phi   R13
-           glo   R14
-           str   r2
-           glo   R15
-           adc
-           plo   R15
-           ghi   R14
-           str   r2
-           ghi   R15
-           adc
-           phi   R15
-           ghi   R12                    ; see if need carry from low to high
-           lbz   mul_no                ; jump if no carry is needed
-           glo   R13                    ; move the carry on over
-           adi   1
-           plo   R13
-           ghi   R13
-           adci  0
-           phi   R13
-           glo   R15
-           adci  0
-           plo   R15
-           ghi   R15
-           adci  0
-           phi   R15
-mul_no:    irx                         ; recover ct
-           ldx
-           adi   1                     ; increment by 1
-           stxd                        ; and put it back
-           glo   F9                    ; shift mulL left
+mul_no:    glo   F9                    ; shift mulL left
            shl
            plo   F9
            ghi   F9
@@ -819,81 +760,48 @@ mul_no:    irx                         ; recover ct
            ghi   r8
            shlc
            phi   r8
-           glo   r6                    ; shift mulH left
-           shl
-           plo   r6
-           ghi   r6
+           glo   R15                    ; shift mulH left
            shlc
-           phi   r6
-           glo   R14
+           plo   R15
+           ghi   R15
            shlc
-           plo   R14
-           ghi   R14
-           shlc
-           phi   R14
-           ghi   r8                    ; see if a carry is needed
-           lbz   mul_lp1               ; jump if not
-           ldi   0                     ; zero the high byte
-           phi   r8
-           glo   r6                    ; add in the carry
-           ori   1
-           plo   r6
+           phi   R15
            lbr   mul_lp1               ; loop back for more
-mul_dn:    irx                         ; recover ct
-           ldxa
-           plo   R14                    ; set aside
-           ldxa
-           plo   r6
-           ldxa
-           phi   r6
-           ldx
-           phi   R14
-           ghi   R12                    ; transfer resL to arg1
-           phi   r8
-           glo   R12
+mul_dn:    ghi   r13	               ; move mantissa (24 bits)
            plo   r8
-           ghi   F7
-           phi   F9
-           glo   F7
-           plo   F9
-           glo   R14
-           plo   R12                    ; put ct into RC.0
-mul_lp2:   glo   R12                    ; get ct
-           smi   2                     ; see if <2
-           lbnf  mul_nxt1              ; jump if so
-           ccall    fp_shr_1           ; shift answer to the right 17-03-06
-           ccall    fp_shr_fd          ; shift resH right 17-03-06
-           lbnf  mul_lp2a              ; jump if no carry into low word
-           glo   r8                    ; set high bit
-           ori   080h
-           plo   r8
-mul_lp2a:  dec   R12                    ; decrement count
-           lbr   mul_lp2               ; loop back to keep checking
-mul_nxt1:  irx                         ; recover sign
+           glo   r13
+           phi   r9
+           ghi   r12
+           plo   r9
+           irx                         ; recover sign
            ldxa
            plo   F7
            ldx                         ; recover answer exponent
-           plo   R12
-mul_lp3:   ghi   R15                    ; check resH for nonzero
-           lbnz  mul_lp3a
-           glo   R15
-           lbnz  mul_lp3a
-           ghi   R13
-           lbnz  mul_lp3a
-           glo   R13
-           lbnz  mul_lp3a
-           lbr   mul_lp4               ; jump if no bits set in resH
-mul_lp3a:  inc   R12                    ; increment exponent
-           Ccall fp_shr_1                ; shift answer to the right
-           Ccall fp_shr_fd               ; shift resH right
-           lbnf  mul_lp3               ; jump if no carry into low word
-           glo   r8                    ; set high bit
-           ori   080h
+           adi   1                     ; plus 1
+           phi   R15                   ; to high R15
+           glo   r8                    ; need high bit to be a 1
+           ani   080h                  ; check it
+           lbnz  fp_sc_cln             ; jump if good
+           glo   r12                   ; shift in MSB of RC.0
+           shl
+           glo   F9                    ; shift mantissa left
+           shlc
+           plo   F9
+           ghi   F9
+           shlc
+           phi   F9
+           glo   r8
+           shlc
            plo   r8
-           lbr   mul_lp3
-mul_lp4:   glo   R12                    ; transfer exponent
-           phi   R15                    ; to high R15
-           lbr   fp_sc_up              ; scale number and build answer
+           ghi   R15                    ; get exp1
+           smi   1                      ; minus 1
+           phi   R15                    ; and put it back
+           lbr   fp_sc_cln
+mul_zero:  phi   r8                     ; D==0
+           plo   r8
+           phi   r9
+           plo   r9
+           lbr   fp_sc_end
 
 ; ***************************************
 ; *** Convert ascii to floating point ***
