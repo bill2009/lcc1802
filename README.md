@@ -35,6 +35,8 @@ command line examples use pi as the userid - tested on raspbian
     mkdir build<br />
 * make the project: 
     make BUILDDIR=build all<br />
+* only if this fails (which is possible under recent gcc versions, e.g., 14.2), then run make with the following extra option:
+    make BUILDDIR=build CFLAGS="-g -Wno-error=implicit-function-declaration -Wno-error=implicit-int" all<br />
 * add links to the executables to /usr/bin/:
 ```
 sudo ln -sf /lcc1802/lcc42/build/lcc /usr/bin/lcc
