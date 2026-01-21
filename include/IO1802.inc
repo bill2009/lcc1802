@@ -4,7 +4,7 @@
  IFNDEF LCCNOIO
 	align 64
 ;;function_start IO1802.inc void function(void)
-	pagefit 6
+	;pagefit 6
 _putc:
 _out5:	
 	glo	regArg1
@@ -12,7 +12,7 @@ _out5:
 	str	sp
 	out	5
 	Cretn
-	pagefit 26
+	;pagefit 26
 _inp:		;raw port input
 		;stores a small tailored program on the stack and executes it
 	dec	sp	;work backwards
