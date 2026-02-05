@@ -327,7 +327,7 @@ static int compile(char *src, char *dst) { //wjr replaced may 13 to invoke copt 
                 /* compile source into non-optimized assembly code */
                 compose(com, clist, append(src, 0), append(nonoptname, 0));
                 status = callsys(av);
-                if (status >= 0 && Oflag==1) {
+                if (status == 0 && Oflag==1) {
 						//fprintf(stderr,"composing copt\n");
                         /* call peephole optimizer */
                         compose(peep, clist, append(nonoptname, 0), append(dst, 0));
